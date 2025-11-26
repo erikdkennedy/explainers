@@ -1,0 +1,293 @@
+/*****************************************
+                VARIABLES
+*****************************************/
+
+:root {
+    --text-color: #2d2d2d;
+    --border-color: #D3D3D3;
+    --link-color: #5B5BFD;
+    --brand-color: #31359D;
+    --background-color: #FAF9F7;
+    --serif: 'Newsreader', Georgia, serif;
+    --sans: 'Figtree', system-ui;
+    --mono: 'JetBrains Mono', monospace;
+}
+
+
+
+/*****************************************
+                HELPERS
+*****************************************/
+
+$under-w400: "max-width: 401px";
+$w400: "min-width: 400px";
+$w500: "min-width: 500px";
+$w600: "min-width: 600px";
+$w700: "min-width: 700px";
+$w800: "min-width: 800px";
+$w900: "min-width: 900px";
+$w1000: "min-width: 1000px";
+$w1100: "min-width: 1100px";
+$w1200: "min-width: 1200px";
+$w1300: "min-width: 1300px";
+$w1400: "min-width: 1400px";
+$w1440: "min-width: 1441px";
+
+@mixin under-w400 { @media ($under-w400) {@content;} }
+@mixin w400 { @media ($w400) {@content;} }
+@mixin w500 { @media ($w500) {@content;} }
+@mixin w600 { @media ($w600) {@content;} }
+@mixin w700 { @media ($w700) {@content;} }
+@mixin w800 { @media ($w800) {@content;} }
+@mixin w900 { @media ($w900) {@content;} }
+@mixin w1000 { @media ($w1000) {@content;} }
+@mixin w1100 { @media ($w1100) {@content;} }
+@mixin w1200 { @media ($w1200) {@content;} }
+@mixin w1300 { @media ($w1300) {@content;} }
+@mixin w1400 { @media ($w1400) {@content;} }
+@mixin w1440 { @media ($w1440) {@content;} }
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@mixin big-shadow {
+    box-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.1),
+                0 12px 48px 0 rgba(0, 0, 0, 0.08);
+                //0 120px 60px 0 rgba(0, 0, 0, 0.04);
+}
+
+@mixin serif {
+    font-family: var(--serif);
+    font-optical-sizing: auto;
+}
+
+.mono {
+    font-family: var(--mono);
+    text-transform: uppercase;
+}
+
+.logo {
+    @include serif;
+
+    color: var(--brand-color);
+    padding: 8px 0;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 94%;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+}
+
+    .logo-secondary {
+        opacity: 0.6;
+    }
+
+/*****************************************
+        RESET & GLOBAL STYLES
+*****************************************/
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+* {margin: 0;}
+
+html,
+body {
+    @include serif;
+    
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    font-size: 19px;
+    line-height: 123%;
+    background-color: var(--background-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+
+    @include w700 {
+        font-size: 21px;
+        line-height: 140%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        scroll-behavior: auto;
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+}
+
+input, button, textarea, select {
+    font: inherit;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+nav {
+    display: flex;
+    grid-column: layout;
+    margin: 0 auto;
+    padding-inline: 16px;
+    max-width: 1400px;
+    width: 100%;
+}
+
+
+
+/*****************************************
+               HOMEPAGE
+*****************************************/
+
+.posts {}
+
+    .post {
+        //margin-block: 40px;
+
+        a {
+            display: block;
+            padding: 20px 24px;
+            color: inherit;
+            text-decoration: none;
+            transition: background-color 0.2s ease-out;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            @include w900 {
+                padding: 24px 0;
+            }
+        }
+    }
+
+        .post-wrapper {
+            @include w900 {
+                display: flex;
+                gap: 32px;
+                margin: 0 auto;
+                max-width: 920px;
+            }
+        }
+
+            .post-image {
+                margin-bottom: 16px;
+                width: 150px;
+                height: 75px;
+                background-color: #ddd;
+                border-radius: 36px;
+                overflow: hidden;
+
+                @include w900 {
+                    margin-bottom: 0;
+                    min-width: 250px;
+                    height: 125px;
+                    border-radius: 62.5px;
+                }
+
+                img,
+                svg {
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+
+            .post-text {}
+
+                .post-title {
+                    margin-bottom: 6px;
+                    font-size: 32px;
+                    line-height: 94%;
+                    font-weight: 700;
+
+                    @include w900 {
+                        font-size: 60px;
+                        font-variation-settings: 'opsz' 60;
+                    }
+                }
+
+                .post-subtitle {
+                    margin-bottom: 10px;
+                    font-family: var(--sans);
+                    font-size: 17px;
+                    line-height: 19px;
+                    font-weight: 400;
+                    opacity: 0.8;
+
+                    @include w900 {
+                        font-size: 18px;
+                    }
+                }
+
+                .post-date {
+                    font-size: 14px;
+                    line-height: 13px;
+                    letter-spacing: 0.06em;
+                    opacity: 0.7;
+                }
+
+
+@keyframes drawExtinction1 {
+    from {stroke-dashoffset: 100px;}
+    to {stroke-dashoffset: 0px;}
+}
+
+@keyframes drawExtinction2 {
+    from {stroke-dashoffset: 0px;}
+    to {stroke-dashoffset: 100px;}
+}
+
+#extinction-line-1 {
+    stroke-dasharray: 50px, 50px;
+    animation: drawExtinction1 10000ms linear infinite;
+}
+
+#extinction-line-2 {
+    stroke-dasharray: 50px, 50px;
+    animation: drawExtinction2 10000ms linear infinite;
+}
+
+@keyframes drawKelvinLine {
+    from {stroke-dashoffset: 600px;}
+    to {stroke-dashoffset: -600px;}
+}
+
+.kelvin-line {
+    stroke-dasharray: 600px, 600px;
+    animation: drawKelvinLine 5000ms linear var(--delay) infinite backwards;
+}
+
+#line-5000k {
+    --delay: 0ms;
+}
+
+#line-4000k {
+    --delay: 400ms;
+}
+
+#line-3000k {
+    --delay: 800ms;
+}
+
+#line-2000k {
+    --delay: 1200ms;
+}
