@@ -7,9 +7,10 @@ img_subdir: qm
 img_on_homepage: quantum-background-sm.html
 published_on: 2025-11-01
 layout: post.md
+css: quantum
 js: post
 tags: [posts]
-published: true
+published: false
 ---
 
 I’ve spent over a year trying to piece together quantum mechanics, and this article is the result of my work. If you learn all the material in this article, you’ll know enough to be annoyed by just about _everyone_:

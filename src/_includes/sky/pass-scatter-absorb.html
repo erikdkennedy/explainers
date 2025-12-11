@@ -1,0 +1,37 @@
+<div id="pass-scatter-absorb" class="widget">
+    <div class="photon-demo">
+        <div class="photon-container"></div>
+        <div class="o2-molecule">
+            <div class="nuclei"></div>
+            <div class="electron-cloud" data-period="2" data-amplitude="2"></div>
+        </div>
+        <p class="label photon-source-label">Photon <br>Source</p>
+        <p class="label oxygen-molecule-label">Oxygen <br>Molecule</p>
+    </div>
+    <div class="control-panel">
+        <div class="control inverse-wavelength-control">
+            <label for="inverse-wavelength-slider">Photon Wavelength <br><span class="label--small">700 to 200 nm</span></label>
+            <input type="range" id="inverse-wavelength-slider" min="0" max="500" value="0">
+            <div class="inverse-wavelength-labels">
+                <p class="label--small wavelength-slider-label wavelength-slider-label--visible">Visible Light</p>
+                <p class="label--small wavelength-slider-label wavelength-slider-label--uv">UV</p>
+                <p class="label--small wavelength-slider-label--resonance">Resonance <br>Frequency</p>
+            </div>
+        </div>
+        <div class="control pass-scatter-absorb-response-control">
+            <p class="label pass-scatter-absorb-response-label">Response <br><span class="label--small">Not to scale</span></p>
+            <div class="gauge">
+                <p class="label--small">Passes Through</p>
+                <div class="gauge__bar gauge__bar--transmitted" data-percentage="01"></div>
+            </div>
+            <div class="gauge">
+                <p class="label--small">Scattered</p>
+                <div class="gauge__bar gauge__bar--scattered" data-percentage="01"></div>
+            </div>
+            <div class="gauge">
+                <p class="label--small">Absorbed</p>
+                <div class="gauge__bar gauge__bar--absorbed" data-percentage="01"></div>
+            </div>
+        </div>
+    </div>
+</div>

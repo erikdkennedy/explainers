@@ -12,6 +12,7 @@ layout: null
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/scss/home.css">
+    <script defer src="/assets/js/transition.js"></script>
   </head>
   <body>
     {% include site-top-nav.md %}
@@ -21,7 +22,7 @@ layout: null
         <div class="post">
           <a href="{{ post.url }}">
             <div class="post-wrapper">
-              <div class="post-image">
+              <div class="post-image" style="view-transition-name: post-{{ post.fileSlug }}">
                 {%- assign img_ext = post.data.img_on_homepage | split: '.' | last -%}
                 {%- if img_ext == 'html' -%}
                   {% include {{ post.data.img_on_homepage }} %}
@@ -52,6 +53,12 @@ layout: null
         </div>
       {% endfor %}
     </div>
+    {%- if js -%}
+    {% assign js_list = js | join: ' ' | split: ' ' %}
+    {%- for name in js_list -%}
+    <script defer src="/assets/js/{{ name }}.js"></script>
+    {%- endfor -%}
+    {%- endif -%}
   </body>
 </html>
 
