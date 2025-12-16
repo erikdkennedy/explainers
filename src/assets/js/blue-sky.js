@@ -295,9 +295,21 @@
         _scatteredPercentage = scatteredPercentage;
         _absorbedPercentage = absorbedPercentage;
 
-        $('.gauge__bar--scattered').setAttribute('data-percentage', scatteredPercentage);
-        $('.gauge__bar--absorbed').setAttribute('data-percentage', absorbedPercentage);
-        $('.gauge__bar--transmitted').setAttribute('data-percentage', transmittedPercentage);
+        const $scatteredBar = $('.gauge__bar--scattered');
+        const $absorbedBar = $('.gauge__bar--absorbed');
+        const $transmittedBar = $('.gauge__bar--transmitted');
+        if ($scatteredBar) {
+            $scatteredBar.setAttribute('data-percentage', scatteredPercentage);
+            $scatteredBar.style.setProperty('--bar-fill', `${Math.max(0, Math.min(100, Math.round(scatteredPercentage)))}%`);
+        }
+        if ($absorbedBar) {
+            $absorbedBar.setAttribute('data-percentage', absorbedPercentage);
+            $absorbedBar.style.setProperty('--bar-fill', `${Math.max(0, Math.min(100, Math.round(absorbedPercentage)))}%`);
+        }
+        if ($transmittedBar) {
+            $transmittedBar.setAttribute('data-percentage', transmittedPercentage);
+            $transmittedBar.style.setProperty('--bar-fill', `${Math.max(0, Math.min(100, Math.round(transmittedPercentage)))}%`);
+        }
 
         const electronCloudFrequency = getElectronCloudFrequency();
         const electronCloudAmplitude = getElectronCloudAmplitude();

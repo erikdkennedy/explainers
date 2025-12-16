@@ -26,6 +26,7 @@ $w500: "min-width: 500px";
 $w600: "min-width: 600px";
 $w700: "min-width: 700px";
 $w800: "min-width: 800px";
+$under-w900: "max-width: 900px";
 $w900: "min-width: 900px";
 $w1000: "min-width: 1000px";
 $w1100: "min-width: 1100px";
@@ -40,6 +41,7 @@ $w1440: "min-width: 1441px";
 @mixin w600 { @media ($w600) {@content;} }
 @mixin w700 { @media ($w700) {@content;} }
 @mixin w800 { @media ($w800) {@content;} }
+@mixin under-w900 { @media ($under-w900) {@content;} }
 @mixin w900 { @media ($w900) {@content;} }
 @mixin w1000 { @media ($w1000) {@content;} }
 @mixin w1100 { @media ($w1100) {@content;} }
@@ -63,7 +65,6 @@ $w1440: "min-width: 1441px";
 @mixin big-shadow {
     box-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.1),
                 0 12px 48px 0 rgba(0, 0, 0, 0.08);
-                //0 120px 60px 0 rgba(0, 0, 0, 0.04);
 }
 
 @mixin serif {

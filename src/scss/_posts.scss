@@ -9,9 +9,12 @@
     --font-serif: 'Newsreader', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
     --font-mono: 'PP Supply Mono', monospace;
+
     --content-padding: 16px;
+    --margin-buster: -32px;
 
     --annotation-arrow-color: #999;
+
     
     @include w700 {
         --content-padding: 45px;
@@ -24,29 +27,42 @@
                 HELPERS
 *****************************************/
 
-.post-grid {
-    --toc-width: minmax(260px, 310px);
-    --content-width: min(100%, 790px);
+@mixin content-width {
+    width: 100%;
+    max-width: 790px;
+    margin-inline: auto;
+    padding-inline: 16px;
 
-    @include w700 {
-        display: grid;
-        grid-template-columns:
-            [full-start] 1fr
-            [layout-start] 0
-            [content-start] var(--content-width) [content-end sidenote-start]
-            var(--toc-width) [sidenote-end layout-end]
-            1fr [full-end];
-        align-content: start;
+    @include w900 {
+        padding-inline: 45px;
     }
+}
 
-    @include w1200 {
-        grid-template-columns:
-            [full-start] 1fr
-            [layout-start] var(--toc-width)
-            [content-start] var(--content-width) [content-end sidenote-start]
-            var(--toc-width) [sidenote-end layout-end]
-            1fr [full-end];
+.content-width {
+    @include content-width;
+}
+
+@mixin layout-width {
+    width: 100%;
+    max-width: 1400px;
+    margin-inline: auto;
+    padding-inline: 2px;
+
+    @include w900 {
+        padding-inline: 8px;
     }
+}
+
+.layout-width {
+    @include layout-width;
+}
+
+@mixin slub {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    opacity: 0.8;
 }
 
 /*****************************************
@@ -72,24 +88,119 @@ li {
 .post__figure {
     margin: 40px 0;
     
-    video, img {
+    video, img, svg {
         display: block;
-        margin: 0 auto 20px;
+        margin: 0 auto 16px;
         border-radius: 20px;
     }
 
+    img.responsive {
+        width: 50%;
+    }
+    
     figcaption {
         color: #424242;
         font-family: var(--font-serif);
+        line-height: 130%;
         font-style: italic;
-        font-size: 90%;
+        font-size: 95%;
         text-align: center;
+    }
+    
+    .image-credit {
+        margin: 0;
+        font-family: var(--font-sans);
+        text-align: center;
+        line-height: 140%;
+        font-size: 13px;
+        font-style: italic;
+        opacity: 0.7;
+
+        &:before {
+            content: "Image: ";
+        }
     }
 }
 
 a, a:visited {
     color: var(--link-color);
 }
+
+table {
+    margin-block: 40px 50px;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    font-family: var(--font-sans);
+
+    &.dense {
+        @include w900 {
+            margin-inline: var(--margin-buster);
+        }
+    }
+
+    &.header-column {
+        th:first-child,
+        td:first-child {
+            font-weight: 600;
+
+            span.secondary {
+                font-weight: 400;
+            }
+        }
+    }
+}
+
+    tr {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        th {
+            @include slub;
+
+            padding-bottom: 4px;
+            text-align: left;
+
+            &:not(:last-child) {
+                padding-right: 8px;
+            }
+        }
+
+        td {
+            padding-block: 12px;
+            line-height: 125%;
+
+            &:not(:last-child) {
+                padding-right: 8px;
+            }
+        }
+
+.sticky-column-table-wrapper {
+    @include under-w900 {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        table {
+            width: 100%;
+        }
+
+        th:first-child,
+        td:first-child {
+            position: sticky;
+            left: 0;
+            background-color: var(--background-color);
+            box-shadow: inset -1px 0 0 0 var(--border-color);
+            z-index: 1;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            padding-left: 8px;
+        }
+    }
+}
+
+
+
 
 /*****************************************
               PAGE STYLES
@@ -98,81 +209,70 @@ a, a:visited {
 header {
     @include big-shadow;
     
-    margin-inline: 8px;
     border: 8px solid white;
     border-radius: 40px;
     background-color: #3333FF;
+}
 
-    @include w700 {
-        display: grid;
-        grid-template-columns: subgrid;
-        grid-column: layout;
+    .header__text {
+        padding: 24px;
     }
-}
 
-.header__text {
-    padding: 24px;
+        .post-title {
+            margin-block: 4px 8px;
+            color: white;
+            font-family: var(--font-serif);
+            font-style: normal;
+            font-weight: 700;
+            font-size: 36px;
+            line-height: 100%;
 
-    @include w700 {
-        grid-column: content;
-        padding: 90px var(--content-padding) 60px;
-    }
-}
+            @include w700 {
+                margin-block: 44px 4px;
+                font-size: 70px;
+                line-height: 94%;
+            }
+        }
 
-.post-title {
-    margin-bottom: 8px;
-    color: white;
-    font-family: var(--font-serif);
-    font-style: normal;
-    font-weight: 700;
-    font-size: 36px;
-    line-height: 100%;
+        .post-subtitle {
+            margin-block: 0 0px;
+            color: #FFF;
+            font-family: var(--font-sans);
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 94%;
+            opacity: 0.8;
 
-    @include w700 {
-        font-size: 70px;
-        line-height: 94%;
-    }
-}
-
-.post-subtitle {
-    color: #FFF;
-    font-family: var(--font-sans);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 94%;
-    opacity: 0.8;
-
-    @include w700 {
-        font-size: 30px;
-    }
-}
-
-article {
-    display: contents;
-}
+            @include w700 {
+                margin-block: 0 24px;
+                font-size: 30px;
+            }
+        }
 
 .nutshell {
-    grid-column: content;
-    margin: 0; //override p margin
-    padding: 24px var(--content-padding);
+    padding-block: 24px;
     color: #424242;
     font-family: var(--font-serif);
     font-size: 20px;
     font-style: italic;
-    line-height: 130%;
-    letter-spacing: -0.56px;    
-    opacity: 0.7;
+    line-height: 135%;
+    letter-spacing: -0.01em;    
+    opacity: 0.75;
 
     @include w700 {
         font-size: 28px;
         padding-block: 50px;
         border-left: 1px solid var(--border-color);
     }
+
+    em {
+        font-style: normal;
+    }
 }
 
-.full-width {
-    grid-column: full;
+article {
+    position: relative;
 }
 
 hr.full-width {
@@ -182,41 +282,53 @@ hr.full-width {
 }
 
 .toc-wrapper {
-    grid-column: content;
-    padding: 32px var(--content-padding) 0;
-    
-    @include w1200 {
-        grid-column: layout-start / content-start;
-        padding-inline: 0;
-        position: relative;
+    @include w1400 {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(50vw - 700px);
+        height: 100%;
+        width: 305px;
     }
 }
 
 .toc {
+    @include content-width;
+    
+    padding-top: 24px;
+    border-left: 1px solid var(--border-color);
     font-family: var(--font-sans);
     font-size: 16px;
 
-    @include w1200 {
+    @include w900 {
+        padding-inline: 0; // override content-width
+    }
+
+    @include w1400 {
         position: sticky;
-        top: 20px;
-        background-color: color-mix(in srgb, var(--background-color) 50%, transparent);
-        backdrop-filter: blur(4px);
+        top: 60px;
+        margin-inline: 0; //override content-width
+        padding-top: 8px;
+        border-left: none;
         z-index: 2;
     }
 
     h4 {
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
-        opacity: 0.8;
+        @include slub;
+
         margin-bottom: 0px;
         padding-left: 40px;
+
+        @include w1400 {
+            padding-left: 50px;
+        }
     }
 
     ol {
         list-style-type: none;
         counter-reset: item;
         list-style: none;
+        margin-bottom: 0;
         padding-left: 0;
     }
 
@@ -230,11 +342,19 @@ hr.full-width {
             content: counter(item, upper-roman) ".";
             position: absolute;
             top: 0;
-            left: 4px;
+            left: 2px;
             padding-top: 6px;
             width: 40px;
             text-align: left;
             line-height: 140%;
+
+            @include w900 {
+                left: 45px;
+            }
+
+            @include w1400 {
+                left: 8px;
+            }
         }
     }
 
@@ -248,8 +368,16 @@ hr.full-width {
         transition: all 0.2s ease-out;
         opacity: 0.8;
 
+        @include w900 {
+            padding-left: 80px;
+        }
+
         @include w1200 {
             padding-right: 10px;
+        }
+
+        @include w1400 {
+            padding-left: 50px;
         }
 
         &:hover {
@@ -278,16 +406,40 @@ hr.full-width {
     }
 }
 
+.triple-wide {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    @include w900 {
+        flex-direction: row;
+        margin-inline: var(--margin-buster);
+    }
+}
+    .triple-wide__item {
+        flex: 1 1 33.333%;
+
+        @include under-w900 {
+            &:not(:last-child) .post__figure {
+                margin-bottom: 0;
+            }
+        }
+    }
+
 
 /*****************************************
          BODY TEXT-SPECIFIC STYLES
 *****************************************/
 
 .post-body {
+    @include content-width;
+
     position: relative;
-    grid-column: content;
-    padding: 20px var(--content-padding) 0;
-    border-left: 1px solid var(--border-color);
+    padding-block: 20px 60px;
+
+    @include w700 {
+        border-left: 1px solid var(--border-color);
+    }
 
     @include w1200 {
         padding-top: 32px;
@@ -295,10 +447,20 @@ hr.full-width {
 
     h2 {
         position: relative;
-        margin: 120px 0 50px;
+        margin: 50px 0 20px;
         padding-bottom: 12px;
-        font-size: 50px;
+        font-size: 30px;
         line-height: 95%;
+
+        @include w700 {
+            margin: 60px 0 30px;
+            font-size: 40px;
+        }
+
+        @include w900 {
+            margin: 120px 0 50px;
+            font-size: 50px;
+        }
     
         &:before {
             content: attr(data-ordinal);
@@ -320,6 +482,18 @@ hr.full-width {
              width: 100vw;
             background-color: var(--border-color);
             transform: translateX(calc(50% - 50vw));
+        }
+    }
+
+    h3 {
+        margin: 40px 0 20px;
+        font-size: 24px;
+        line-height: 95%;
+        opacity: 0.8;
+
+        @include w700 {
+            margin: 60px 0 30px;
+            font-size: 30px;
         }
     }
 

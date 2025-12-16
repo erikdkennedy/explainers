@@ -30,9 +30,9 @@ This causes them to disperse all throughout the atmosphere. They disperse so far
 
 Therefore the sky is blue.
 
-<figure class="inline-svg-diagram">
+<figure class="post__figure inline-svg-diagram">
   {% include sky/why-sky-is-blue-diagram.svg %}
-  <figcaption>Most colors of light pass through the atmosphere relatively unencumbered. You only see them when you look at the sun, where they contribute to the whiteness of the sun’s light. Blue, however, bounces around a lot, getting spread all over the sky. Because blue photons hit our eyeballs from every angle of the sky, the whole sky appears blue.</figcaption>
+  <figcaption class="post__figure-caption">Most colors of light pass through the atmosphere relatively unencumbered. You only see them when you look at the sun, where they contribute to the whiteness of the sun’s light. Blue, however, bounces around a lot, getting spread all over the sky. Because blue photons hit our eyeballs from every angle of the sky, the whole sky appears blue.</figcaption>
 </figure>
 
 
@@ -58,7 +58,7 @@ For both N2 and O2, the lowest resonant frequency is in the ultraviolet range. S
 
 In fact, violet is 10x more likely to scatter than red. Here’s a chart!
 
-{% include img.md, src: "rayleigh-scattering-by-frequency-graph.png", alt: "Chart showing amount of scattering increasing with the fourth power of frequency", caption: "Math fun fact: scattering increases proportional to the fourth power of the frequency. So higher frequency light means WAY more scattering." %}
+{% include img.md, src: "rayleigh-scattering-by-frequency-graph.png", width: "600", alt: "Chart showing amount of scattering increasing with the fourth power of frequency", caption: "Math fun fact: scattering increases proportional to the fourth power of the frequency. So higher frequency light means WAY more scattering." %}
 
 Interestingly, when light gets *really* close to – and eventually exactly at – the resonant frequency of the molecule’s electron cloud, it gets *absorbed* far more than *scattered*\! The photon simply disappears into the electron cloud, and the electron cloud bumps up one energy level.
 
@@ -97,7 +97,7 @@ And the answer is *not really*. If we could see UV, the sky would be a UV-tinted
 
 You can see both of those effects in the solar radiation spectrum chart:
 
-{% include img.md, src: "solar-radiation-spectrum.png", alt: "Chart showing solar radiation as a function of wavelength, both for top-of-atmosphere values and sea-level values", caption: "The sun emits the most visible light, with UV frequencies falling off very steeply. Augmenting this effect is that the ozone layer in particular absorbs a lot of UV before it can reach Earth’s surface." %}
+{% include img.md, src: "solar-radiation-spectrum.png", width: "600", alt: "Chart showing solar radiation as a function of wavelength, both for top-of-atmosphere values and sea-level values", caption: "The sun emits the most visible light, with UV frequencies falling off very steeply. Augmenting this effect is that the ozone layer in particular absorbs a lot of UV before it can reach Earth’s surface." %}
 
 
 
@@ -127,11 +127,11 @@ Clouds are made up of a huge number of tiny water droplets. These droplets are s
 
 So, it’s not as simple as “the photons cause the hundreds of trillions of electrons to jiggle”. Instead, it’s more like the light has entered a very tiny prism or glass bead.
 
-{% include img.md, src: "prism.png", caption: "In a prism, white light can reflect around, bounce off exterior or interior surfaces, and even reflect differently depending on frequency – creating a rainbow effect.", alt: "A prism deflecting white light into a rainbow" %}
+{% include img.md, src: "prism.png", width: "600", caption: "In a prism, white light can reflect around, bounce off exterior or interior surfaces, and even reflect differently depending on frequency – creating a rainbow effect.", alt: "A prism deflecting white light into a rainbow" %}
 
 The droplet is just as complex. Some of the photons hitting the droplet bounce off the surface. Some enter it, bounce around inside once, twice, etc. – and leave again. Perhaps a few are absorbed. As with a prism, different wavelengths of light will reflect at different angles. The specifics aren’t important – you should just get the general gist.
 
-{% include img.md, src: "droplet-paths.png", alt: "The many paths of light through a water droplet" %}
+{% include img.md, src: "droplet-paths.png", width: "600", alt: "The many paths of light through a water droplet" %}
 
 So whatever white (or slightly yellowish) light that came from the direction of the sun is leaving in many *random* directions. Think of every color, shooting off in different directions\! And then multiply that by a quadrillion droplets! In sum, you just see every frequency of photon coming from every part of the cloud.
 
@@ -160,7 +160,7 @@ OK, so the answer is actually fairly straightforward. And it generalizes. Here�
 
 If you live in an area with wildfires, you’ve probably seen this effect here on Earth\!
 
-{% include img.md, src: "reddish-brown-smoke-filled-sky.png", alt: "An orangish-brown smoke-filled sky above Palo Alto.", caption: "An orangish-brown smoke-filled sky above Palo Alto." %}
+{% include img.md, src: "reddish-brown-smoke-filled-sky.png", width: "600", alt: "An orangish-brown smoke-filled sky above Palo Alto.", caption: "An orangish-brown smoke-filled sky above Palo Alto." %}
 
 To really understand the reason, let’s back up and talk about some chemistry.
 
@@ -172,7 +172,7 @@ But even for a tiny dust nanoparticle, there are *many* constituent molecules, e
 
 Because the “peak” absorption of the molecules is usually violet or ultraviolet (as it is with small gases), blues/violets will make it to the surface much less than oranges/reds.
 
-{% include img.md, src: "approximate-absorption-from-martian-dust.png", alt: "Approximate light absorption from Martian dust as a function of wavelength", caption: "Approximate light absorption from Martian dust as a function of wavelength" %}
+{% include img.md, src: "approximate-absorption-from-martian-dust.png", width: "600", alt: "Approximate light absorption from Martian dust as a function of wavelength", caption: "Approximate light absorption from Martian dust as a function of wavelength" %}
 
 Of course, a reasonable question is *why are blue and violet absorbed so strongly by these dust particles?*
 
@@ -184,7 +184,7 @@ So, the exact specifics depend on the molecules in question, but *generally*, th
 
 This is actually true of solids in general, not just atmospheric dust or aerosols. If you’ve ever heard that purple was “the color of kings” or that the purple dye of antiquity was worth its weight in gold, it’s true\! To get something purple, you’d need to find a material whose electrons were excited by low-energy red photons, but had no use for higher-energy violet photons.
 
-{% include img.md, src: "tyrian-purple-shroud-of-charlemagne.png", alt: "A Tyrian purple shroud of Charlemagne", caption: "A Tyrian purple shroud of Charlemagne" %}
+{% include img.md, src: "tyrian-purple-shroud-of-charlemagne.png", width: "500", alt: "A Tyrian purple shroud of Charlemagne", caption: "A Tyrian purple shroud of Charlemagne" %}
 
 So this is why the Martian sky is red – and why reds and browns are more common in nature (for solid things, at least) than purple and blue.
 
@@ -195,7 +195,7 @@ So this is why the Martian sky is red – and why reds and browns are more commo
 
 It’s less famous than the red daytime sky of Mars, but the Martian sunset is blue!
 
-{% include img.md, src: "martian-sunset-blue.png", caption: "Martian sunset photo taken by the Spirit rover. Photo by NASA/JPL/Texas A&M/Cornell.", alt: "Photo of Martian sunset with blue halo taken by the Spirit rover" %}
+{% include img.md, src: "martian-sunset-blue.png", image-credit: "Photo by NASA/JPL/Texas A&M/Cornell.", caption: "Martian sunset photo taken by the Spirit rover.", alt: "Photo of Martian sunset with blue halo taken by the Spirit rover" %}
 
 In the last section, we talked about Martian dust absorbing violet/blue. But the dust also *scatters* light – which it can do *totally unrelated to how it absorbs* (remember, since photons can – and usually do – cruise straight through a molecule, scattering and absorbing can have their own interesting frequency-dependent characteristics. They don’t simply sum to 100%)
 
@@ -220,29 +220,26 @@ At the beginning of this article, I said being able to *predict* something is a 
 
 Here are the three general rules of thumb we’ve already talked about.
 
-### **Small gas molecules \= blue/green atmosphere**
+### Small gas molecules \= blue/green atmosphere
 
 Atmospheric gases tend to be much, much smaller than the wavelengths of visible light. In these cases, they tend to preferentially scatter blue/violet/UV. This means that ***gaseous atmospheres are usually blue or blue-green***.
 
-<table>
-    <tbody>
-        <tr>
-            <td>
-                {% include img.md, src: "blue-atmosphere-earth.png", caption: "Earth: atmosphere is 99% nitrogen and oxygen.", alt: "Earth's blue sky" %}
-            </td>
-            <td>
-                {% include img.md, src: "blue-atmosphere-uranus.png", caption: "Uranus: upper atmosphere is 98% hydrogen and helium. We don’t have pictures from the surface.", alt: "Uranus' blue sky" %}
-            </td>
-            <td>
-                {% include img.md, src: "blue-atmosphere-neptune.png", caption: "Neptune: upper atmosphere is 99% hydrogen and helium. We don’t have pictures from the surface.*", alt: "Neptune's blue sky" %}
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="triple-wide">
+    <div class="triple-wide__item">
+        {% include img.md, src: "blue-atmosphere-earth.png", width: "300px", caption: "Earth: atmosphere is 99% nitrogen and oxygen.", alt: "Earth's blue sky" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "blue-atmosphere-uranus.png", width: "300px", image-credit: "Patrick Irwin, University of Oxford.", caption: "Uranus: upper atmosphere is 98% hydrogen and helium. We don’t have pictures from the surface.", alt: "Uranus' blue sky" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "blue-atmosphere-neptune.png", width: "300px", image-credit: "Patrick Irwin, University of Oxford.", caption: "Neptune: upper atmosphere is 99% hydrogen and helium. We don’t have pictures from the surface.", alt: "Neptune's blue sky" %}
+    </div>
+</div>
+
 
 This is pleasingly true for Earth, Uranus, and Neptune.
 
-### **Dust or haze \= red/orange/yellow atmospheres**
+### Dust or haze \= red/orange/yellow atmospheres
 
 When visible light hits particles that are in the ballpark of its own wavelength, things get more complicated and can differ on a case-by-case basis.
 
@@ -253,21 +250,17 @@ These particles are typically either:
 
 ***Dust and haze generally makes atmospheres appear warmer colors*** – e.g. red, orange, yellow.
 
-<table>
-    <tbody>
-        <tr>
-            <td>
-                {% include img.md, src: "red-atmosphere-mars.png", caption: "Mars: iron oxide dust", alt: "Mars' red sky" %}
-            </td>
-            <td>
-                {% include img.md, src: "orange-atmosphere-titan.png", caption: "Titan (a moon of Saturn): haze of organic molecules", alt: "Titan's orange sky" %}
-            </td>
-            <td>
-                {% include img.md, src: "yellow-atmosphere-venus.png", caption: "Venus: haze of sulfurous molecules", alt: "Venus' yellow sky" %}
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="triple-wide">
+    <div class="triple-wide__item">
+        {% include img.md, src: "red-atmosphere-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/ASU/MSSS", caption: "Mars: iron oxide dust.", alt: "Mars' red sky" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "orange-atmosphere-titan.png", width: "300px", image-credit: "ESA/NASA/JPL/University Of Arizona", caption: "Titan (a moon of Saturn): haze of organic molecules.", alt: "Titan's orange sky" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "yellow-atmosphere-venus.png", width: "300px", image-credit: "Russian Academy of Science, processing by Don Mitchell", caption: "Venus: haze of sulfurous molecules.", alt: "Venus' yellow sky" %}
+    </div>
+</div>
 
 All three significantly dusty/hazy atmospheres in our solar system hold to this rule\!
 
@@ -283,33 +276,29 @@ When visible light hits clouds of droplets (or ice crystals) that are much bigge
 
 (Provided the cloud is hit by white light from the sun, that is. If a cloud is below a thick haze or doesn’t *receive* all wavelengths, neither can it *reflect* all wavelengths)
 
-<table>
-    <tbody>
-        <tr>
-            <td>
-                {% include img.md, src: "white-clouds-earth.png", caption: "Earth: clouds made of water (liquid or frozen)", alt: "Earth's white clouds" %}
-            </td>
-            <td>
-                {% include img.md, src: "white-clouds-venus.png", caption: "Venus: high-altitude clouds of sulfuric acid (!). The tan/orange is from the aforementioned haze.", alt: "Venus' white clouds" %}
-            </td>
-            <td>
-                {% include img.md, src: "white-clouds-mars.png", caption: "Mars: a rare overcast sky. Martian clouds are made of water ice.", alt: "Mars' white clouds" %}
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="triple-wide">
+    <div class="triple-wide__item">
+        {% include img.md, src: "white-clouds-earth.png", width: "300px", image-credit: "NASA", caption: "Earth: clouds made of water (liquid or frozen).", alt: "Earth's white clouds" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "white-clouds-venus.png", width: "300px", image-credit: "NASA/JPL-Caltech", caption: "Venus: high-altitude clouds of sulfuric acid (!). The tan/orange is from the aforementioned haze.", alt: "Venus' white clouds" %}
+    </div>
+    <div class="triple-wide__item">
+        {% include img.md, src: "white-clouds-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/MSSS", caption: "Mars: a rare overcast sky. Martian clouds are made of water ice.", alt: "Mars' white clouds" %}
+    </div>
+</div>
 
-### **Putting it all together**
+### Putting it all together
 
 The largest and most complex atmosphere in our solar system is Jupiter. But we know enough to start making some smart guesses about it\!
 
 QUIZ: looking at this picture, what can you say about Jupiter’s atmosphere? Answers below the image, so take a guess before scrolling 😉
 
-{% include img.md, src: "jupiter-atmosphere-closeup.png", alt: "A closeup of Jupiter's atmosphere" %}
+{% include img.md, src: "jupiter-atmosphere-closeup.png", width: "500", image-credit: "NASA/JPL/University of Arizona", caption: "A closeup of Jupiter's atmosphere", alt: "A closeup of Jupiter's atmosphere" %}
 
 Here’s a comparison of how a basic guess – informed by our simplistic model – compares to scientific consensus.
 
-<table>
+<table class="dense">
     <thead>
         <tr>
             <th>Color</th>
@@ -323,8 +312,6 @@ Here’s a comparison of how a basic guess – informed by our simplistic model 
             <td>Haze (couldn’t be dust; a liquid core makes that impossible)</td>
             <td>A haze of unknown composition</td>
         </tr>
-    </tbody>
-    <tbody>
         <tr>
             <td>White</td>
             <td>Clouds, probably of ice because of coldness</td>
@@ -355,52 +342,57 @@ Scientists have official names for the three types of scattering we’ve talked 
 
 And yes, somewhat strangely, it’s not the *absolute* particle size that determines how it scatters light. It’s the *relative* size of the particle to the wavelength of light.
 
-<table>
-    <thead>
-        <tr>
-            <th>Property</th>
-            <th>Rayleigh Scattering</th>
-            <th>Mie Scattering</th>
-            <th>Geometric Scattering</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Relative particle size</td>
-            <td>\~10-10,000x smaller than wavelength</td>
-            <td>Within \~0.1-10x of the wavelength size</td>
-            <td>\>10x the wavelength size</td>
-        </tr>
-        <tr>
-            <td>Particle example</td>
-            <td>Gas molecules</td>
-            <td>Dust, haze</td>
-            <td>Droplets, ice crystals</td>
-        </tr>
-        <tr>
-            <td>Color effect</td>
-        </tr>
-        <tr>
-            <td>Wavelength dependence</td>
-            <td>Highly favors short wavelengths</td>
-            <td>Irregular or none</td>
-            <td>Negligible</td>
-        </tr>
-        <tr>
-            <td>Directionality of scattering</td>
-            <td>Nearly symmetric</td>
-            <td>Strongly forward scattering, especially as relative particle size increases</td>
-            <td>All directions</td>
-        </tr>
-        <tr>
-            <td>Role of absorption</td>
-            <td>Depends on wavelength, but negligible for visible spectrum</td>
-            <td>Often major, but varies case by case</td>
-            <td>Negligible</td>
-        </tr>
-    </tbody>
-</table>
-
+<div class="sticky-column-table-wrapper">
+    <table class="dense header-column">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Rayleigh Scattering</th>
+                <th>Mie Scattering</th>
+                <th>Geometric Scattering</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Relative particle size</td>
+                <td>~10-10,000x smaller than wavelength</td>
+                <td>Within ~0.1-10x of the wavelength size</td>
+                <td>>10x the wavelength size</td>
+            </tr>
+            <tr>
+                <td>Particle example <br><span class="secondary">(for visible light)</span></td>
+                <td>Gas molecules</td>
+                <td>Dust, haze</td>
+                <td>Droplets, ice crystals</td>
+            </tr>
+            <tr>
+                <td>Color effect <br><span class="secondary">(in visible spectrum)</span></td>
+                <td>Blue, violet</td>
+                <td>Commonly warm, but varies case by case</td>
+                <td>Whites, neutral</td>
+            </tr>
+            <tr>
+                <td>Wavelength dependence</td>
+                <td>Highly favors short wavelengths</td>
+                <td>Irregular or none</td>
+                <td>Negligible</td>
+            </tr>
+            <tr>
+                <td>Directionality of scattering</td>
+                <td>Nearly symmetric</td>
+                <td>Strongly forward scattering, especially as relative particle size increases</td>
+                <td>All directions</td>
+            </tr>
+            <tr>
+                <td>Role of absorption</td>
+                <td>Depends on wavelength, but negligible for visible spectrum</td>
+                <td>Often major, but varies case by case</td>
+                <td>Negligible</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    
 This table implies that if you take a particle and shine longer and longer wavelength light on it, it’ll go from one domain to the next. And that’s true\!
 
 The full picture looks a bit like this:
@@ -420,5 +412,5 @@ But at least you know why the sky’s blue.
 
 ## Further Resources {data-ordinal="IX." #further-resources}
 
-- [NASA’s sunset simulator](https://www.nasa.gov/solar-system/nasa-scientist-simulates-sunsets-on-other-worlds/). You know who *really* wants to know what color the sky is on other planets? NASA. They’ve built an [incredibly powerful app](https://psg.gsfc.nasa.gov/about.php) for modeling atmospheres and radiation, and here they use it to crank out a few beautiful visuals of our solar system’s best sunsets.  
-- [Blue Moons and Martian Sunsets](https://opg.optica.org/ao/fulltext.cfm?uri=ao-53-9-1808). The mechanics of Mars’s blue sunsets are still somewhat debated. The authors of this article make a convincing model based on the assumptions I worked with above.
+- [NASA’s sunset simulator](https://www.nasa.gov/solar-system/nasa-scientist-simulates-sunsets-on-other-worlds/){target="_blank"}. You know who *really* wants to know what color the sky is on other planets? NASA. They’ve built an [incredibly powerful app](https://psg.gsfc.nasa.gov/about.php){target="_blank"} for modeling atmospheres and radiation, and here they use it to crank out a few beautiful visuals of our solar system’s best sunsets.  
+- [Blue Moons and Martian Sunsets](https://opg.optica.org/ao/fulltext.cfm?uri=ao-53-9-1808){target="_blank"}. The mechanics of Mars’s blue sunsets are still somewhat debated. The authors of this article make a convincing model based on the assumptions I worked with above.
