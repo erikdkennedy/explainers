@@ -106,6 +106,7 @@ export default function(eleventyConfig) {
     templateFormats: ["md", "html"],
     markdownTemplateEngine: "liquid",
     htmlTemplateEngine: "liquid",
-    dataTemplateEngine: "liquid"
+    dataTemplateEngine: "liquid",
+    pathPrefix: "/explainers/"
   };
 }
