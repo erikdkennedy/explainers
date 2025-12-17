@@ -49,25 +49,6 @@
   opacity: 0.6;
 }
 
-::view-transition-group(*) {
-  animation-duration: 350ms;
-  animation-timing-function: ease-in-out;
-}
-
-::view-transition-image-pair(*) {
-  isolation: auto;
-  overflow: clip;
-}
-
-@keyframes vt-fade-out-fast {
-  to {
-    opacity: 0;
-  }
-}
-::view-transition-old(*) {
-  animation: vt-fade-out-fast 120ms ease-out both;
-}
-
 .flr {
   float: right;
 }

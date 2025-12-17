@@ -298,6 +298,7 @@
         const $scatteredBar = $('.gauge__bar--scattered');
         const $absorbedBar = $('.gauge__bar--absorbed');
         const $transmittedBar = $('.gauge__bar--transmitted');
+        
         if ($scatteredBar) {
             $scatteredBar.setAttribute('data-percentage', scatteredPercentage);
             $scatteredBar.style.setProperty('--bar-fill', `${Math.max(0, Math.min(100, Math.round(scatteredPercentage)))}%`);

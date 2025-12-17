@@ -15,12 +15,11 @@
 	{%- else -%}
 	<link rel="stylesheet" href="/assets/css/home.css">
 	{%- endif -%}
-	<script defer src="/assets/js/transition.js"></script>
 </head>
 
 <body>
 	{% include site-top-nav.md %}
-	<header class="layout-width" style="view-transition-name: post-{{ page.fileSlug }}">
+	<header class="layout-width">
 		<div class="header__text content-width">
 			<h1 class="post-title">{{ title }}</h1>
 			<h2 class="post-subtitle">{{ subtitle }}</h2>
