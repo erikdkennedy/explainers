@@ -93,12 +93,10 @@ li {
         margin: 0 auto 16px;
         border-radius: 20px;
     }
+}
 
-    img.responsive {
-        width: 50%;
-    }
-    
-    figcaption {
+    figcaption,
+    .caption {
         color: #424242;
         font-family: var(--font-serif);
         line-height: 130%;
@@ -106,7 +104,7 @@ li {
         font-size: 95%;
         text-align: center;
     }
-    
+
     .image-credit {
         margin: 0;
         font-family: var(--font-sans);
@@ -120,7 +118,6 @@ li {
             content: "Image: ";
         }
     }
-}
 
 a, a:visited {
     color: var(--link-color);

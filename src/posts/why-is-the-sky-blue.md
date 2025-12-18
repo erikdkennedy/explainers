@@ -1,7 +1,7 @@
 ---
 title: Why is the sky blue?
 subtitle: And the sunset red? But the Martian sky red and sunset blue? Etc.
-nutshell: "The internet’s default answer to “why is the sky blue?” is “Rayleigh scattering”. And that’s not wrong, but it’s also not very useful. Simply knowing the name of something is very different from understanding it. But if names don’t constitute understanding, what does? My answer: having a model that allows you to make predictions. If you can reliably predict something, you understand it. In this article, we’ll explore why the sky is blue – but deeply enough so that, by the time you finish, you can predict what color the sky will be on other planets."
+nutshell: "The internet’s default answer to “why is the sky blue?” is “Rayleigh scattering”. And that’s not wrong, but it’s also not very useful. Simply knowing the name of something is very different from understanding it. But if names don’t constitute understanding… what does? My answer: having a model that allows you to make predictions. If you can reliably predict something, then you probably understand that thing. In this article, we’ll explore why the sky is blue – but we’ll go deep enough that, by the time you finish, you can predict what color the sky will be on other planets."
 toc: sky-toc.html
 img_subdir: sky
 img_on_homepage: clouds-slow.png
@@ -40,11 +40,13 @@ Therefore the sky is blue.
 
 ## What’s so special about blue? {data-ordinal="I." #why-blue}
 
-This is nice and true and all, but it kind of kicks the can down the road. Why *blue*? Why not red?
+This is true and all, but it kicks the can down the road. Why *blue*? Why not red?
 
-In short, it’s because blue – and violet, blue’s higher-frequency neighbor – of all visible colors, have the closest frequencies to a “resonant frequency” of nitrogen and oxygen molecules’s electron clouds.
+In short, it’s because blue and violet have the closest frequencies to a “resonant frequency” of nitrogen and oxygen molecules’s electron clouds.
 
-There’s a lot there, so let’s unpack it.
+There's a lot there, so we'll unpack it below. But first, here's an (interactive) demo.
+
+{% include sky/pass-scatter-absorb.html %}
 
 When a photon passes through/near a small molecule (like N2 or O2, which make up 99% of our atmosphere), it causes the electron cloud around the molecules to “jiggle”. This jiggling is at the same frequency as the photon itself – meaning violet photons cause faster jiggling than red photons.
 
@@ -54,34 +56,25 @@ In any case, for reasons due the internal structure of the molecule, there are c
 
 The stronger the electron cloud’s oscillations, the more likely a passing photon (a) is deflected in a new direction rather than (b) passes straight through.
 
-For both N2 and O2, the lowest resonant frequency is in the ultraviolet range. So as the visible colors increase in frequency towards ultraviolet, we see more and more deflection, or “scattering”\*.
+For both N<sub>2</sub> and O<sub>2</sub>, the lowest resonant frequency is in the ultraviolet range. So as the visible colors increase in frequency towards ultraviolet, we see more and more deflection, or “scattering”.
 
-In fact, violet is 10x more likely to scatter than red. Here’s a chart!
+In fact, violet is 10x more likely to scatter than red.
 
-{% include img.md, src: "rayleigh-scattering-by-frequency-graph.png", width: "600", alt: "Chart showing amount of scattering increasing with the fourth power of frequency", caption: "Math fun fact: scattering increases proportional to the fourth power of the frequency. So higher frequency light means WAY more scattering." %}
+{% include img.md, src: "rayleigh-scattering-by-frequency-graph.png", width: "600", alt: "Chart showing amount of scattering increasing with the fourth power of frequency", caption: "Math talk: scattering increases proportional to the FOURTH power of the frequency. So higher frequency light means WAY more scattering." %}
 
-Interestingly, when light gets *really* close to – and eventually exactly at – the resonant frequency of the molecule’s electron cloud, it gets *absorbed* far more than *scattered*\! The photon simply disappears into the electron cloud, and the electron cloud bumps up one energy level.
+So why isn't the sky violet? Great question – [we'll cover that in a sec](#sky-violet).
 
-This isn’t important for *why the sky is blue*, but we’ll come back to it 😉
+I just want to point out two other things that (a) you can see in the demo above, and (b) are useful for later in this article.
 
-Here’s an interactive widget with the full effect!
+First, when light gets *really* close to – and eventually exactly at – the resonant frequency of the molecule’s electron cloud, it gets *absorbed* far more than *scattered*! The photon simply disappears into the electron cloud (and the electron cloud bumps up one energy level). This isn’t important for understanding the color of _Earth's_ sky… but [there are other skies out there](#martian-sky) 😉
 
-{% include sky/pass-scatter-absorb.html %}
+Second, did you notice that even red scatters _some_? Like, yes, blue scatters 10x _more_. But the sky is actually _every_ color, just _mostly_ blue/violet. This is why the sky is *light* blue. If _white_ light is all visible colors of light mixed together equally, _light blue_ is all visible colors mixed together – but biased towards blue.
 
-This demo is a bit of a simplification. In reality, such a small percentage of photons actually scatter or absorb that this would be boring to watch if perfectly accurate. Something like 99.999% of photons pass through, even *at* the resonance frequency\!
-
-But even so, you start to get a sense for some of the dynamics here.
-
-For instance, all visible colors scatter *somewhat*. Yes, blue scatters 10x more than red. But the fact that they all scatter helps explain why the sky is *light* blue. If white light is all visible colors of light mixed together, light blue is all visible colors mixed together – but biased towards blue.
-
-Check it out 😉
+What would the sky look like if it was _only_ blue? Check it out.
 
 {% include sky/rgb-adjuster-sky-blue.html %}
 
-If the sky was shooting _only_ blue photons to your eyes, it would be a darker and richer blue, which you can test out above.
-
-By the way, this dynamic applies to more than just N2 and O2. Any small gaseous molecule – carbon dioxide, hydrogen, helium, etc. – would preferentially scatter blue, yielding a blue sky at day.
-
+I'll just end by saying, this dynamic (where scattering increases sharply with the frequency of light) applies to _far more_ than just N<sub>2</sub> and O<sub>2</sub>. In fact, _any_ small gaseous molecule – carbon dioxide, hydrogen, helium, etc. – would preferentially scatter blue, yielding a blue sky at day.
 
 
 

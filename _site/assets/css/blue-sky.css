@@ -329,10 +329,9 @@ li {
   margin: 0 auto 16px;
   border-radius: 20px;
 }
-.post__figure img.responsive {
-  width: 50%;
-}
-.post__figure figcaption {
+
+figcaption,
+.caption {
   color: #424242;
   font-family: var(--font-serif);
   line-height: 130%;
@@ -340,7 +339,8 @@ li {
   font-size: 95%;
   text-align: center;
 }
-.post__figure .image-credit {
+
+.image-credit {
   margin: 0;
   font-family: var(--font-sans);
   text-align: center;
@@ -349,7 +349,7 @@ li {
   font-style: italic;
   opacity: 0.7;
 }
-.post__figure .image-credit:before {
+.image-credit:before {
   content: "Image: ";
 }
 
