@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import * as sass from "sass";
 import MarkdownIt from "markdown-it";
@@ -81,6 +82,19 @@ export default function(eleventyConfig) {
   // Paired shortcode to wrap Markdown inside a <div class="inset"> wrapper
   eleventyConfig.addPairedShortcode('inset', (content, cls = 'inset') => {
     return `<div class="${cls}">${markdownLib.render(content)}</div>`;
+  });
+
+  // Filter: resolve meta image path if it exists; else return empty string
+  eleventyConfig.addFilter('meta_image_path', (imgSubdir) => {
+    if (!imgSubdir || typeof imgSubdir !== 'string') {
+      return '';
+    }
+    const filename = `${imgSubdir}.png`;
+    const absolutePath = path.resolve('src/assets/img/meta', filename);
+    if (fs.existsSync(absolutePath)) {
+      return `/assets/img/meta/${filename}`;
+    }
+    return '';
   });
 
   // Final safety net: strip empty paragraphs from generated HTML

@@ -5,6 +5,11 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>{{ title }}</title>
+	{%- assign meta_image = img_subdir | meta_image_path -%}
+	{%- if meta_image -%}
+	<meta property="og:image" content="{{ meta_image }}">
+	<meta name="twitter:image" content="{{ meta_image }}">
+	{%- endif -%}
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link
