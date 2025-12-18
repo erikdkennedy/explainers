@@ -6,7 +6,7 @@ toc: qm-toc.html
 img_subdir: qm
 img_on_homepage: quantum-background-sm.html
 published_on: 2025-11-01
-layout: post.md
+layout: post
 css: quantum
 js: post
 tags: [posts]
