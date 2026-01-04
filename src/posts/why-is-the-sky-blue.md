@@ -22,7 +22,17 @@ Let’s start by asking ourselves: _what color SHOULD the sky be_?
 
 Or, one step further back, what color should _anything_ be?
 
-And the answer is: the color of anything is due to the wavelength of photons coming _from_ that thing and hitting your eye.
+And the answer is: the color of anything is due to[^1] the wavelength of photons coming _from_ that thing and hitting your eye.
+
+[^1]: **Well ackshually… 🧐**
+    
+    These sidenotes are optional to read, but I’ll use them for giving the fuller technical details when I’ve abbreviated things in the main body of the text.
+
+    In this case, the color you see is _determined_ by the wavelengths of light entering your eye since (1) you may be seeing a pure frequency, but in almost all cases, (2) you’re seeing _many_ frequencies, which your brain _interprets_ as a single color.
+    
+    For instance, the sensation of _turquoise_ at a specific point can be caused by (a) photons of wavelength 500nm emanating from that point, (b) a specific combo of photons of wavelengths 470nm _and_ 540nm, or (c) (mostly realistically) photons of a huge number of wavelengths, probably peaking somewhere _around_ 500nm.
+
+    In the text, I am a bit fast and loose with the difference.
 
 When sunlight hits Earth’s atmosphere, most colors of photons pass through unencumbered. But _blue_ photons have a tendency to ricochet around a lot.
 
@@ -48,7 +58,7 @@ There's a lot there, so we'll unpack it below. But first, here's an (interactive
 
 {% include sky/pass-scatter-absorb.html %}
 
-When a photon passes through/near a small molecule (like N2 or O2, which make up 99% of our atmosphere), it causes the electron cloud around the molecules to “jiggle”. This jiggling is at the same frequency as the photon itself – meaning violet photons cause faster jiggling than red photons.
+When a photon passes through/near a small molecule (like N<sub>2</sub> or O<sub>2</sub>, which make up 99% of our atmosphere), it causes the electron cloud around the molecules to “jiggle”. This jiggling is at the same frequency as the photon itself – meaning violet photons cause faster jiggling than red photons.
 
 In any case, for reasons due the internal structure of the molecule, there are certain *resonant frequencies* of each molecule’s electron cloud. As the electron clouds vibrate closer and closer to these resonant frequencies, the vibrations get larger and larger.
 
@@ -56,7 +66,9 @@ In any case, for reasons due the internal structure of the molecule, there are c
 
 The stronger the electron cloud’s oscillations, the more likely a passing photon (a) is deflected in a new direction rather than (b) passes straight through.
 
-For both N<sub>2</sub> and O<sub>2</sub>, the lowest resonant frequency is in the ultraviolet range. So as the visible colors increase in frequency towards ultraviolet, we see more and more deflection, or “scattering”.
+For both N<sub>2</sub> and O<sub>2</sub>, the lowest resonant frequency is in the ultraviolet range. So as the visible colors increase in frequency towards ultraviolet, we see more and more deflection, or “scattering”[^2].
+
+[^2]: “Scattering” is the scientific term of art for molecules deflecting photons. Linguistically, it’s used somewhat inconsistently. You’ll hear both “blue light scatters more” (the subject is the _light_) and “atmospheric molecules scatter blue light more” (the subject is the _molecule_). In any case, they means the same thing 🤷‍♂️
 
 In fact, violet is 10x more likely to scatter than red.
 
@@ -116,7 +128,9 @@ Again, you can play with this and see for yourself 😎
 
 *The answer to this question is the second of three “domains” you should understand in order to have a working model of atmosphere color. The physics are different from the small-molecule scattering above.*
 
-Clouds are made up of a huge number of tiny water droplets. These droplets are so small (around .02 millimeters in diameter) that they remain floating in the air. But compared to small gas molecules like N2 and O2, these droplets are *enormous*. A single water droplet may be 100 trillion H20 molecules!
+Clouds are made up of a huge number of tiny water droplets[^4]. These droplets are so small (around .02 millimeters in diameter) that they remain floating in the air. But compared to small gas molecules like N<sub>2</sub> and O<sub>2</sub>, these droplets are *enormous*. A single water droplet may be 100 trillion H<sub>2</sub>O molecules!
+
+[^4]: A small cloud may be a quadrillion droplets.
 
 So, it’s not as simple as “the photons cause the hundreds of trillions of electrons to jiggle”. Instead, it’s more like the light has entered a very tiny prism or glass bead.
 
@@ -134,7 +148,7 @@ And that means the cloud is white!
 
 This idea that the tiny droplets that comprise clouds scales up. Anything larger that light can enter – drizzle, raindrops, hail – will also tend towards white.
 
-But that raises the question – what about things *in between* tiny molecules (N2, O2) and the relatively enormous prism-like droplets? How do *those things* act?
+But that raises the question – what about things *in between* tiny molecules (N<sub>2</sub>, O<sub>2</sub>) and the relatively enormous prism-like droplets? How do *those things* act?
 
 Well, the dust in the sky of Mars is a great example 😉
 
@@ -159,7 +173,7 @@ To really understand the reason, let’s back up and talk about some chemistry.
 
 Compared to tiny gas molecules, solid particles tend to have a much wider range of light frequencies that they absorb.
 
-For instance, we discussed how N2 and O2 have *specific* resonant frequencies at which they hungrily absorb UV photons. Move slightly away from those frequencies, and absorption drops off a cliff.
+For instance, we discussed how N<sub>2</sub> and O<sub>2</sub> have *specific* resonant frequencies at which they hungrily absorb UV photons. Move slightly away from those frequencies, and absorption drops off a cliff.
 
 But even for a tiny dust nanoparticle, there are *many* constituent molecules, each in slightly different configurations, each being jostled slightly differently by its neighbors. Consequently, the constituent molecules all have *slightly different* preferences of which frequency to absorb.
 
@@ -229,8 +243,9 @@ Atmospheric gases tend to be much, much smaller than the wavelengths of visible 
     </div>
 </div>
 
+This is pleasingly true for Earth, Uranus, and Neptune[^3].
 
-This is pleasingly true for Earth, Uranus, and Neptune.
+[^3]: You may recall Neptune as looking like a much darker, richer blue. However, more recent analysis by Patrick Irwin shows the true color is very likely closer to what’s shown here.
 
 ### Dust or haze \= red/orange/yellow atmospheres
 
@@ -291,7 +306,7 @@ QUIZ: looking at this picture, what can you say about Jupiter’s atmosphere? An
 
 Here’s a comparison of how a basic guess – informed by our simplistic model – compares to scientific consensus.
 
-<table class="dense">
+<!-- <table class="dense">
     <thead>
         <tr>
             <th>Color</th>
@@ -313,10 +328,19 @@ Here’s a comparison of how a basic guess – informed by our simplistic model 
         <tr>
             <td>Slate (dark blue-gray)</td>
             <td>Small atmospheric molecules. But potentially a chemically odd haze, if something absorbed the visible spectrum pretty strongly?</td>
-            <td>Hydrogen and helium – i.e. small gaseous molecules that scatter blue/violet</td>
+            <td>Hydrogen and helium – i.e. small gaseous molecules that scatter blue/violet[^5]</td>
         </tr>
     </tbody>
-</table>
+</table> -->
+
+
+| Color | Our guess | Scientific consensus 
+|------|-----------|----------------------|
+| Red | Haze (couldn’t be dust; a liquid core makes that impossible) | A haze of unknown composition |
+| White | Clouds, probably of ice because of coldness | Clouds of ammonia ice |
+| Slate (dark blue-gray) | Small atmospheric molecules. But potentially a chemically odd haze, if something absorbed the visible spectrum pretty strongly? | Hydrogen and helium – i.e. small gaseous molecules that scatter blue/violet[^5]{data-render-sidenote-in-place="true"} |
+
+[^5]: The Galileo probe that descended into Jupiter entered one of these spots. It’s most surprising finding was how _dry_ Jupiter’s atmosphere seemed to be. But knowing it fell between where the clouds were, this makes total sense. Instead of ice crystals, it found hydrogen and helium.
 
 We didn’t do too bad, huh? A few key ideas explain a _lot_ of sky color!
 

@@ -15,9 +15,14 @@
 
     --annotation-arrow-color: #999;
 
-    
+    overflow-x: clip;
+
     @include w700 {
         --content-padding: 45px;
+    }
+
+    @include w1400 {
+        --sidebar-width: 305px;
     }
 }
 
@@ -128,6 +133,7 @@ table {
     border-collapse: collapse;
     border-spacing: 0px;
     font-family: var(--font-sans);
+    font-size: 16px;
 
     &.dense {
         @include w900 {
@@ -194,6 +200,29 @@ table {
             padding-left: 8px;
         }
     }
+}
+
+.sidenote {
+    --gap: 24px;
+
+    display: none;
+
+    @include w1400 {
+        display: block;
+        font-family: var(--font-sans);
+        float: right;
+        clear: right;
+        width: var(--sidebar-width);
+        margin-right: calc(-1 * (var(--sidebar-width) + var(--gap)));
+        margin-left: var(--gap);
+        box-sizing: border-box;
+    }
+}
+
+hr {
+    height: 1px;
+    background-color: var(--border-color);
+    border-style: none;
 }
 
 
@@ -285,7 +314,7 @@ hr.full-width {
         bottom: 0;
         left: calc(50vw - 700px);
         height: 100%;
-        width: 305px;
+        width: var(--sidebar-width);
     }
 }
 
@@ -307,6 +336,8 @@ hr.full-width {
         margin-inline: 0; //override content-width
         padding-top: 8px;
         border-left: none;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(5px);
         z-index: 2;
     }
 
@@ -423,6 +454,44 @@ hr.full-width {
         }
     }
 
+.footnote-ref {
+    @include w1400 {
+        vertical-align: baseline;
+        font-size: 1em;
+        line-height: inherit;
+
+        &:before {
+            content: "*";
+        }
+        
+        a {
+            display: none;
+        }
+    }
+}
+
+.footnotes-sep {
+    position: relative;
+    left: calc(50% - 50vw);
+    margin: 40px 0;
+    width: 100vw;
+
+    @include w1400 {
+        display: none;
+    }
+}
+
+.footnotes {
+    margin: 40px 0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.3;
+
+    @include w1400 {
+        display: none;
+    }
+}
+
 
 /*****************************************
          BODY TEXT-SPECIFIC STYLES
@@ -472,11 +541,11 @@ hr.full-width {
         &:after {
             content: '';
             position: absolute;
-             left: calc(50% - 50vw);
+            left: calc(50% - 50vw);
             bottom: 0;
             display: block;
             height: 1px;
-             width: 100vw;
+            width: 100vw;
             background-color: var(--border-color);
             transform: translateX(calc(50% - 50vw));
         }
@@ -494,7 +563,7 @@ hr.full-width {
         }
     }
 
-    aside {
+    .sidenote {
         margin-bottom: 12px;
         border-block: 1px solid var(--border-color);
         padding-block: 20px;
