@@ -150,10 +150,22 @@ export default function(eleventyConfig) {
         const $clone = $li.clone();
         $clone.find('a.footnote-backref').remove();
         let html = ($clone.html() || '').trim();
-        // If the entire note is a single <p>…</p>, unwrap it for valid inline insertion
-        const singleParagraphMatch = html.match(/^\s*<p>([\s\S]*?)<\/p>\s*$/i);
-        if (singleParagraphMatch) {
-          html = singleParagraphMatch[1].trim();
+        // Ensure we keep paragraph structure; if no block-level tag exists, wrap in a paragraph.
+        // If a single <p> contains newline-separated text, split into multiple paragraphs.
+        if (!/<\s*(p|ul|ol|table|div|blockquote|pre|figure)\b/i.test(html)) {
+          html = `<p>${html}</p>`;
+        } else {
+          const singleP = html.match(/^\s*<p>([\s\S]*?)<\/p>\s*$/i);
+          if (singleP && singleP[1] && singleP[1].includes('\n')) {
+            const parts = singleP[1]
+              .split(/\n+/)
+              .map(s => s.trim())
+              .filter(Boolean)
+              .map(s => `<p>${s}</p>`);
+            if (parts.length) {
+              html = parts.join('');
+            }
+          }
         }
         if (html) {
           footnoteMap.set(id, html);
