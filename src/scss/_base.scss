@@ -77,7 +77,8 @@ $w1440: "min-width: 1441px";
     text-transform: uppercase;
 }
 
-.logo {
+.logo,
+a.logo:visited { //specificity
     @include serif;
 
     color: var(--brand-color);
