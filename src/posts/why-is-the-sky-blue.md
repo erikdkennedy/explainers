@@ -6,7 +6,7 @@ toc: sky-toc.html
 img_subdir: sky
 img_on_homepage: clouds-slow.png
 video_on_homepage: clouds-slow.mp4
-published_on: 2025-12-01
+published_on: 2026-01-08
 layout: post
 css: blue-sky
 js: [post, blue-sky]
