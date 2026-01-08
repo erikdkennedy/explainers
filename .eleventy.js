@@ -105,6 +105,9 @@ export default function(eleventyConfig) {
     });
   }
 
+  // Shortcode: current year (useful for copyright footers)
+  eleventyConfig.addShortcode('year', () => new Date().getFullYear());
+
   // Filter: resolve meta image path if it exists; else return empty string
   eleventyConfig.addFilter('meta_image_path', (imgSubdir) => {
     if (!imgSubdir || typeof imgSubdir !== 'string') {

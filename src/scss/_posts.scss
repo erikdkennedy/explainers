@@ -455,9 +455,13 @@ hr.full-width {
     }
 
 .credits {
-    margin-top: 70px;
+    margin-top: 50px;
     font-style: italic;
     opacity: 0.7;
+
+    @include w900 {
+        margin-block: 80px 30px;
+    }
 }
 
 .footnote-ref {
@@ -479,7 +483,6 @@ hr.full-width {
 .footnotes-sep {
     position: relative;
     left: calc(50% - 50vw);
-    margin: 40px 0;
     width: 100vw;
 
     @include w1400 {
@@ -488,16 +491,130 @@ hr.full-width {
 }
 
 .footnotes {
-    margin: 40px 0;
+    margin: 24px 0;
     font-family: var(--font-sans);
     font-size: 14px;
     line-height: 1.3;
+
+    .footnote-item {
+        margin-bottom: 14px;
+    }
+
+    p {
+        margin-bottom: 6px;
+    }
 
     @include w1400 {
         display: none;
     }
 }
 
+footer.post-footer {
+    @include big-shadow;
+    
+    position: relative;
+    margin-bottom: 24px;
+    border: 8px solid white;
+    border-radius: 40px;
+    padding: 24px;
+    color: white;
+    background-color: var(--brand-color);
+    overflow: hidden;
+
+    @include w900 {
+        margin-bottom: 50px;
+    }
+
+    .logo {
+        display: inline-block;
+        margin-bottom: 40px;
+        color: white;
+    }
+
+    p {
+        margin-bottom: 12px;
+        font-size: 16px;
+        font-family: var(--font-sans);
+    }
+}
+
+    .footer-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .footer-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        inset: 0;
+        z-index: 0;
+    }
+
+.formkit-form[data-uid="10309cbc66"] {
+    max-width: 400px !important;
+}
+
+    .formkit-form[data-uid="10309cbc66"][min-width~="700"] [data-style="clean"] {
+        padding: 0 !important;
+    }
+
+        .formkit-fields {
+            margin: 0 !important;
+            flex-wrap: nowrap !important;
+            background-color: white;
+            border-radius: 24px;
+        }
+
+            .formkit-field {
+                margin: 0 !important;
+                flex-shrink: 1;
+                flex-basis: auto !important;
+                height: 48px !important;
+            }
+
+            .formkit-submit {
+                @extend .mono;
+                
+                flex-shrink: 0 !important;
+                flex-basis: auto !important;
+                margin: 0 !important;
+                height: 48px !important;
+                border: 2px solid white !important;
+                font-weight: 400 !important;
+                font-size: 13px !important;
+                line-height: 1.5;
+            }
+
+        .formkit-powered-by-convertkit {
+            display: none !important;
+        }
+
+.copyright {
+    @include content-width;
+    @extend .mono;
+
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+
+    @include w900 {
+        margin-bottom: 40px;
+    }
+}
+
+        .mottoes {
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+
+        .copyright-text {
+            opacity: 0.5;
+        }
 
 /*****************************************
          BODY TEXT-SPECIFIC STYLES
@@ -507,7 +624,7 @@ hr.full-width {
     @include content-width;
 
     position: relative;
-    padding-block: 20px 60px;
+    padding-block: 20px;
 
     @include w700 {
         border-left: 1px solid var(--border-color);
