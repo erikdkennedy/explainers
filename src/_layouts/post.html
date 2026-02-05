@@ -25,7 +25,32 @@
 
 <body>
 	{% include site-top-nav.md %}
-	<header class="layout-width">
+	{%- assign has_header_media = header_img or header_video -%}
+	<header class="layout-width post-header{% if has_header_media %} has-header-media{% endif %}">
+		{%- if has_header_media -%}
+		<div class="header__media"
+			{%- if header_img -%}
+				style="background-image: url('/assets/img/{{ img_subdir }}/{{ header_img }}');"
+			{%- endif -%}
+			aria-hidden="true">
+			{%- if header_video -%}
+			<video class="header__video"
+					autoplay
+					muted
+					loop
+					playsinline
+					preload="metadata"
+					{%- if header_img -%}
+					poster="/assets/img/{{ img_subdir }}/{{ header_img }}"
+					{%- endif -%}>
+				<source src="/assets/img/{{ img_subdir }}/{{ header_video }}">
+			</video>
+			{%- endif -%}
+			{%- if header_overlay -%}
+			<div class="header__overlay" style="background: {{ header_overlay }};"></div>
+			{%- endif -%}
+		</div>
+		{%- endif -%}
 		<div class="header__text content-width">
 			<h1 class="post-title">{{ title }}</h1>
 			<h2 class="post-subtitle">{{ subtitle }}</h2>
@@ -65,6 +90,5 @@
 </body>
 
 </html>
-
 
 

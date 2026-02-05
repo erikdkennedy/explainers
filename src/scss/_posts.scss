@@ -235,12 +235,40 @@ hr {
 header {
     @include big-shadow;
     
+    position: relative;
+    overflow: hidden;
     border: 8px solid white;
     border-radius: 40px;
     background-color: #3333FF;
 }
 
+    .header__media {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        pointer-events: none;
+    }
+
+        .header__video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header__overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
     .header__text {
+        position: relative;
+        z-index: 2;
         padding: 24px;
     }
 
