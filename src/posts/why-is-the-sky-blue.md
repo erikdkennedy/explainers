@@ -6,6 +6,9 @@ toc: sky-toc.html
 img_subdir: sky
 img_on_homepage: clouds-slow.png
 video_on_homepage: clouds-slow.mp4
+header_video: cloud-banner.mp4
+header_img: cloud-banner.png
+header_overlay: "#31359D80"
 published_on: 2026-01-08
 layout: post
 css: blue-sky
