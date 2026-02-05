@@ -24,6 +24,7 @@ _site/
 ########################################
 src/assets/css/
 _site/scss/
+.figma-assets/
 
 ########################################
 # Source maps (generated)
