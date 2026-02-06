@@ -364,7 +364,7 @@ hr.full-width {
         margin-inline: 0; //override content-width
         padding-top: 8px;
         border-left: none;
-        background: rgba(255, 255, 255, 0.35);
+        background: color-mix(in srgb, var(--background-color) 35%, transparent);
         backdrop-filter: blur(5px);
         z-index: 2;
     }
@@ -488,7 +488,7 @@ hr.full-width {
     opacity: 0.7;
 
     @include w900 {
-        margin-block: 80px 30px;
+        margin-block: 100px 30px;
     }
 }
 
@@ -541,6 +541,7 @@ footer.post-footer {
     @include big-shadow;
     
     position: relative;
+    min-height: 380px;
     margin-bottom: 24px;
     border: 8px solid white;
     border-radius: 40px;
@@ -568,20 +569,46 @@ footer.post-footer {
 
     .footer-content {
         position: relative;
-        z-index: 1;
+        z-index: 2;
     }
+
+    .footer-illustration {
+        position: absolute;
+        top: -10%;
+        left: 30%;
+        z-index: 1;
+        max-height: 120%;
+        height: auto;
+        filter: invert(1);
+        mix-blend-mode: lighten;
+        pointer-events: none;
+        opacity: 0.3;
+
+        @include w900 {
+            left: 50%;
+            opacity: 0.4;
+        }
+    }
+
 
     .footer-bg {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        inset: 0;
-        z-index: 0;
-    }
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    inset: 0;
+    z-index: 0;
+}
+
+.footer-bg [data-us-project],
+.footer-bg [data-us-project-src],
+.footer-bg canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
 
 .formkit-form[data-uid="10309cbc66"] {
     max-width: 400px !important;
