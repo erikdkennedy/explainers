@@ -108,17 +108,23 @@ export default function(eleventyConfig) {
   // Shortcode: current year (useful for copyright footers)
   eleventyConfig.addShortcode('year', () => new Date().getFullYear());
 
-  // Filter: resolve meta image path if it exists; else return empty string
+  // Filter: resolve meta image path if it exists; else fall back to home.png
   eleventyConfig.addFilter('meta_image_path', (imgSubdir) => {
+    const defaultFilename = 'home.png';
+    const defaultAbsolutePath = path.resolve('src/assets/img/meta', defaultFilename);
+    const defaultPath = fs.existsSync(defaultAbsolutePath)
+      ? `/assets/img/meta/${defaultFilename}`
+      : '';
+
     if (!imgSubdir || typeof imgSubdir !== 'string') {
-      return '';
+      return defaultPath;
     }
     const filename = `${imgSubdir}.png`;
     const absolutePath = path.resolve('src/assets/img/meta', filename);
     if (fs.existsSync(absolutePath)) {
       return `/assets/img/meta/${filename}`;
     }
-    return '';
+    return defaultPath;
   });
 
   // Final safety net: strip empty paragraphs from generated HTML
