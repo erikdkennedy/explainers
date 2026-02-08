@@ -436,4 +436,4 @@ But at least you know why the sky’s blue.
 - [NASA’s sunset simulator](https://www.nasa.gov/solar-system/nasa-scientist-simulates-sunsets-on-other-worlds/){target="_blank"}. You know who *really* wants to know what color the sky is on other planets? NASA. They’ve built an [incredibly powerful app](https://psg.gsfc.nasa.gov/about.php){target="_blank"} for modeling atmospheres and radiation, and here they use it to crank out a few beautiful visuals of our solar system’s best sunsets.  
 - [Blue Moons and Martian Sunsets](https://opg.optica.org/ao/fulltext.cfm?uri=ao-53-9-1808){target="_blank"}. The mechanics of Mars’s blue sunsets are still somewhat debated. The authors of this article make a convincing model based on the assumptions I worked with above.
 
-Thank you to Dr. Patrick Irwin, Dr. Craig Bohren, and Matt Favero for corrections and feedback.{ .credits }
+Thank you to Dr. Patrick Irwin, Dr. Craig Bohren, and Matt Favero for corrections and feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }
