@@ -669,6 +669,10 @@ footer.post-footer {
 
         .copyright-text {
             opacity: 0.5;
+
+            a {
+                color: var(--text-color);
+            }
         }
 
 /*****************************************
