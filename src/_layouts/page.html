@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <title>{{ title }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+  {%- if css -%}
+  <link rel="stylesheet" href="/assets/css/{{ css }}.css">
+  {%- else -%}
+  <link rel="stylesheet" href="/assets/css/home.css">
+  {%- endif -%}
+</head>
+<body>
+  {% include site-top-nav.md %}
+  <main>
+    {{ content }}
+  </main>
+  {%- if footer -%}
+  <footer class="post-footer layout-width">
+    <div class="footer-content content-width">
+      <a href="/" class="logo">explainers <br> <em class="logo-secondary">.blog</em></a>
+      <p>For fans of intuitive explanations:</p>
+      <script async data-uid="10309cbc66" src="https://erik-kennedy.kit.com/10309cbc66/index.js"></script>
+    </div>
+    <img class="footer-illustration" src="/assets/img/footer/isomorphic-sextant-illustration.svg" alt="" aria-hidden="true">
+    {% include footer-bg.html %}
+  </footer>
+  <div class="copyright">
+    <p class="mottoes">You don’t understand it until you can predict it. No Can-kicking. No Jargon.</p>
+    <p class="copyright-text">© {% year %} <a href="https://erikdkennedy.com">Erik Kennedy</a></p>
+  </div>
+  {%- endif -%}
+  {%- if js -%}
+    {% assign js_list = js | join: ' ' | split: ' ' %}
+    {%- for name in js_list -%}
+      <script defer src="/assets/js/{{ name }}.js"></script>
+    {%- endfor -%}
+  {%- endif -%}
+</body>
+</html>
