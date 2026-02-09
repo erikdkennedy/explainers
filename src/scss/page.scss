@@ -1,0 +1,31 @@
+@use "./posts" as *;
+
+.page-header {
+    @include content-width;
+    padding-top: 48px;
+    padding-bottom: 6px;
+
+    @include w900 {
+        padding-top: 72px;
+    }
+}
+
+.page-title {
+    margin-bottom: 6px;
+    color: var(--text-color);
+    font-size: 32px;
+    line-height: 94%;
+    font-weight: 700;
+
+    @include w900 {
+        font-size: 60px;
+        font-variation-settings: 'opsz' 60;
+    }
+}
+
+.post-body {
+    @include w700 {
+        margin-bottom: 100px;
+        border-left: none;
+    }
+}
