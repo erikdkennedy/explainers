@@ -1,0 +1,28 @@
+---
+permalink: /feed.xml
+layout: null
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Explainers</title>
+    <link>https://explainers.blog</link>
+    <description>A blog of simple explanations to deep questions</description>
+    <language>en-us</language>
+    <atom:link href="https://explainers.blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>{{ "now" | date: "%a, %d %b %Y %H:%M:%S %z" }}</lastBuildDate>
+    {% assign sorted_posts = collections.posts | where: "data.published", true | sort: "data.published_on" | reverse %}
+    {% for post in sorted_posts %}
+    <item>
+      <title>{{ post.data.title | escape }}</title>
+      <link>https://explainers.blog{{ post.url }}</link>
+      <guid isPermaLink="true">https://explainers.blog{{ post.url }}</guid>
+      <pubDate>{{ post.data.published_on | date: "%a, %d %b %Y 00:00:00 %z" }}</pubDate>
+      <dc:creator>{{ post.data.author | default: "Erik Kennedy" | escape }}</dc:creator>
+      <description>{{ post.data.nutshell | default: post.data.subtitle | escape }}</description>
+      <content:encoded><![CDATA[{{ post.templateContent | replace: "]]>", "]]]]><![CDATA[>" }}]]></content:encoded>
+    </item>
+    {% endfor %}
+  </channel>
+</rss>
