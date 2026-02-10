@@ -55,7 +55,7 @@ Therefore the sky is blue.
 
 This is true and all, but it kicks the can down the road. Why *blue*? Why not red?
 
-In short, it’s because blue and violet have the closest frequencies to a “resonant frequency” of nitrogen and oxygen molecules’s electron clouds.
+In short, it’s because blue and violet have the closest frequencies to a “resonant frequency” of nitrogen and oxygen molecules’ electron clouds.
 
 There's a lot there, so we'll unpack it below. But first, here's an (interactive) demo.
 
