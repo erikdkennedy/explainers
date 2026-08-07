@@ -1,0 +1,57 @@
+<!-- The scrubber's hint id is static, so include this widget at most once per page. -->
+<div id="emission" class="widget emission-widget">
+    <div class="em-stage">
+        <!-- Three layers, in paint order: the orbital, then the phantom copies, then the
+             nucleus. The nucleus has to come last or the copies that have only just left
+             are drawn on top of the atom they left, which reads as a smudge rather than as
+             a halo — and the orbital has to come first or its blurred red tints them.
+             Photons are DOM dots, seeded by initEmission() in quantum.js: hand-authoring
+             150 divs would be unreadable, and they must keep their pixel size on a phone. -->
+        <!-- The 2p orbital: two blurred lobes meeting at the nucleus, tips at the origin.
+             The south lobe is the north one mirrored, which is how Figma builds it. Drawn
+             1:1 — the viewBox is 180 x 240 user units in a 180 x 240px box, so blur(15px)
+             is Figma's stdDeviation 15 exactly. -->
+        <svg class="em-cloud" viewBox="-90 -120 180 240" aria-hidden="true" focusable="false">
+            <path class="em-cloud-lobe" d="M36 -43.7C36 -30.9975 0 0 0 0C0 0 -36 -30.9975 -36 -43.7C-36 -56.4025 -19.8823 -69 0 -69C19.8823 -69 36 -56.4025 36 -43.7Z"/>
+            <path class="em-cloud-lobe" transform="scale(1 -1)" d="M36 -43.7C36 -30.9975 0 0 0 0C0 0 -36 -30.9975 -36 -43.7C-36 -56.4025 -19.8823 -69 0 -69C19.8823 -69 36 -56.4025 36 -43.7Z"/>
+        </svg>
+        <!-- Ground underneath and always opaque; excited on top, fading out on the decay
+             probability. Cross-fading *both* would leave the atom part transparent in the
+             middle of the transition — the card and the phantom copies behind it show
+             through, and a picture about a red atom turning blue goes muddy just where the
+             reader is watching. One disc fading over another is the same information. -->
+        <div class="em-nucleus em-nucleus--ground"></div>
+        <div class="em-nucleus em-nucleus--excited"></div>
+        <!-- One label per keyframe. All five ship; JS reveals whichever step the reader
+             has arrived at, and hides all of them while the clock is moving. -->
+        <!-- The space before the <br> is load-bearing: the narrow layout hides the break, and
+             without it the two halves run together. A trailing space before a line break is
+             collapsed away, so the wide layout is unaffected. -->
+        <p class="em-label em-label--intro" data-step="0">Hydrogen atom, <br>excited state</p>
+        <p class="em-label" data-step="1">Phantom copies of the photon leave in every possible direction</p>
+        <p class="em-label" data-step="2">…And at every possible time</p>
+        <p class="em-label" data-step="3">…The atom, too, has phantom copies. One for each possible time that it drops energy (from losing a photon)</p>
+        <p class="em-label" data-step="4">When the system regains contact with the outside world, we find it in only one state – i.e. there’s only one photon!</p>
+    </div>
+    <div class="em-controls">
+        <!-- Integer steps: the scrubber's own value is the clock, so it needs finer
+             resolution than the 100 steps a range input defaults to. -->
+        <input type="range" class="em-scrubber" min="0" max="1000" value="0" aria-label="Time" aria-describedby="em-scrubber-hint">
+        <div class="em-buttons">
+            <!-- Arrows are drawn rather than typed, so the buttons do not wait on the mono
+                 webfont — and an arrow glyph's baseline is nowhere near centred anyway. -->
+            <button type="button" class="em-step em-step--prev" aria-label="Previous step">
+                <svg class="em-step-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path d="M14 9H4M8.5 4.75 4.25 9l4.25 4.25"/>
+                </svg>
+            </button>
+            <button type="button" class="em-step em-step--next" aria-label="Next step">
+                <svg class="em-step-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path d="M4 9h10M9.5 4.75 13.75 9l-4.25 4.25"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <p id="em-scrubber-hint" class="visually-hidden">Time since the atom was excited. Phantom copies of the photon stream outwards as time runs on, and the atom fades from its excited state into its ground state.</p>
+    <p class="em-status visually-hidden" role="status" aria-live="polite"></p>
+</div>

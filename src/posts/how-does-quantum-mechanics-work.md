@@ -143,7 +143,9 @@ And, while this will complicate things, and we will return to it later, it’s w
 
 1. We also need phantom copies of the *atom*, one for each possibility of *when* it jumps down an energy level (which it does when the photon is emitted)
 
-<!-- TODO: figure – atom emitting phantom-copy photons. Caption: “Note: I’m only displaying SOME of the photon phantom copies. In reality, they’d cover the surface of the illustration!” -->
+{% include qm/emission.html %}
+
+<p class="caption">Note: I’m only displaying SOME of the photon phantom copies. In reality, they’d cover the surface of the illustration!</p>
 
 You’ll notice the bulk of these phantom photons leave *early* (rather than later) and *horizontally* (rather than vertically). Exactly *why* is specific to the type of atom and the exact configuration of its electrons – but for now, just understand this: ***some outcomes are more likely than others***.
 

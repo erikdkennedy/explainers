@@ -60,12 +60,35 @@
     const TE_MAX_FRAME = 0.05; // seconds — clamp dt so a backgrounded tab does not jump
     const TE_REDUCED_MOTION_T = 0.35; // a paused widget should still show a cloud, not a speck
 
+    // An excited atom emitting a photon. Lengths are in stage widths and times in units of
+    // the whole timeline, as above. Two distributions carry the physics, and between them
+    // they are what makes the article's claim — "the bulk of these phantom photons leave
+    // early, and horizontally" — something the reader watches rather than reads:
+    //
+    //   when  the emission time is exponential, so most copies leave in the first moments
+    //   where the 2p orbital's dipole is vertical, so intensity goes as sin^2 off that
+    //         axis: brightest along the horizontal, dark along the lobes themselves
+    // Sized for the *first* step rather than the last: at t = 0.05 the copies have barely
+    // cleared the nucleus, and the ones still behind it are hidden, so a count that looks
+    // generous at full spread leaves a bare handful in the halo the reader meets first.
+    const EM_PHOTON_COUNT = 150;
+    // Per unit t. exp(-3) leaves ~5% of the atom still excited at the end of the timeline,
+    // which is the most decay that can be shown without the last stretch looking static.
+    const EM_DECAY_RATE = 3;
+    const EM_PHOTON_SPEED = 0.55; // stage widths per unit t — the earliest copies clear the frame
+    const EM_STEPS = [0, 0.05, 0.10, 0.90, 1]; // Figma's five dial positions, over a 530px track
+    const EM_TWEEN_MIN = 450; // ms for the shortest hop, 0 -> 0.05
+    const EM_TWEEN_MAX = 1400; // ms for the long haul, 0.10 -> 0.90
+    const EM_MAX_FRAME = 0.05; // seconds — clamp dt so a backgrounded tab does not jump
+    const EM_EPSILON = 1e-6; // "strictly past the current t", in the face of float error
+
     // Pending render per widget, so a drag never queues up more than one.
     const _doubleSlitFrames = new WeakMap();
     const _doubleSlitPathFrames = new WeakMap();
 
     // Per-widget simulation state: the frozen dot seeds, the clock, and the rAF handle.
     const _electronClouds = new WeakMap();
+    const _emissionFields = new WeakMap();
 
 
     /*****************************************
@@ -93,6 +116,30 @@
 
     function normalizeAngle(degrees) {
         return ((degrees % 360) + 360) % 360;
+    }
+
+    function easeInOutCubic(u) {
+        return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+    }
+
+    // Inverse-CDF sample of an exponential. This is the whole of "most phantom copies
+    // leave early": the density is largest at zero and decays from there.
+    function randomExponential(rate) {
+        return -Math.log(1 - Math.random()) / rate; // 1 - random() is (0, 1], so log is finite
+    }
+
+    // Dipole radiation: intensity goes as sin^2 of the angle off the dipole axis. The 2p
+    // orbital's axis is vertical and theta is measured from the horizontal, so that angle
+    // is (90deg - theta) and the envelope becomes cos^2 — brightest straight out to the
+    // sides, dark along the lobes. Rejection sampling, two iterations on average, drawn
+    // once per photon at init and never again.
+    function randomDipoleAngle() {
+        for (let i = 0; i < 64; i++) {
+            const theta = Math.random() * 2 * Math.PI;
+            const cos = Math.cos(theta);
+            if (Math.random() < cos * cos) return theta;
+        }
+        return Math.random() * 2 * Math.PI; // unreachable in practice; never loop forever
     }
 
 
@@ -332,6 +379,100 @@
     }
 
 
+    // The one curve the whole widget rides. Photon count, the red nucleus, and the excited
+    // orbital all read this, so they cannot drift apart and quietly make the physics wrong:
+    // when four fifths of the phantom copies have left, the atom is four fifths grounded
+    // because it is the same number, not because two curves were tuned to agree.
+    function emissionEmittedFraction(t) {
+        return 1 - Math.exp(-EM_DECAY_RATE * t);
+    }
+
+    // Two frozen draws per photon — when it leaves, and which way. Drawing them once is what
+    // makes the render below a pure function of t, so scrubbing backwards lands on exactly
+    // the arrangement it left rather than reshuffling the spray.
+    function seedEmissionField($widget) {
+        const $stage = $widget.querySelector('.em-stage');
+        if (!$stage) return null;
+
+        const $photons = [];
+        const seeds = [];
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < EM_PHOTON_COUNT; i++) {
+            const $photon = document.createElement('div');
+            $photon.className = 'em-photon';
+            $photon.style.display = 'none'; // nothing has been emitted at t = 0
+
+            const theta = randomDipoleAngle();
+
+            seeds.push({
+                tau: randomExponential(EM_DECAY_RATE), // the moment this copy leaves
+                cos: Math.cos(theta),
+                sin: Math.sin(theta),
+                shown: false, // last rendered visibility, so display is only written on a change
+            });
+
+            $photons.push($photon);
+            fragment.appendChild($photon);
+        }
+
+        $stage.appendChild(fragment);
+
+        // atomY and heightInWidths are placeholders until measureEmissionStage() runs — the
+        // atom is placed by CSS and the maths has to orbit the same point, so both are read
+        // off the layout rather than restated here. See --em-atom-y in quantum.scss.
+        return {
+            $stage,
+            $photons,
+            seeds,
+            t: 0,
+            atomY: 0.5125,
+            heightInWidths: 400 / 700,
+            tween: null,
+            frame: 0,
+            last: 0,
+            visible: true,
+            survivor: 0,
+        };
+    }
+
+    // A copy's radius grows from the moment it left, so at time t it sits at
+    // speed * (t - tau) along its own direction — and does not exist at all before that.
+    function emissionPhotonPosition(seed, t) {
+        const age = t - seed.tau;
+
+        if (age < 0) return { x: 0, dy: 0, emitted: false };
+
+        const radius = EM_PHOTON_SPEED * age;
+
+        return { x: radius * seed.cos, dy: radius * seed.sin, emitted: true };
+    }
+
+    // Collapse leaves exactly one phantom copy behind, and it has to be one the reader can
+    // actually see — a survivor that flew off the frame ten steps ago reads as a bug. Chosen
+    // once, after the stage has been measured, so the choice is as frozen as the seeds are.
+    function pickEmissionSurvivor(state) {
+        const candidates = [];
+
+        // Stage widths, measured from the atom: the frame runs half a width either side, and
+        // the atom sits atomY of the way down a stage heightInWidths tall. The 0.9 keeps the
+        // survivor clear of the edge rather than half-clipped by it.
+        const left = 0.5 * 0.9;
+        const up = state.atomY * state.heightInWidths * 0.9;
+        const down = (1 - state.atomY) * state.heightInWidths * 0.9;
+
+        state.seeds.forEach((seed, i) => {
+            const { x, dy, emitted } = emissionPhotonPosition(seed, 1);
+
+            if (emitted && Math.abs(x) < left && dy > -up && dy < down) candidates.push(i);
+        });
+
+        if (!candidates.length) return 0;
+
+        return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+
     function readDoubleSlitPathsParams($widget) {
         const $slider = param => $widget.querySelector(`.dsp-slider[data-param="${param}"]`);
         const value = param => {
@@ -449,6 +590,98 @@
 
         $widget.classList.toggle('is-playing', state.playing);
         if ($toggle) $toggle.setAttribute('aria-label', state.playing ? 'Pause' : 'Play');
+    }
+
+
+    // Both the aspect correction and the atom's own height are layout facts, so they are read
+    // from the layout — once here, rather than per frame inside the render loop.
+    function measureEmissionStage($widget) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        const width = state.$stage.offsetWidth;
+        const height = state.$stage.offsetHeight;
+
+        // A zero-width stage means the widget has not been laid out yet (or is in a pane that
+        // never lays it out); keep the last good numbers rather than dividing by nothing.
+        if (!width || !height) return;
+
+        state.heightInWidths = height / width;
+
+        const declared = parseFloat(getComputedStyle($widget).getPropertyValue('--em-atom-y'));
+        if (!Number.isNaN(declared)) state.atomY = declared / 100;
+    }
+
+    function renderEmissionField($widget) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        const t = state.t;
+        // Collapse is the last instant of the timeline, and it is instant: every phantom copy
+        // but one stops existing. Being keyed off t alone keeps the render pure, so scrubbing
+        // back off the end brings the whole spray straight back.
+        const collapsed = t >= 1;
+
+        state.seeds.forEach((seed, i) => {
+            const { x, dy, emitted } = emissionPhotonPosition(seed, t);
+            const $photon = state.$photons[i];
+            const shown = collapsed ? i === state.survivor : emitted;
+
+            // Writing display on every dot every frame would be 110 needless style
+            // invalidations; only the ones that actually changed are worth the write.
+            if (shown !== seed.shown) {
+                $photon.style.display = shown ? '' : 'none';
+                seed.shown = shown;
+            }
+
+            if (!shown) return;
+
+            // Both axes are in stage widths, so the vertical offset is divided by the stage's
+            // aspect ratio on the way into a percentage of its height. Without this the spray
+            // flattens into an ellipse as the stage gets wider.
+            $photon.style.left = `${(0.5 + x) * 100}%`;
+            $photon.style.top = `${(state.atomY + dy / state.heightInWidths) * 100}%`;
+        });
+
+        // The atom and its orbital ride the same curve as the photon count, by construction.
+        // Only the excited pair is written: the ground disc underneath is always opaque, so
+        // the blue on show is 1 - excited without anything having to say so. See the note in
+        // emission.html for why cross-fading both would leave the atom see-through.
+        const stillExcited = 1 - emissionEmittedFraction(t);
+
+        $widget.style.setProperty('--em-excited-opacity', String(stillExcited));
+        $widget.style.setProperty('--em-cloud-opacity', String(stillExcited));
+    }
+
+    // Labels belong to keyframes, not to moments: while the clock is moving — under a step
+    // button or under the reader's own thumb — there is no step to caption, so none show.
+    function setEmissionLabel($widget, step) {
+        $widget.querySelectorAll('.em-label').forEach($label => {
+            $label.classList.toggle('is-visible', Number($label.dataset.step) === step);
+        });
+
+        const $status = $widget.querySelector('.em-status');
+        if (!$status) return;
+
+        const $current = step === null ? null : $widget.querySelector(`.em-label[data-step="${step}"]`);
+        $status.textContent = $current ? $current.textContent : '';
+    }
+
+    function syncEmissionControls($widget) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        const $scrubber = $widget.querySelector('.em-scrubber');
+        const $prev = $widget.querySelector('.em-step--prev');
+        const $next = $widget.querySelector('.em-step--next');
+
+        // Don't fight the reader's grip on the thumb.
+        if ($scrubber && document.activeElement !== $scrubber) {
+            $scrubber.value = String(Math.round(state.t * Number($scrubber.max)));
+        }
+
+        if ($prev) $prev.disabled = state.t <= EM_STEPS[0] + EM_EPSILON;
+        if ($next) $next.disabled = state.t >= EM_STEPS[EM_STEPS.length - 1] - EM_EPSILON;
     }
 
     function describeArrow(angle, magnitude) {
@@ -954,6 +1187,139 @@
     }
 
 
+    function stepEmissionTween($widget, timestamp) {
+        const state = _emissionFields.get($widget);
+        if (!state || !state.tween) return;
+
+        // A fresh start after a scroll back into view has no previous timestamp to measure
+        // against; skip one frame rather than jumping the clock.
+        if (!state.last) state.last = timestamp;
+
+        const elapsed = Math.min(EM_MAX_FRAME, (timestamp - state.last) / 1000) * 1000;
+        state.last = timestamp;
+
+        const tween = state.tween;
+        tween.elapsed += elapsed;
+
+        const u = clampNumber(tween.elapsed / tween.duration, 0, 1);
+
+        state.t = tween.from + (tween.to - tween.from) * easeInOutCubic(u);
+
+        renderEmissionField($widget);
+        syncEmissionControls($widget);
+
+        if (u >= 1) {
+            settleEmissionStep($widget, tween.step);
+            return;
+        }
+
+        state.frame = requestAnimationFrame(ts => stepEmissionTween($widget, ts));
+    }
+
+    // Arriving at a keyframe: land exactly on it, stop the clock, and caption it.
+    function settleEmissionStep($widget, step) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        if (state.frame) cancelAnimationFrame(state.frame);
+
+        state.frame = 0;
+        state.last = 0;
+        state.tween = null;
+        state.t = EM_STEPS[step];
+
+        renderEmissionField($widget);
+        syncEmissionControls($widget);
+        setEmissionLabel($widget, step);
+    }
+
+    // The step buttons search for the nearest keyframe *strictly past* where the clock stands,
+    // which is what lets them work identically whether the reader arrived here by pressing a
+    // button or by dragging the scrubber to some moment in between.
+    function goToEmissionStep($widget, direction) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        // Search from where the clock is *heading*, not from where it happens to be. A reader
+        // pressing the button twice in quick succession means two steps; searching from the
+        // current t would find the keyframe already being tweened to and start it over.
+        const target = state.tween ? state.tween.to : state.t;
+        const from = state.t;
+        const step = direction > 0
+            ? EM_STEPS.findIndex(value => value > target + EM_EPSILON)
+            : findLastEmissionStep(target);
+
+        if (step === -1) return; // already at whichever end was asked for
+
+        setEmissionLabel($widget, null);
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+            settleEmissionStep($widget, step);
+            return;
+        }
+
+        // The timeline is deliberately lopsided — three keyframes inside the first tenth, then
+        // one long haul to 0.9 — so a fixed duration would either crawl through the short hops
+        // or blur straight past the spread. Scale it with the distance instead.
+        const span = Math.abs(EM_STEPS[step] - from);
+
+        state.tween = {
+            from,
+            to: EM_STEPS[step],
+            step,
+            elapsed: 0,
+            duration: EM_TWEEN_MIN + (EM_TWEEN_MAX - EM_TWEEN_MIN) * span,
+        };
+
+        state.last = 0;
+        updateEmissionPlayback($widget);
+    }
+
+    function findLastEmissionStep(from) {
+        for (let i = EM_STEPS.length - 1; i >= 0; i--) {
+            if (EM_STEPS[i] < from - EM_EPSILON) return i;
+        }
+
+        return -1;
+    }
+
+    // The tween runs only while the widget is on screen, so a post carrying six widgets is not
+    // paying for the ones the reader has scrolled past. A tween interrupted by scrolling away
+    // is finished rather than abandoned — coming back to a half-arrived keyframe with no label
+    // would look broken.
+    function updateEmissionPlayback($widget) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        if (state.tween && state.visible && !state.frame) {
+            state.last = 0;
+            state.frame = requestAnimationFrame(ts => stepEmissionTween($widget, ts));
+        } else if (state.tween && !state.visible) {
+            settleEmissionStep($widget, state.tween.step);
+        }
+    }
+
+    // Taking hold of the scrubber is a request to look at one moment of your own choosing, so
+    // it abandons any tween and drops the caption — there is no keyframe here to caption.
+    function scrubEmissionField($widget, $scrubber) {
+        const state = _emissionFields.get($widget);
+        if (!state) return;
+
+        if (state.frame) cancelAnimationFrame(state.frame);
+
+        state.frame = 0;
+        state.last = 0;
+        state.tween = null;
+        state.t = clampNumber(Number($scrubber.value) / Number($scrubber.max), 0, 1);
+
+        setEmissionLabel($widget, null);
+        renderEmissionField($widget);
+        syncEmissionControls($widget);
+    }
+
+
     /*****************************************
                   LISTENER WIRING
     *****************************************/
@@ -1100,6 +1466,54 @@
         });
     }
 
+    function initEmission() {
+        const $widgets = document.querySelectorAll('.emission-widget');
+
+        $widgets.forEach($widget => {
+            const state = seedEmissionField($widget);
+            if (!state) return;
+
+            _emissionFields.set($widget, state);
+
+            // Measure before choosing the survivor: which copies are still in frame at t = 1
+            // depends on the stage's shape, which differs between the wide layout and the
+            // taller one a phone gets.
+            measureEmissionStage($widget);
+            state.survivor = pickEmissionSurvivor(state);
+
+            const $scrubber = $widget.querySelector('.em-scrubber');
+            if ($scrubber) {
+                $scrubber.addEventListener('input', () => scrubEmissionField($widget, $scrubber), { passive: true });
+            }
+
+            const $prev = $widget.querySelector('.em-step--prev');
+            if ($prev) $prev.addEventListener('click', () => goToEmissionStep($widget, -1));
+
+            const $next = $widget.querySelector('.em-step--next');
+            if ($next) $next.addEventListener('click', () => goToEmissionStep($widget, 1));
+
+            // Percentages survive a resize on their own, but the aspect correction and the
+            // atom's own height do not — so remeasure when the stage changes shape.
+            if (window.ResizeObserver) {
+                new ResizeObserver(() => {
+                    measureEmissionStage($widget);
+                    renderEmissionField($widget);
+                }).observe(state.$stage);
+            }
+
+            if (window.IntersectionObserver) {
+                new IntersectionObserver(entries => {
+                    state.visible = entries[entries.length - 1].isIntersecting;
+                    updateEmissionPlayback($widget);
+                }).observe($widget);
+            }
+
+            // Nothing to guard for reduced motion here: the widget starts stopped at its first
+            // keyframe either way, and goToEmissionStep() is where the tween is skipped.
+            settleEmissionStep($widget, 0);
+        });
+    }
+
 
     /*****************************************
                    INITIALIZATION
@@ -1111,6 +1525,7 @@
         initDoubleSlitPaths();
         initDoubleSlitPattern();
         initTravelingElectron();
+        initEmission();
     }
 
     document.addEventListener('DOMContentLoaded', init, { once: true });
