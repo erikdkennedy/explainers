@@ -1353,6 +1353,527 @@
     }
 
 
+/*****************************************
+            RAMSEY EXPERIMENT
+*****************************************/
+
+/* Unlike every other widget here, this one *is* the card: the header rule runs the full width,
+   the divider between the stage and the sphere runs to the caption, and the caption is a panel
+   inset inside the card's own radius. So .widget's 30px padding is dropped and the parts do
+   their own insetting. Everything inside the two SVGs is in their viewBox units and scales with
+   the column; the chrome around them is in real pixels and does not. */
+.ramsey-widget {
+    /* VARIABLES */
+    --rm-ground-color: #007BFC;
+    --rm-excited-color: var(--brand-red);
+    --rm-halo-opacity: 0.2; /* Figma's dilate-and-knock-out glow, which is just a disc behind a disc */
+    --rm-ghost-opacity: 0.1; /* a copy that has served its purpose but is still worth seeing */
+    --rm-rule-color: #DCDCDC;
+    --rm-guide-color: #D9D9D9; /* the sphere's unvisited paths, and the connectors */
+    --rm-mark-color: #BFBFBF; /* its unlit nodes and direction markers */
+    --rm-dot-color: #333; /* the microwave photons, matching the emission widget's spray */
+    --rm-dot-radius: 1.5px;
+
+    --rm-header-height: 58px;
+    --rm-inset: 30px; /* the header's own left margin, and the caption panel's text inset */
+    --rm-caption-inset: 10px; /* the white panel's gap to the card edge */
+    --rm-caption-radius: 30px;
+    --rm-crumb-size: 15px;
+    --rm-button-height: 38px;
+    --rm-caption-fade: 220ms;
+    --rm-lit-fade: 200ms;
+
+    /* Multipliers on the fine detail only, as in the amplitude widget. Two of them, because the
+       two panels do not scale together: the stage fills whatever column it is given, while the
+       sphere is capped at its natural width and therefore sits at 1.0 for most of the range. */
+    --rm-counter-scale: 1;
+    --rm-bloch-scale: 1;
+
+    /* Written per frame by renderRamsey(); the fallbacks are only for the instant before it
+       first runs. Every one of them arrives with its unit already attached — a bare number in a
+       calc() or in a CSS geometry property is dropped silently. */
+    --rm-radius: 0px;
+    --rm-halo: 0px;
+    --rm-opacity: 0;
+    --rm-angle: 0deg;
+    --rm-arrow-length: 0px;
+    --rm-arrow-opacity: 0;
+    --rm-link-length: 0px;
+    --rm-link-shaft: 0px;
+    --rm-trail: 1px;
+
+    padding: 0;
+    overflow: hidden;
+    border-color: rgba(0, 0, 0, 0.1); /* .widget leaves this transparent; the Figma frame draws it */
+}
+
+    /* HEADER */
+
+    .rm-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-height: var(--rm-header-height, 58px);
+        padding: 0 20px 0 var(--rm-inset, 30px);
+        border-bottom: 1px solid var(--rm-rule-color, #DCDCDC);
+    }
+
+        /* The rail scrolls rather than wrapping, because the header's height is what keeps the
+           card from jolting as the reader steps. It only ever overflows at the last step or on
+           a narrow screen, and syncRamseyChrome() keeps the current crumb in view either way. */
+        .rm-rail {
+            /* Positioned so the crumbs' offsetLeft is measured from the rail rather than from
+               whatever happens to be positioned further up the page — scrollRamseyCrumbIntoView()
+               compares the two, and without this it silently scrolls to the wrong place. */
+            position: relative;
+            flex: 1;
+            min-width: 0; /* a flex item's intrinsic width would otherwise floor the whole row */
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Fades the trail off rather than cutting it, so a crumb scrolled out of reach reads
+               as "there is more behind you" instead of as a layout bug. Gated on a class rather
+               than applied always, or the fade would eat the first word of START at the one time
+               there is nothing behind you. */
+            &.is-scrolled {
+                mask-image: linear-gradient(to right, transparent, #000 24px);
+            }
+        }
+
+            .rm-crumbs {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            .rm-crumb-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+
+                /* Steps still ahead are not in the rail at all, so it grows as the reader
+                   advances. An explicit rule, because the display above would beat [hidden]. */
+                &[hidden] {
+                    display: none;
+                }
+
+                /* Decoration, and deliberately not in the markup: a screen reader working down
+                   the list does not need an arrow read out between every item. */
+                & + .rm-crumb-item::before {
+                    content: "→";
+                    opacity: 0.3;
+                }
+            }
+
+                .rm-crumb {
+                    padding: 0;
+                    border: none;
+                    background: none;
+                    font-family: var(--font-mono);
+                    font-size: var(--rm-crumb-size, 15px);
+                    line-height: 120%;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                    color: var(--text-color);
+                    opacity: 0.5;
+                    cursor: pointer;
+
+                    /* The step you are on: full strength, and nothing to click towards. It stays
+                       a live control all the same — see syncRamseyChrome() for why. */
+                    &.is-current {
+                        opacity: 1;
+                        cursor: default;
+                    }
+
+                    &:not(.is-current):hover {
+                        opacity: 0.8;
+                    }
+
+                    &:focus-visible {
+                        outline: 2px solid var(--link-color);
+                        outline-offset: 3px;
+                        border-radius: 2px;
+                    }
+                }
+
+                /* One label, two lengths. The short one only exists because the full trail is
+                   570px of 15px mono and a phone column is 280. */
+                .rm-crumb-short {
+                    display: none;
+                }
+
+        .rm-buttons {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+            .rm-button {
+                display: grid;
+                place-items: center;
+                height: var(--rm-button-height, 38px);
+                padding: 0 20px;
+                border: none;
+                border-radius: calc(var(--rm-button-height, 38px) / 2);
+                font-family: var(--font-mono);
+                font-size: 15px;
+                line-height: 120%;
+                text-transform: uppercase;
+                cursor: pointer;
+
+                &:focus-visible {
+                    outline: 2px solid var(--link-color);
+                    outline-offset: 2px;
+                }
+
+                /* Figma draws the disabled NEXT of the last step and nothing else; the same
+                   treatment covers BACK at the first. */
+                &[disabled] {
+                    opacity: 0.3;
+                    cursor: default;
+                }
+            }
+
+            /* Square, so the trail keeps the width. Going back is worth a control of its own but
+               not as much room as going forward. */
+            .rm-button--back {
+                width: var(--rm-button-height, 38px);
+                padding: 0;
+                color: var(--brand-color);
+                background-color: transparent;
+                box-shadow: inset 0 0 0 2px var(--brand-color);
+            }
+
+            .rm-button--next {
+                color: #fff;
+                background-color: var(--brand-color);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .rm-button-icon {
+                width: 18px;
+                height: 18px;
+                margin: 0; /* _posts.scss centres bare svg in prose */
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.75;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+    /* BODY */
+
+    /* Figma's divider sits at x = 469 of 700, which is exactly this ratio — so it lands in the
+       right place at any width without a percentage written anywhere. */
+    .rm-body {
+        display: grid;
+        grid-template-columns: 469fr 231fr;
+    }
+
+        /* No vertical padding: the stage's viewBox is the frame's stage column exactly, so with
+           the panel flush against the header rule every coordinate in RM_CAST lands where Figma
+           put it, and the caption panel starts where Figma's does. */
+        .rm-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0; /* grid items floor at their content's intrinsic width without this */
+            padding: 0;
+        }
+
+        /* Figma insets the sphere 10 from the divider and 6 from the card, not evenly — and the
+           two together are exactly the slack, so the drawing lands on its frame coordinates. */
+        .rm-panel--bloch {
+            padding: 0 6px 0 10px;
+            border-left: 1px solid var(--rm-rule-color, #DCDCDC);
+        }
+
+        .rm-panel svg {
+            display: block;
+            width: 100%;
+            margin: 0; /* _posts.scss centres bare svg in prose; these are placed */
+        }
+
+        /* The sphere never grows past the size it was drawn at, which is why it needs its own
+           counter-scale: through the whole stacked range it is already at 1.0. */
+        .rm-panel--bloch svg {
+            max-width: 215px;
+        }
+
+    /* ATOMS */
+
+    .rm-atom {
+        opacity: var(--rm-opacity, 0);
+    }
+
+        /* Figma builds this as a dilate of the disc knocked out of itself, which under an opaque
+           disc is a plain concentric circle — and unlike the filter it can be animated and
+           themed. The excited state's is four times wider on purpose: the energy is the thing
+           the reader is meant to see, and it is not a slip in the design file. */
+        .rm-atom-halo {
+            r: var(--rm-halo, 0px);
+            opacity: var(--rm-halo-opacity, 0.2);
+        }
+
+        .rm-atom-disc {
+            r: var(--rm-radius, 0px);
+        }
+
+        .rm-atom[data-state="ground"] .rm-atom-halo,
+        .rm-atom[data-state="ground"] .rm-atom-disc {
+            fill: var(--rm-ground-color, #007BFC);
+        }
+
+        .rm-atom[data-state="excited"] .rm-atom-halo,
+        .rm-atom[data-state="excited"] .rm-atom-disc {
+            fill: var(--rm-excited-color);
+        }
+
+        /* Sized off the disc it sits in, so it shrinks with its own copy rather than needing a
+           row in the keyframe table. */
+        .rm-atom-letter {
+            font-family: var(--font-mono);
+            font-size: calc(var(--rm-radius, 0px) * 0.95);
+            text-anchor: middle;
+            dominant-baseline: central;
+            fill: #fff;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Screen rotation, so positive is clockwise and 0deg is straight up. The group sits at
+           the atom's own centre, so this turns about the right point with nothing else said. */
+        .rm-arrow {
+            transform: rotate(var(--rm-angle, 0deg));
+            opacity: var(--rm-arrow-opacity, 0);
+        }
+
+            /* A <rect> rather than a <line> because height is a CSS geometry property and y2 is
+               not — the same reason the amplitude widget draws its shaft this way. Geometry
+               properties take a <length>, so the unit is not optional. */
+            .rm-arrow-shaft {
+                x: calc(-0.5px * var(--rm-counter-scale));
+                y: calc(0px - var(--rm-arrow-length, 0px));
+                width: calc(1px * var(--rm-counter-scale));
+                height: var(--rm-arrow-length, 0px);
+                fill: var(--text-color);
+            }
+
+            /* stroke is inherited, so it reaches the referenced path inside the shadow tree. */
+            .rm-arrow-head {
+                fill: none;
+                stroke: var(--text-color);
+                stroke-width: calc(1 * var(--rm-counter-scale));
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+    /* CONNECTORS */
+
+    .rm-connector {
+        opacity: var(--rm-opacity, 0);
+        fill: var(--rm-guide-color, #D9D9D9);
+    }
+
+        .rm-connector-shaft {
+            x: 0px;
+            y: calc(-1px * var(--rm-counter-scale));
+            width: var(--rm-link-shaft, 0px);
+            height: calc(2px * var(--rm-counter-scale));
+        }
+
+        .rm-connector-head {
+            x: var(--rm-link-length, 0px);
+        }
+
+    /* PHOTONS */
+
+    .rm-photon {
+        r: calc(var(--rm-dot-radius, 1.5px) * var(--rm-counter-scale));
+        fill: var(--rm-dot-color, #333);
+    }
+
+    /* BLOCH SPHERE */
+
+    .rm-bloch-guide {
+        fill: none;
+        stroke: var(--rm-guide-color, #D9D9D9);
+        stroke-width: calc(1.5 * var(--rm-bloch-scale));
+    }
+
+    /* Thicker than the grey path and drawn on the same centreline, so it reads as the same
+       route highlighted rather than as a second one beside it. */
+    .rm-bloch-trail {
+        fill: none;
+        stroke: var(--rm-ground-color, #007BFC);
+        stroke-width: calc(2.5 * var(--rm-bloch-scale));
+        stroke-dasharray: 1px 1px; /* the path declares pathLength="1", so one unit is all of it */
+        stroke-dashoffset: var(--rm-trail, 1px);
+    }
+
+    .rm-bloch-marker,
+    .rm-bloch-node {
+        fill: var(--rm-mark-color, #BFBFBF);
+        transition: fill var(--rm-lit-fade, 200ms) ease;
+    }
+
+        .rm-bloch-marker.is-lit,
+        .rm-bloch-node.is-lit {
+            fill: var(--rm-ground-color, #007BFC);
+        }
+
+        /* Deliberately no counter-scale here. Each marker carries its placement in a transform
+           *attribute*, and a CSS transform replaces that outright rather than composing with
+           it — all six would collapse onto the sphere's centre. They are solid 8-unit triangles
+           and the sphere never renders below about 0.9 anyway, so there is nothing to recover. */
+        .rm-bloch-node {
+            r: calc(4px * var(--rm-bloch-scale));
+        }
+
+    .rm-bloch-label {
+        font-family: var(--font-mono);
+        font-size: calc(12px * var(--rm-bloch-scale));
+        text-transform: uppercase;
+        fill: var(--text-color);
+        /* Figma has these at black 70%. Ours start from --text-color, which is already lighter,
+           so the value is calibrated to land on the same rendered grey rather than copied. */
+        opacity: 0.78;
+    }
+
+    /* CAPTION */
+
+    /* All five captions share one grid cell, so the panel is always as tall as the longest of
+       them at whatever width the reader is at. The height is reserved with nothing measured and
+       no JS, which is what keeps stepping from nudging the page — and it stays right through a
+       resize, which a measured height would not. */
+    .rm-captions {
+        display: grid;
+        margin: var(--rm-caption-inset, 10px);
+        padding: 24px var(--rm-inset, 30px);
+        border-radius: var(--rm-caption-radius, 30px);
+        background-color: #fff;
+    }
+
+        .rm-caption {
+            grid-area: 1 / 1;
+            font-family: var(--font-sans);
+            font-size: 16px;
+            line-height: 145%;
+            opacity: 0;
+            transition: opacity var(--rm-caption-fade, 220ms) ease;
+            pointer-events: none;
+        }
+
+        .rm-caption.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+            /* .widget zeroes the bottom margin on every p it contains, so the caption has to put
+               its own spacing back. */
+            .rm-caption p + p,
+            .rm-caption ol {
+                margin-top: 12px;
+            }
+
+            .rm-caption ol {
+                margin-bottom: 0;
+                padding-left: 24px;
+            }
+
+            .rm-caption li {
+                margin-bottom: 4px;
+            }
+
+    /* RESPONSIVE */
+
+    .ramsey-widget {
+        /* The stage is the whole card once the sphere drops below it, so the correction it needs
+           is not monotonic in viewport width — it grows while the two panels share a row and is
+           withdrawn the moment they stop. The sphere's own is nearly flat, because it is capped
+           at its natural size for everything below about 650px of card. */
+        @include under-w700 {
+            --rm-counter-scale: 1.12;
+            --rm-bloch-scale: 1.08;
+            --rm-crumb-size: 13px;
+
+            .rm-crumb-long {
+                display: none;
+            }
+
+            .rm-crumb-short {
+                display: inline;
+            }
+        }
+
+        /* 231fr of a 560px card is 185px for a sphere that wants 215, and the labels are the
+           first thing to go. Below here it moves under the stage, which hands the stage the
+           whole card back — hence the counter-scale dropping to 1. */
+        @include under-w600 {
+            --rm-counter-scale: 1;
+            --rm-bloch-scale: 1;
+
+            .rm-body {
+                grid-template-columns: 1fr;
+            }
+
+            /* Stacked, there is no divider to hold the sphere off, so the asymmetric inset that
+               reproduced Figma's frame becomes a visible lean. Centre it instead. */
+            .rm-panel--bloch {
+                padding: 14px 0;
+                border-left: none;
+                border-top: 1px solid var(--rm-rule-color, #DCDCDC);
+            }
+        }
+
+        @include under-w500 {
+            --rm-counter-scale: 1.1;
+            --rm-inset: 20px;
+            --rm-caption-radius: 24px;
+
+            /* Two 38px-tall buttons and any crumbs at all will not share 220px, so the header
+               becomes two rows. Its height still does not depend on which step you are on, so
+               nothing jolts. */
+            .rm-header {
+                flex-wrap: wrap;
+                gap: 0 12px;
+                padding-block: 10px;
+            }
+
+            .rm-rail {
+                flex-basis: 100%;
+                order: -1;
+            }
+
+            .rm-buttons {
+                margin-left: auto;
+            }
+
+            .rm-captions {
+                padding: 20px var(--rm-inset, 20px);
+            }
+        }
+
+        @include under-w400 {
+            --rm-counter-scale: 1.3;
+            --rm-crumb-size: 12px;
+
+            .rm-caption {
+                font-size: 15px;
+            }
+        }
+    }
+
+
 /* Respect reduced motion: static dashes are still an affordance, and everything the lamp
    and the imprints do is opacity-only, so all of that survives untouched. */
 @media (prefers-reduced-motion: reduce) {
@@ -1386,4 +1907,10 @@
     /* Emission is the same story: the tween between keyframes is JS, and goToEmissionStep()
        snaps straight to the keyframe under this query instead. What is left here is the
        label cross-fade, which is opacity-only and is what conveys the state — so it stays. */
+
+    /* And Ramsey again: both of its clocks are JS. goToRamseyStep() snaps rather than tweening,
+       and ramseySpinning() reads this same query every frame, so the arrows never turn and each
+       keyframe is placed at the moment of physical time where it reproduces its Figma frame
+       exactly (RM_REDUCED_TAU). What survives here is the caption cross-fade and the trail's
+       fill transition, both of which are what convey the state rather than decorate it. */
 }

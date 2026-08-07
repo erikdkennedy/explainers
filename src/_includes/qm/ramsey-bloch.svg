@@ -1,0 +1,54 @@
+<!-- NB: no blank lines anywhere in this file — a blank line closes the Markdown HTML block
+     and the rest of the SVG gets re-parsed as prose.
+     Hand-authored from Figma nodes 1412:1040 / 1076 / 1274 / 1300 / 1512, but the geometry is
+     *recomputed* rather than copied: the export's great circle is r 50.75 while its arcs use
+     51.5, its cardinal dots sit ~1px off the extremes, and its direction markers drift a pixel
+     between frames. Everything here is analytic about one centre (104.5, 79.5) with R = 51 and
+     the equator's minor radius 16.5, so the blue trace is exactly concentric with the grey
+     path it thickens and every marker lands exactly on an arc midpoint. -->
+<svg viewBox="0 0 215 158" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rm-bloch-title" aria-describedby="rm-bloch-desc">
+<title id="rm-bloch-title">Where the atom's state has travelled</title>
+<desc id="rm-bloch-desc">A sphere whose north pole is the ground state, south pole the excited state, and whose equator is the fifty-fifty mixtures — “plus” on the left, “minus” on the right. A blue trail marks the route the state has taken so far.</desc>
+<defs>
+    <!-- One triangle, tip at the origin pointing along +x, re-used at all six arc midpoints
+         with a rotation equal to the tangent's bearing there. Figma draws six separately
+         placed polygons of two different sizes; this is the one it uses most. -->
+    <path id="rm-bloch-marker" d="M0 0L-6.75 -4.33L-6.75 4.33Z"/>
+</defs>
+<!-- The sphere: the great circle in the plane of the page, and the equator seen almost
+     edge-on. Both are drawn once in grey and then overpainted, arc by arc, in blue. -->
+<circle class="rm-bloch-guide" cx="104.5" cy="79.5" r="51"/>
+<ellipse class="rm-bloch-guide" cx="104.5" cy="79.5" rx="51" ry="16.5"/>
+<!-- The trail, in three arcs rather than one path: each hop of the story drives exactly one
+     of them from hidden to shown, so the joins land on the labelled points by construction
+     instead of on computed fractions of a combined arc length. pathLength="1" is what lets
+     quantum.js write a progress straight into stroke-dashoffset without measuring anything.
+     All three sweep counter-clockwise (sweep-flag 0), which in SVG's y-down space is the
+     circulation the direction markers below show: ground → plus → excited → minus → ground. -->
+<path class="rm-bloch-trail" data-segment="0" pathLength="1" d="M104.5 28.5A51 51 0 0 0 53.5 79.5"/>
+<path class="rm-bloch-trail" data-segment="1" pathLength="1" d="M53.5 79.5A51 16.5 0 0 0 155.5 79.5"/>
+<path class="rm-bloch-trail" data-segment="2" pathLength="1" d="M155.5 79.5A51 51 0 0 0 104.5 28.5"/>
+<!-- Direction markers. Positions are the arc midpoints: the two equator ones at the ellipse's
+     own extremes, the four meridian ones at 45° — (R sin θ, −R cos θ) with θ clockwise from
+     twelve o'clock — each rotated to the tangent there. Figma's frame 4 has the two upper
+     markers pointing the opposite way to its frames 1–3; frames 1–3 are the ones that agree
+     with the trail's direction, so they are the spec and frame 4 is the slip. -->
+<use class="rm-bloch-marker" data-segment="0" href="#rm-bloch-marker" transform="translate(68.44 43.44) rotate(135)"/>
+<use class="rm-bloch-marker" data-segment="1" href="#rm-bloch-marker" transform="translate(104.5 96) rotate(0)"/>
+<use class="rm-bloch-marker" data-segment="2" href="#rm-bloch-marker" transform="translate(140.56 43.44) rotate(225)"/>
+<!-- The lower half is never travelled in this experiment, so these three only ever show the
+     circulation. They carry no data-segment and quantum.js leaves them grey. -->
+<use class="rm-bloch-marker" href="#rm-bloch-marker" transform="translate(68.44 115.56) rotate(45)"/>
+<use class="rm-bloch-marker" href="#rm-bloch-marker" transform="translate(140.56 115.56) rotate(-45)"/>
+<use class="rm-bloch-marker" href="#rm-bloch-marker" transform="translate(104.5 63) rotate(180)"/>
+<!-- The four labelled points, exactly at the extremes. Each lights when the arc arriving at
+     it finishes; ground starts lit because that is where the atom begins. -->
+<circle class="rm-bloch-node" data-node="ground" cx="104.5" cy="28.5" r="4"/>
+<circle class="rm-bloch-node" data-node="excited" cx="104.5" cy="130.5" r="4"/>
+<circle class="rm-bloch-node" data-node="plus" cx="53.5" cy="79.5" r="4"/>
+<circle class="rm-bloch-node" data-node="minus" cx="155.5" cy="79.5" r="4"/>
+<text class="rm-bloch-label" x="104.5" y="11" text-anchor="middle">Ground</text>
+<text class="rm-bloch-label" x="104.5" y="154" text-anchor="middle">Excited</text>
+<text class="rm-bloch-label" x="0" y="78">“Plus”<tspan x="0" dy="12">50/50</tspan></text>
+<text class="rm-bloch-label" x="164" y="78">“Minus”<tspan x="164" dy="12">50/50</tspan></text>
+</svg>

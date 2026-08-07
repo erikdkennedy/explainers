@@ -238,7 +238,15 @@ export default function(eleventyConfig) {
 
   // allow includes w/o quotes
   eleventyConfig.setLiquidOptions({dynamicPartials: false});
-  
+
+  // Eleventy's dev server defaults to 8080 and does not look at PORT on its own. Honouring it
+  // here lets a tool that hands us a free port (a worktree running alongside another checkout,
+  // say) get the server it asked for, while a plain `npm run serve` still lands on 8080.
+  if (process.env.PORT) {
+    eleventyConfig.setServerOptions({ port: Number(process.env.PORT) });
+  }
+
+
   return {
     dir: {
       input: "src",
