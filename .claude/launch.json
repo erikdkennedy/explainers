@@ -6,6 +6,13 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "serve"],
       "port": 8080
+    },
+    {
+      "name": "wavefunction-studio",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/wavefunction-studio/serve.mjs"],
+      "port": 8123,
+      "autoPort": true
     }
   ]
 }

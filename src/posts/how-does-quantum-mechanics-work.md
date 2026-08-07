@@ -332,6 +332,12 @@ Let’s get started 😎
 
 ### Wavefunction
 
+<!-- TODO: this glossary entry is still unwritten. The video below is the finished asset;
+     the prose around it is yours. Re-tune or re-export it with tools/wavefunction-studio
+     (see its README) — params.json there reproduces this exact clip. -->
+
+{% include img.md, src: "wavefunction-in-3d.mp4", controls: true, width: "700px", alt: "A three-dimensional landscape of a quantum wavefunction passing through a double slit. A rainbow-striped hill travels toward a barrier, part of it bounces back, and the rest fans out beyond the two slits into an interference pattern of ripples.", caption: "The wavefunction of a particle going through a double-slit. The color represents the ANGLE of the amplitude at that point. The height represents the LENGTH of the amplitude at that point. Cancellations between multiple paths lead to wave-like crests and troughs of probability. Note that most probability “bounces back” rather than passing through the slits." %}
+
 ### Measurement/Observation
 
 ### The Measurement Problem

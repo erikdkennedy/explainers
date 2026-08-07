@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wavefunction studio</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three/build/three.module.js",
+    "three/addons/": "/vendor/three/examples/jsm/"
+  }
+}
+</script>
+<style>
+    :root {
+        --bg: #16181c;
+        --panel: #1e2127;
+        --line: #2e333c;
+        --text: #d8dce3;
+        --dim: #838b98;
+        --accent: #ffa530;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 330px;
+        height: 100vh;
+        font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: var(--bg);
+        color: var(--text);
+    }
+    main { display: flex; flex-direction: column; min-width: 0; padding: 16px; gap: 12px; }
+    #view { width: 100%; background: #000; border-radius: 6px; display: block; }
+
+    .transport { display: flex; align-items: center; gap: 12px; }
+    .transport input[type=range] { flex: 1; min-width: 0; }
+
+    #status { color: var(--dim); min-height: 1.4em; }
+    #status.is-error { color: #ff6b5e; }
+
+    aside {
+        background: var(--panel);
+        border-left: 1px solid var(--line);
+        overflow-y: auto;
+        padding: 16px;
+    }
+    h2 {
+        font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--dim); margin: 20px 0 10px; font-weight: 600;
+    }
+    h2:first-child { margin-top: 0; }
+
+    .control { display: grid; grid-template-rows: 1fr auto; margin-bottom: 9px; }
+    .control label { color: var(--dim); display: flex; justify-content: space-between; }
+    .control .value { color: var(--text); }
+    input[type=range] { width: 100%; accent-color: var(--accent); }
+
+    .row { display: flex; gap: 8px; align-items: center; margin-bottom: 9px; }
+    .row label { color: var(--dim); flex: 1; }
+    select, button {
+        font: inherit; background: #262a31; color: var(--text);
+        border: 1px solid var(--line); border-radius: 4px; padding: 5px 9px;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    button.is-dirty { border-color: var(--accent); color: var(--accent); }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    #diagnostics { margin-top: 4px; }
+    .diag {
+        display: flex; justify-content: space-between;
+        padding: 3px 0; border-bottom: 1px solid var(--line); color: var(--dim);
+    }
+    .diag b { color: var(--text); font-weight: 500; }
+    /* A setting that is lying shows up here rather than only in the picture. */
+    .diag.is-warn b { color: var(--accent); }
+    .diag.is-warn b::after { content: ' ⚠'; }
+</style>
+</head>
+<body>
+
+<main>
+    <canvas id="view"></canvas>
+    <div class="transport">
+        <button id="play">Play</button>
+        <input type="range" id="scrub" min="0" max="239" step="1" value="0">
+        <span id="frame-label">– / –</span>
+    </div>
+    <div id="status">starting…</div>
+</main>
+
+<aside>
+    <h2>Readouts</h2>
+    <div id="diagnostics"></div>
+
+    <h2>Physics</h2>
+    <div id="sim-controls"></div>
+    <div class="row">
+        <label for="preview-grid">Preview grid</label>
+        <select id="preview-grid">
+            <option value="128">128²  (draft)</option>
+            <option value="256" selected>256²  (preview)</option>
+            <option value="512">512²  (slow)</option>
+        </select>
+    </div>
+
+    <h2>Look</h2>
+    <div class="row">
+        <label for="height-mode">Height is</label>
+        <select id="height-mode">
+            <option value="0" selected>Probability |ψ|²</option>
+            <option value="1">Amplitude |ψ|</option>
+        </select>
+    </div>
+    <div class="row">
+        <label for="grid-toggle">Surface grid</label>
+        <input type="checkbox" id="grid-toggle">
+    </div>
+    <div id="look-controls"></div>
+
+    <h2>Export</h2>
+    <div class="row">
+        <label for="export-grid">Export grid</label>
+        <select id="export-grid">
+            <option value="256">256²</option>
+            <option value="512" selected>512²</option>
+        </select>
+    </div>
+    <div class="row">
+        <label for="export-scale">Supersample</label>
+        <select id="export-scale">
+            <option value="1">1×  (1400×900, quick)</option>
+            <option value="2" selected>2×  (2800×1800)</option>
+        </select>
+    </div>
+    <div class="buttons">
+        <button id="recompute">Recompute</button>
+        <button id="export">Export master</button>
+        <button id="save">Save params</button>
+        <button id="load">Load params</button>
+    </div>
+</aside>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
