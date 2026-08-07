@@ -1021,3 +1021,71 @@ the knob here would push it out through the rim.
   dropped declaration. Check the used value with `getBBox()` or `getComputedStyle()` instead.
   (Reading `width.baseVal` is still correct where JS is the thing writing the attribute, as
   `readArrow()` does.)
+
+---
+
+# Offline video: the wavefunction studio
+
+`tools/wavefunction-studio/` is the repo's first non-published authoring tool. It simulates a
+quantum wave packet crossing a double slit, renders it as a 3-D height field, and exports the
+looping mp4 at `src/assets/img/qm/wavefunction-in-3d.mp4`. Its own README covers the physics and
+the traps; this section is about the pattern, for the next tool like it.
+
+**Anything under `tools/` is invisible to Eleventy.** `.eleventy.js` sets `dir.input: "src"`, so no
+`ignores` entry is needed — but note it also registers `js` and `scss` as *template formats*, so a
+tool placed inside `src/` would get built and published. Keep tools out of `src/`.
+
+`three` is pinned exactly (`"three": "0.170.0"`, no caret) as a devDependency and served out of
+`node_modules` by the tool's own server through an import map. Nothing ships to readers; the
+deliverable is the mp4. Pin exactly — three breaks `ShaderMaterial`, colourspace and addon-path
+details across minor releases, and this tool should still run in two years.
+
+## Verifying a tool like this
+
+Split the checks by what they can actually prove:
+
+| What | Where | Why not elsewhere |
+|---|---|---|
+| Physics | `node test-sim.mjs` | Plain ES module, no DOM. Runs against closed-form solutions. |
+| Shaders | headless Brave + `check.html` | It is GPU code; only a real GL context can run it. |
+| Composition | contact sheet PNG | Six frames across the loop, in one image. |
+
+⚠️ **The Browser pane can do neither of the first two.** Its tab is hidden, which suspends
+`requestAnimationFrame` *and* throttles `postMessage` round-trips to seconds per frame — a
+240-frame render there took minutes and never finished. It also lays the page out at zero width,
+so every geometric reading silently returns 0. Headless Brave needs
+`--use-gl=angle --use-angle=swiftshader` for WebGL; plain `--disable-gpu` gives no GL context at all.
+
+⚠️ **`--virtual-time-budget` fast-forwards timers but does not wait for CPU-bound work.** A long
+export driven that way exits after a couple of seconds with the job barely started. Have the
+*server* expose a status endpoint and poll it from the shell instead, with the browser launched
+detached.
+
+## Write the assertion against the thing you can see
+
+Two bugs here were invisible to the obvious metric and turned up only by looking:
+
+- The loop-seam metric said 0.2% while the loop visibly **popped**, because the packet was born
+  on camera. Frame N really did equal frame 0 — the injection happens exactly at the boundary, so
+  no seam metric could ever catch it. The fix was an entry corridor upstream of the visible square;
+  the regression test now asserts on the packet's *brightness at the near edge*, run through the
+  same gamma the shader uses.
+- A "surface is not black" check passed at 0.1% lit while the render was, for practical purposes,
+  black. Assertions on a field with three orders of magnitude of dynamic range have to be sampled
+  **across the loop**, not at one frame, or they measure whichever end you happened to pick.
+
+## Encoding notes that cost time to find
+
+- **Keep the master in RGB.** A `yuv444p` master carries no colour tags, so `zscale` later fails
+  with `no path between colorspaces`, and it puts two RGB→YUV conversions in one pipeline.
+- **It has to be `ffv1`, not x264.** This ffmpeg's libx264 has no RGB output colourspace — asking
+  for `-pix_fmt gbrp` silently gives back `yuv444p`. Check with
+  `ffmpeg -h encoder=libx264 | grep -A2 "Supported pixel formats"`. ffv1 measured 25 ms/frame at
+  2800×1800, comfortably ahead of the simulation.
+- **Two-pass x264 needs identical GOP settings in both passes**, or pass 2 aborts with
+  `different keyint setting than first pass`.
+- **`local kbps="$1" out="…${kbps}…"` trips `set -u`.** Split the declaration.
+- Budget reality: 240 frames of 1400×900 saturated field encoded to **2.7 MB at CRF 18** — the
+  *highest* quality rung came in under the 3 MB target, because rendering at 2× and downscaling
+  removes the high-frequency detail that would otherwise cost bitrate. Supersampling buys quality
+  and compression at the same time.

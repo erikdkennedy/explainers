@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wavefunction studio — render checks</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three/build/three.module.js",
+    "three/addons/": "/vendor/three/examples/jsm/"
+  }
+}
+</script>
+<style>
+    body { margin: 0; background: #000; color: #ddd;
+           font: 12px/1.5 ui-monospace, Menlo, monospace; }
+    #out { padding: 10px; white-space: pre; }
+    #view { display: none; }
+    #sheet { display: block; width: 1200px; }
+</style>
+</head>
+<body>
+<!-- Render-path checks for the shaders, run in headless Brave:
+       "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" --headless=new \
+         --use-gl=angle --use-angle=swiftshader --virtual-time-budget=60000 \
+         --screenshot=out.png --dump-dom http://127.0.0.1:PORT/check.html
+     The Browser pane cannot do this job: its tab is hidden, which suspends rAF, and it
+     lays the page out at zero width so every geometric reading is silently 0. -->
+<canvas id="view" width="400" height="260"></canvas>
+<canvas id="sheet"></canvas>
+<pre id="out">running…</pre>
+
+<script type="module">
+import { WaveSim, toHalf, defaultParams } from './sim.js';
+import { SurfaceScene, defaultLook } from './scene.js';
+
+const log = [];
+let failures = 0;
+function check(name, ok, detail) {
+    log.push(`${ok ? '  ok  ' : ' FAIL '} ${name}${detail ? `  —  ${detail}` : ''}`);
+    if (!ok) failures++;
+}
+
+// The colour law from paintDoubleSlitField(), reimplemented here so the GLSL can be
+// diffed against it rather than against a description of it.
+function referenceColour(re, im, value) {
+    const hue = (Math.atan2(im, re) / (2 * Math.PI) + 0.5) * 6;
+    const sector = ((Math.floor(hue) % 6) + 6) % 6;
+    const f = hue - Math.floor(hue);
+    const rising = value * f;
+    const falling = value * (1 - f);
+    switch (sector) {
+        case 0: return [value, rising, 0];
+        case 1: return [falling, value, 0];
+        case 2: return [0, value, rising];
+        case 3: return [0, falling, value];
+        case 4: return [rising, 0, value];
+        default: return [value, 0, falling];
+    }
+}
+
+function fillField(size, re, im) {
+    const data = new Uint16Array(size * size * 4);
+    for (let i = 0; i < size * size; i++) {
+        data[i * 4] = toHalf(re);
+        data[i * 4 + 1] = toHalf(im);
+        data[i * 4 + 3] = toHalf(1);
+    }
+    return data;
+}
+
+try {
+    const canvas = document.getElementById('view');
+    const scene = new SurfaceScene(canvas);
+
+    check('WebGL2 context created', !!scene.renderer.getContext());
+
+    /* --- 1. Colour law matches quantum.js exactly --------------------------- */
+    // Flat field, lit by ambient alone, so the sampled pixel is the raw colour with no
+    // lighting term folded in.
+    const SIZE = 64;
+    scene.ensureSize(SIZE, SIZE);
+    Object.assign(scene.look, {
+        ambient: 1, diffuse: 0, specular: 0, fade: 0, grid: 0, exposure: 1,
+        // Both must be zeroed. The camera looks straight down at the plane's centre and
+        // the wall sits at 0.5, so the barrier band lands squarely on the sampled pixel.
+        frameOpacity: 0, wallOpacity: 0,
+        heightScale: 0, heightMode: 1,
+        cameraAzimuth: 0, cameraElevation: 89.9, cameraDistance: 1.6, fov: 40,
+    });
+    scene.applyLook();
+    scene.setPeak(1);
+
+    let worstColour = 0;
+    const phases = [0, Math.PI / 3, Math.PI / 2, Math.PI, -Math.PI / 2, 2.2];
+    for (const phase of phases) {
+        const re = Math.cos(phase);
+        const im = Math.sin(phase);
+        scene.uploadField(fillField(SIZE, re, im));
+        const pixels = scene.renderToPixels(200, 200);
+
+        const centre = ((100 * 200) + 100) * 4;   // dead centre, looking straight down
+        const got = [pixels[centre] / 255, pixels[centre + 1] / 255, pixels[centre + 2] / 255];
+        const want = referenceColour(re, im, Math.pow(1, 0.6));
+        worstColour = Math.max(worstColour, ...want.map((w, i) => Math.abs(w - got[i])));
+    }
+    // 1/255 quantisation plus the shader's deliberate 1/255 dither.
+    check('phase -> colour matches paintDoubleSlitField', worstColour < 0.02,
+        `max channel error = ${worstColour.toFixed(4)}`);
+
+    // Phase 0 must be cyan — the convention double-slit-paths.html documents.
+    scene.uploadField(fillField(SIZE, 1, 0));
+    const cyan = scene.renderToPixels(200, 200);
+    const c = ((100 * 200) + 100) * 4;
+    check('phase 0 renders cyan',
+        cyan[c] < 12 && cyan[c + 1] > 240 && cyan[c + 2] > 240,
+        `rgb(${cyan[c]}, ${cyan[c + 1]}, ${cyan[c + 2]})`);
+
+    /* --- 2. A real field renders something structured ---------------------- */
+    // The shipped defaults, at draft resolution and a short loop. Anything hard-coded
+    // here instead would let the defaults rot without the check noticing.
+    const sim = new WaveSim({ ...defaultParams, grid: 128, frames: 60 });
+    const size = sim.windowSize;
+    const field = sim.allocField();
+
+    let peak = 0;
+    sim.stepTo(sim.recordStart);
+    for (let f = 0; f <= 60; f++) { sim.stepToFrame(f); peak = Math.max(peak, sim.peakMagnitude()); }
+
+    // Mid-flight, where the packet has met the wall and is diffracting.
+    sim.reset();
+    sim.stepTo(sim.recordStart);
+    sim.stepToFrame(34);
+    sim.writeField(field);
+
+    // What the exposure control has to bridge: the incident packet sets the clip peak,
+    // and the transmitted pattern is a small fraction of it.
+    let midPeak = 0;
+    for (let i = 0; i < sim.size; i++) {
+        midPeak = Math.max(midPeak, Math.hypot(sim.re[i], sim.im[i]));
+    }
+    log.push(`  ..    clip peak = ${peak.toExponential(2)}, `
+        + `frame-34 peak = ${midPeak.toExponential(2)} `
+        + `(${(100 * midPeak / peak).toFixed(2)}% of clip peak)`);
+
+    scene.ensureSize(size.width, size.height);
+    Object.assign(scene.look, defaultLook);
+    scene.applyLook();
+    scene.setPeak(peak);
+    scene.setWall(sim.params);
+    scene.uploadField(field);
+
+    const W = 400, H = 260;          // contact-sheet tile size
+    // ⚠️ Statistics are gathered at the real preview size, not the tile size. Line widths
+    // scale with uPixelScale (renderWidth / 1400), so a 1.3 px frame line measured in a
+    // 400-wide tile is 0.37 px and all but vanishes — which reads as "the frame is
+    // missing" when it is only being measured at the wrong scale.
+    const SW = 1400, SH = 900;
+
+    function statsFor(frameIndex) {
+        sim.reset();
+        sim.stepTo(sim.recordStart);
+        sim.stepToFrame(frameIndex);
+        sim.writeField(field);
+        scene.uploadField(field);
+        const px = scene.renderToPixels(SW, SH);
+
+        let lit = 0, maxChannel = 0, nan = 0, white = 0;
+        const hues = new Set();
+        for (let i = 0; i < SW * SH; i++) {
+            const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2];
+            if (Number.isNaN(r)) nan++;
+            const m = Math.max(r, g, b);
+            maxChannel = Math.max(maxChannel, m);
+            if (m > 8) lit++;
+            if (m > 100) hues.add(Math.round(Math.atan2(g - b, r - g) * 6));
+            if (r > 90 && g > 90 && b > 90 && Math.abs(r - g) < 26 && Math.abs(g - b) < 26) white++;
+        }
+        return { lit: lit / (SW * SH), maxChannel, nan, hues: hues.size, white };
+    }
+
+    // Sampled across the loop rather than at one instant: the incident packet and the
+    // diffracted pattern differ by more than two orders of magnitude, so a single frame
+    // cannot tell you whether both ends of the range survive the exposure and knee.
+    const SAMPLES = [2, 10, 18, 26, 34, 46];
+    const sampled = SAMPLES.map((f) => ({ f, ...statsFor(f) }));
+    for (const s of sampled) {
+        log.push(`  ..    frame ${String(s.f).padStart(2)}: `
+            + `${(s.lit * 100).toFixed(1)}% lit, max ${s.maxChannel}, ${s.hues} hues`);
+    }
+
+    const brightest = Math.max(...sampled.map((s) => s.maxChannel));
+    const anyLit = Math.max(...sampled.map((s) => s.lit));
+    const allHues = Math.max(...sampled.map((s) => s.hues));
+
+    check('the incident packet reaches full brightness', brightest > 200,
+        `brightest frame peaks at ${brightest}`);
+    check('every sampled frame has something on it',
+        sampled.every((s) => s.lit > 0.01), `dimmest = ${(Math.min(...sampled.map(s => s.lit)) * 100).toFixed(1)}% lit`);
+    check('no frame floods the screen', anyLit < 0.85,
+        `busiest = ${(anyLit * 100).toFixed(1)}% lit`);
+    // A NaN from pow(x < 0) or a degenerate normalize() poisons whole triangles; a
+    // flat-coloured render would otherwise pass every check above.
+    check('multiple phases present (no hue collapse)', allHues > 4, `${allHues} hue buckets`);
+    check('no NaN pixels', sampled.every((s) => s.nan === 0));
+    // Occlusion by a tall wave is correct behaviour, so this is a max, not an every().
+    check('ground frame lines are visible', Math.max(...sampled.map((s) => s.white)) > 150,
+        `${Math.min(...sampled.map((s) => s.white))}–${Math.max(...sampled.map((s) => s.white))} `
+        + `near-white pixels across the loop`);
+
+    /* --- 4. The wall is drawn with slits in it ----------------------------- */
+    // Regression check for a bug that made the whole figure look wrong for a reason that
+    // had nothing to do with the physics: the simulation had slits all along, but the
+    // drawn wall was one unbroken line, so the barrier read as solid.
+    function wallRunsFor(slitWidth) {
+        scene.setWall({ ...sim.params, slitWidth });
+        Object.assign(scene.look, defaultLook, {
+            heightScale: 0, fade: 0,
+            cameraAzimuth: 0, cameraElevation: 89.9, cameraDistance: 1.5, fov: 42,
+            cameraTargetY: 0,
+        });
+        scene.applyLook();
+        scene.uploadField(new Uint16Array(size.width * size.height * 4)); // empty field
+        const px = scene.renderToPixels(SW, SH);
+
+        // Straight down, so the wall is a horizontal band: find the row carrying the most
+        // bright pixels, ignoring the top and bottom borders.
+        let bestRow = -1, bestCount = 0;
+        for (let y = Math.round(SH * 0.2); y < Math.round(SH * 0.8); y++) {
+            let n = 0;
+            for (let x = 0; x < SW; x++) if (px[(y * SW + x) * 4] > 40) n++;
+            if (n > bestCount) { bestCount = n; bestRow = y; }
+        }
+
+        let runs = 0, gap = 0, run = 0, seenBright = false, trailing = 0;
+        for (let x = 0; x < SW; x++) {
+            const bright = px[(bestRow * SW + x) * 4] > 40;
+            if (bright) {
+                run++;
+                if (run === 2) runs++;          // >=2 px, so AA fringes do not count
+                if (seenBright) { gap += trailing; }
+                seenBright = true;
+                trailing = 0;
+            } else {
+                run = 0;
+                if (seenBright) trailing++;
+            }
+        }
+        return { runs, gap, bright: bestCount };
+    }
+
+    const narrow = wallRunsFor(0.022);
+    const wide = wallRunsFor(0.05);
+    check('two slits cut the wall into three segments', narrow.runs === 3,
+        `${narrow.runs} bright runs across the wall row`);
+    check('widening the slits widens the gaps', wide.gap > narrow.gap * 1.5,
+        `gap ${narrow.gap}px at w=0.022 -> ${wide.gap}px at w=0.05`);
+
+    scene.setWall(sim.params);
+    Object.assign(scene.look, defaultLook);
+    scene.applyLook();
+
+    /* --- 5. Contact sheet, for the screenshot ------------------------------ */
+    const sheet = document.getElementById('sheet');
+    sheet.width = W * 3;
+    sheet.height = H * 2;
+    const ctx = sheet.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, sheet.width, sheet.height);
+    SAMPLES.forEach((f, i) => {
+        sim.reset();
+        sim.stepTo(sim.recordStart);
+        sim.stepToFrame(f);
+        sim.writeField(field);
+        scene.uploadField(field);
+        scene.render(W, H);
+        ctx.drawImage(canvas, (i % 3) * W, Math.floor(i / 3) * H);
+        ctx.fillStyle = '#888';
+        ctx.font = '12px monospace';
+        ctx.fillText(`frame ${f}`, (i % 3) * W + 8, Math.floor(i / 3) * H + 16);
+    });
+} catch (error) {
+    check('no exception', false, `${error.message}\n${error.stack}`);
+}
+
+// Written in a finally-equivalent position: one throw part-way through otherwise takes
+// the whole log with it and --dump-dom shows an empty <pre> with no hint why.
+document.getElementById('out').textContent =
+    log.join('\n') + `\n\n${failures === 0 ? 'ALL RENDER CHECKS PASSED' : failures + ' FAILED'}\n`;
+</script>
+</body>
+</html>
