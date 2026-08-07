@@ -1,0 +1,24 @@
+<!-- The scrubber's hint id is static, so include this widget at most once per page. -->
+<div id="traveling-electron" class="widget traveling-electron-widget">
+    <!-- The dots are seeded by initTravelingElectron() in quantum.js — there is nothing
+         to write here, and 70 hand-authored divs would be unreadable. -->
+    <div class="te-stage"></div>
+    <div class="te-controls">
+        <!-- Integer steps: the scrubber's own value is the clock, so it needs finer
+             resolution than the 100 steps a range input defaults to. -->
+        <input type="range" class="te-scrubber" min="0" max="1000" value="0" aria-label="Time" aria-describedby="te-scrubber-hint">
+        <button type="button" class="te-toggle" aria-label="Pause">
+            <!-- Both glyphs ship; CSS shows whichever matches the current state. Drawn
+                 rather than typed, so the button does not wait on the mono webfont. -->
+            <svg class="te-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                <g class="te-icon-pause">
+                    <rect x="4" y="3" width="3.5" height="12" rx="1"/>
+                    <rect x="10.5" y="3" width="3.5" height="12" rx="1"/>
+                </g>
+                <path class="te-icon-play" d="M5 3.2 15 9 5 14.8Z"/>
+            </svg>
+        </button>
+    </div>
+    <p id="te-scrubber-hint" class="visually-hidden">Time. At zero the electron’s position is nearly certain; as time runs on, the cloud of possible positions drifts right and spreads out.</p>
+    <p class="te-status visually-hidden" role="status" aria-live="polite"></p>
+</div>

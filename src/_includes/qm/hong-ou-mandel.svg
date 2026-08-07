@@ -1,0 +1,123 @@
+<!-- NB: no blank lines anywhere in this file — a blank line closes the Markdown HTML block
+     and the rest of the SVG gets re-parsed as prose.
+     Greys come from the --iso-* custom properties, which mirror the Figma variables
+     isometric/top, isometric/left and isometric/right. -->
+<svg viewBox="0 0 390 312" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hom-title">
+<title id="hom-title">An isometric diagram of the Hong-Ou-Mandel experiment: a photon source at each of the lower corners, a half-silvered beam splitter in the middle, and a sensor with an alarm lamp at each of the upper corners.</title>
+<defs>
+    <!-- Source cylinder silhouettes. No fill of their own — each <use> supplies one, and the
+         .hom-ants <use> strokes the very same outline, so the shape is defined exactly once. -->
+    <path id="hom-source-l-body" d="M88.0322 205.703C90.1356 205.225 92.6929 205.707 95.4512 207.3C102.625 211.442 108.441 221.516 108.441 229.8C108.441 233.468 107.3 236.169 105.406 237.682L105.443 237.75L58.7959 264.581A18.371 10.607 60 1 1 39.4434 233.25L85.6279 206.812C86.0469 206.496 86.5011 206.236 86.9863 206.034L87.9219 205.5L88.0322 205.703Z"/>
+    <path id="hom-source-r-body" d="M300.869 205.703C298.766 205.225 296.209 205.708 293.451 207.3C286.277 211.442 280.46 221.516 280.46 229.8C280.46 233.468 281.602 236.169 283.495 237.682L283.458 237.75L330.106 264.581A18.371 10.607 120 1 0 349.458 233.25L303.276 206.814C302.856 206.496 302.4 206.235 301.913 206.033L300.979 205.5L300.869 205.703Z"/>
+    <linearGradient id="hom-grad-source-l" x1="60.4432" y1="219.75" x2="84.443" y2="252.75" gradientUnits="userSpaceOnUse">
+        <stop stop-color="var(--iso-top)"/>
+        <stop offset="1" stop-color="var(--iso-right)"/>
+    </linearGradient>
+    <linearGradient id="hom-grad-source-r" x1="328.458" y1="219.75" x2="304.458" y2="252.75" gradientUnits="userSpaceOnUse">
+        <stop stop-color="var(--iso-top)"/>
+        <stop offset="1" stop-color="var(--iso-left)"/>
+    </linearGradient>
+    <!-- User space, not bounding-box: the body path's box includes the end-cap arc, which is
+         hidden under the cap circle, so a relative sheen would key off invisible geometry. -->
+    <linearGradient id="hom-grad-source-sheen" x1="69" y1="221" x2="70.5" y2="223.5" gradientUnits="userSpaceOnUse">
+        <stop stop-color="white"/>
+        <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Bounding-box units, so one gradient serves both mirrored copies of each part. -->
+    <linearGradient id="hom-grad-post" x1="1" y1="0.5" x2="0" y2="0.5">
+        <stop stop-color="var(--iso-right)"/>
+        <stop offset="1" stop-color="var(--iso-left)"/>
+    </linearGradient>
+    <linearGradient id="hom-grad-bulb" x1="0.3182" y1="0" x2="0.7727" y2="1">
+        <stop stop-color="var(--iso-top)"/>
+        <stop offset="1" stop-color="var(--iso-right)"/>
+    </linearGradient>
+    <radialGradient id="hom-grad-glow">
+        <stop offset="0.3" stop-color="var(--hom-lit-color)" stop-opacity="0.55"/>
+        <stop offset="0.55" stop-color="var(--hom-lit-color)" stop-opacity="0.22"/>
+        <stop offset="1" stop-color="var(--hom-lit-color)" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="hom-clip">
+        <rect width="390" height="312"/>
+    </clipPath>
+    <!-- The cube's silhouette: the six outer corners of the three visible faces. -->
+    <clipPath id="hom-splitter-clip">
+        <path d="M195.441 136.5L221.422 151.5L221.422 181.5L195.441 196.5L169.461 181.5L169.461 151.5Z"/>
+    </clipPath>
+</defs>
+<g clip-path="url(#hom-clip)">
+    <!-- Invisible against the widget card, but the beam splitter and the lamps blend in
+         mix-blend-mode: overlay and need an opaque backdrop to blend against. -->
+    <rect class="hom-backdrop" width="390" height="312"/>
+    <!-- Beam paths: lower-left source to upper-right sensor, and vice versa. -->
+    <line class="hom-beam-guide" x1="57.2501" y1="99.567" x2="424.25" y2="311.567"/>
+    <line class="hom-beam-guide" x1="-34.2501" y1="311.567" x2="332.75" y2="99.567"/>
+    <!-- PHOTON SOURCES. The .hom-ants <use> re-strokes the body outline as a dashed
+         marching border; the end cap is a real arc, so the dashes hug the cylinder. -->
+    <g class="hom-source" data-source="l" role="button" tabindex="0" aria-label="Fire a photon from the left photon source">
+        <use href="#hom-source-l-body" fill="url(#hom-grad-source-l)"/>
+        <use href="#hom-source-l-body" fill="url(#hom-grad-source-sheen)" fill-opacity="0.2"/>
+        <circle cx="15" cy="15" r="15" transform="matrix(0.866025 0.5 0 1 35.9609 226.5)" fill="var(--iso-left)"/>
+        <use class="hom-ants" href="#hom-source-l-body"/>
+        <rect class="hom-hit" x="30" y="199" width="85" height="73" rx="10"/>
+    </g>
+    <g class="hom-source" data-source="r" role="button" tabindex="0" aria-label="Fire a photon from the right photon source">
+        <use href="#hom-source-r-body" fill="url(#hom-grad-source-r)"/>
+        <circle cx="15" cy="15" r="15" transform="matrix(-0.866025 0.5 0 1 352.941 226.5)" fill="var(--iso-right)"/>
+        <use class="hom-ants" href="#hom-source-r-body"/>
+        <rect class="hom-hit" x="347" y="199" width="85" height="73" rx="10"/>
+    </g>
+    <!-- BEAM SPLITTER -->
+    <g class="hom-splitter">
+        <rect opacity="0.7" width="30" height="30" transform="matrix(0.866025 0.5 -0.866025 0.5 195.441 166.5)" fill="var(--iso-top)"/>
+        <rect opacity="0.7" width="30" height="30" transform="matrix(0.866025 0.5 0 1 169.461 151.5)" fill="var(--iso-left)"/>
+        <rect opacity="0.7" width="30" height="30" transform="matrix(0.866025 -0.5 0 1 195.41 166.5)" fill="var(--iso-right)"/>
+        <rect opacity="0.7" width="30" height="30" transform="matrix(0.866025 0.5 -0.866025 0.5 195.441 136.5)" fill="var(--iso-top)"/>
+        <path opacity="0.7" d="M195.441 136.5L221.422 151.5L195.441 166.5L195.441 136.5Z" fill="var(--iso-top)"/>
+        <!-- Figma tints the cube by overlay-blending a rect across its bounding box, which only
+             looks contained because Figma's canvas is white. Over the grey card the blend also
+             lands outside the silhouette and the rect shows. Clipping it to the cube keeps
+             Figma's exact compositing and confines it to the glass. -->
+        <g class="hom-splitter-tint" clip-path="url(#hom-splitter-clip)" style="mix-blend-mode:overlay">
+            <rect x="169.461" y="136.5" width="52.5" height="60" fill="#1028DE"/>
+        </g>
+        <path opacity="0.3" d="M192.829 137.63L211.455 156.876L201.648 162.538L183.023 143.292L192.829 137.63Z" fill="white"/>
+    </g>
+    <!-- SENSORS. quantum.js reads the .hom-face rect's own matrix and width/height to place
+         each photon mark, so the projection is defined here and nowhere else.
+         Figma's 30%-white wash on receding faces is the --iso-*-far tokens; as a plain
+         overhanging rect it showed as a pale box on a non-white card. -->
+    <g class="hom-sensor" data-sensor="l">
+        <rect class="hom-face" width="96" height="48" transform="matrix(0.866025 -0.5 0 1 37.0107 88.5)" fill="var(--iso-right-far)"/>
+        <rect width="96" height="3" transform="matrix(0.866025 -0.5 0.866025 0.5 34.4609 87)" fill="var(--iso-top-far)"/>
+        <rect width="3" height="48" transform="matrix(0.866025 0.5 0 1 34.4609 87)" fill="var(--iso-left-far)"/>
+        <g class="hom-marks"></g>
+        <path d="M79.5 63H79.457C79.457 63.1809 79.3368 63.362 79.0977 63.5C78.6194 63.7759 77.8444 63.776 77.3662 63.5C77.1271 63.362 77.0069 63.1809 77.0068 63H77V45H79.5V63Z" fill="url(#hom-grad-post)"/>
+        <g class="hom-bulb">
+            <circle class="hom-bulb-glow" cx="78.5" cy="40.5" r="15" fill="url(#hom-grad-glow)"/>
+            <circle cx="78.5" cy="40.5" r="5.5" fill="url(#hom-grad-bulb)"/>
+            <circle cx="78.5" cy="40.5" r="5.5" fill="#7B0400" style="mix-blend-mode:overlay"/>
+            <circle class="hom-bulb-lit" cx="78.5" cy="40.5" r="5.5"/>
+        </g>
+    </g>
+    <g class="hom-sensor" data-sensor="r">
+        <rect class="hom-face" width="96" height="48" transform="matrix(-0.866025 -0.5 0 1 353.146 88.5)" fill="var(--iso-left-far)"/>
+        <rect width="96" height="3" transform="matrix(-0.866025 -0.5 -0.866025 0.5 355.696 87)" fill="var(--iso-top-far)"/>
+        <rect width="3" height="48" transform="matrix(-0.866025 0.5 0 1 355.696 87)" fill="var(--iso-right-far)"/>
+        <g class="hom-marks"></g>
+        <path d="M312.5 63H312.457C312.457 63.1809 312.337 63.362 312.098 63.5C311.619 63.7759 310.844 63.776 310.366 63.5C310.127 63.362 310.007 63.1809 310.007 63H310V45H312.5V63Z" fill="url(#hom-grad-post)"/>
+        <g class="hom-bulb">
+            <circle class="hom-bulb-glow" cx="311.5" cy="40.5" r="15" fill="url(#hom-grad-glow)"/>
+            <circle cx="311.5" cy="40.5" r="5.5" fill="url(#hom-grad-bulb)"/>
+            <circle cx="311.5" cy="40.5" r="5.5" fill="#7B0400" style="mix-blend-mode:overlay"/>
+            <circle class="hom-bulb-lit" cx="311.5" cy="40.5" r="5.5"/>
+        </g>
+    </g>
+    <!-- LABELS. 15px PP Supply Mono on an 18px line, matching the global .label token. -->
+    <text class="hom-label" x="77" y="25" text-anchor="middle">SENSOR L</text>
+    <text class="hom-label" x="313" y="25" text-anchor="middle">SENSOR R</text>
+    <text class="hom-label" x="196" y="227" text-anchor="middle">BEAM<tspan x="196" dy="18">SPLITTER</tspan></text>
+    <text class="hom-label" x="72" y="284" text-anchor="middle">PHOTON<tspan x="72" dy="18">SOURCE</tspan></text>
+    <text class="hom-label" x="316.5" y="284" text-anchor="middle">PHOTON<tspan x="316.5" dy="18">SOURCE</tspan></text>
+</g>
+</svg>

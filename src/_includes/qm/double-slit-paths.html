@@ -1,0 +1,139 @@
+<!-- NB: no blank lines anywhere in this file — a blank line closes the Markdown HTML block
+     and the rest of the SVG gets re-parsed as prose.
+     Hand-authored from Figma node 1460:1420. The slider ids are static, so include this
+     widget at most once per page.
+     Three coordinate systems, deliberately kept apart: the chart and the setup are both
+     200 units wide and sit in the same column, so a point on the curve stands directly
+     over the place on the wall it is measuring — and the position slider is stretched by
+     one thumb width (see .dsp-slider--position) so its thumb centre spans exactly that
+     same 0–200. quantum.js is what keeps all three in step. -->
+<div id="double-slit-paths" class="widget double-slit-paths-widget">
+    <div class="dsp-body">
+        <div class="dsp-column dsp-column--setup">
+            <div class="dsp-control">
+                <label for="dsp-position">Position on wall</label>
+                <input type="range" class="dsp-slider dsp-slider--position" id="dsp-position" data-param="position" min="0" max="1000" step="1" value="500" data-initial-value="500">
+            </div>
+            <!-- The probability of landing at each place along the wall, on a fixed scale:
+                 two paths in phase at the centre is full height, whatever the sliders say.
+                 quantum.js fills in the two `d` attributes. -->
+            <svg class="dsp-chart" viewBox="0 0 200 44" role="img" aria-label="Curve of where the particle is likely to land along the wall, for the current wavelength and slit separation.">
+                <rect class="dsp-chart-bg" x="0.5" y="0.5" width="199" height="43" rx="1"/>
+                <path class="dsp-chart-area" d=""></path>
+                <path class="dsp-chart-line" d=""></path>
+            </svg>
+            <svg class="dsp-setup" viewBox="0 0 200 217" role="img" aria-label="The experiment seen from above: a source at the bottom, a wall with two slits, and the detection wall at the top. Two paths run from the source through the slits to the chosen spot. Hue along a path is the phase of its amplitude, turning through the full rainbow every wavelength travelled.">
+                <defs>
+                    <!-- One turn of the phase wheel, at the same six corners as the canvas ramp
+                         in paintDoubleSlitField(): phase 0 is cyan and the wheel runs
+                         cyan → blue → magenta → red → yellow → green. Value is 0.85 rather
+                         than 1 because full-brightness yellow all but vanishes on the pale
+                         ground panel; the canvas twin is drawn on black and needs no such help.
+                         Stops live here once and the four legs below inherit them by href. -->
+                    <linearGradient id="dsp-hue">
+                        <stop offset="0" stop-color="#00D9D9"/>
+                        <stop offset="0.1667" stop-color="#0000D9"/>
+                        <stop offset="0.3333" stop-color="#D900D9"/>
+                        <stop offset="0.5" stop-color="#D90000"/>
+                        <stop offset="0.6667" stop-color="#D9D900"/>
+                        <stop offset="0.8333" stop-color="#00D900"/>
+                        <stop offset="1" stop-color="#00D9D9"/>
+                    </linearGradient>
+                    <!-- spreadMethod="repeat" is what keeps this to seven stops: the gradient
+                         vector spans exactly one wavelength and then tiles along the leg, so
+                         quantum.js only has to move four vectors rather than rebuild hundreds
+                         of stops on every frame. Each vector starts far enough back along its
+                         own leg to account for the phase already accumulated at its start. -->
+                    <linearGradient id="dsp-hue-left-near" href="#dsp-hue" gradientUnits="userSpaceOnUse" spreadMethod="repeat"/>
+                    <linearGradient id="dsp-hue-left-far" href="#dsp-hue" gradientUnits="userSpaceOnUse" spreadMethod="repeat"/>
+                    <linearGradient id="dsp-hue-right-near" href="#dsp-hue" gradientUnits="userSpaceOnUse" spreadMethod="repeat"/>
+                    <linearGradient id="dsp-hue-right-far" href="#dsp-hue" gradientUnits="userSpaceOnUse" spreadMethod="repeat"/>
+                    <linearGradient id="dsp-source-body" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="var(--iso-left)"/>
+                        <stop offset="1" stop-color="var(--iso-right)"/>
+                    </linearGradient>
+                    <filter id="dsp-wall-shadow" x="-5%" y="-200%" width="115%" height="600%">
+                        <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.1"/>
+                    </filter>
+                </defs>
+                <rect class="dsp-ground" x="0.5" y="0.5" width="199" height="216" rx="2"/>
+                <!-- Drawn before the walls, so a path that overshoots its slit is hidden
+                     behind the barrier rather than crossing it. -->
+                <g class="dsp-paths">
+                    <line class="dsp-path-leg" data-leg="left-near" stroke="url(#dsp-hue-left-near)"/>
+                    <line class="dsp-path-leg" data-leg="left-far" stroke="url(#dsp-hue-left-far)"/>
+                    <line class="dsp-path-leg" data-leg="right-near" stroke="url(#dsp-hue-right-near)"/>
+                    <line class="dsp-path-leg" data-leg="right-far" stroke="url(#dsp-hue-right-far)"/>
+                </g>
+                <!-- The detection wall: the chart above is this wall's probability, column
+                     for column. -->
+                <rect class="dsp-wall dsp-wall--far" x="0" y="0" width="200" height="4" rx="2"/>
+                <!-- The barrier. Its two gaps are the slits, so all three bars track the
+                     separation slider; quantum.js writes their x and width. The gaps are
+                     drawn a few units wide to read as slits — the maths treats each as a
+                     single point. Turn the separation down and the middle bar pinches out. -->
+                <rect class="dsp-wall dsp-wall--near" data-bar="left" y="140" height="4" rx="2"/>
+                <rect class="dsp-wall dsp-wall--near" data-bar="middle" y="140" height="4" rx="2"/>
+                <rect class="dsp-wall dsp-wall--near" data-bar="right" y="140" height="4" rx="2"/>
+                <g class="dsp-source">
+                    <rect class="dsp-source-body" x="86.5" y="171" width="27" height="39"/>
+                    <path class="dsp-source-edge" d="M86.5 171H113.5M86.5 210H113.5"/>
+                    <path class="dsp-source-gleam" d="M86.5 171.5H113.5M86.5 209.5H113.5"/>
+                </g>
+            </svg>
+        </div>
+        <div class="dsp-column dsp-column--equation">
+            <div class="dsp-controls">
+                <div class="dsp-control">
+                    <label for="dsp-wavelength">Wavelength <span class="dsp-value" data-value-for="wavelength"></span></label>
+                    <input type="range" class="dsp-slider" id="dsp-wavelength" data-param="wavelength" min="4" max="40" step="1" value="12" data-initial-value="12">
+                </div>
+                <div class="dsp-control">
+                    <label for="dsp-separation">Slit separation <span class="dsp-value" data-value-for="separation"></span></label>
+                    <input type="range" class="dsp-slider" id="dsp-separation" data-param="separation" min="4" max="80" step="1" value="22" data-initial-value="22">
+                </div>
+            </div>
+            <!-- Read-only throughout: every arrow here is written by quantum.js from the
+                 three sliders, so none of them is a control. Structure follows
+                 amplitude-multiplication.svg, minus the grabbers. -->
+            <svg class="dsp-equation" viewBox="0 0 384 120" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The amplitude arriving by the left path, plus the amplitude arriving by the right path, equals the total amplitude at the chosen spot.">
+                <defs>
+                    <!-- Two legs running back from a tip at the origin. Fixed size: the head
+                         does not grow with the arrow, so the shaft is the only thing JS has
+                         to resize. -->
+                    <path id="dsp-arrowhead" d="M-2.83 -2.83L0 0L-2.83 2.83"/>
+                </defs>
+                <text class="dsp-label" x="50" y="13" text-anchor="middle">Left path</text>
+                <g class="dsp-dial" data-role="left" transform="translate(50 70)">
+                    <circle class="dsp-dial-face" r="50"/>
+                    <g class="dsp-arrow">
+                        <rect class="dsp-arrow-shaft" x="0" y="-0.5" width="0" height="1"/>
+                        <use class="dsp-arrow-head" href="#dsp-arrowhead"/>
+                    </g>
+                    <circle class="dsp-arrow-dot" r="2.67"/>
+                </g>
+                <path class="dsp-operator" d="M115 69H130M122.5 61.5V76.5"/>
+                <text class="dsp-label" x="192" y="13" text-anchor="middle">Right path</text>
+                <g class="dsp-dial" data-role="right" transform="translate(192 70)">
+                    <circle class="dsp-dial-face" r="50"/>
+                    <g class="dsp-arrow">
+                        <rect class="dsp-arrow-shaft" x="0" y="-0.5" width="0" height="1"/>
+                        <use class="dsp-arrow-head" href="#dsp-arrowhead"/>
+                    </g>
+                    <circle class="dsp-arrow-dot" r="2.67"/>
+                </g>
+                <path class="dsp-operator" d="M257 65H272M257 73H272"/>
+                <text class="dsp-label" x="334" y="13" text-anchor="middle">Total</text>
+                <g class="dsp-dial" data-role="total" transform="translate(334 70)">
+                    <circle class="dsp-dial-face" r="50"/>
+                    <g class="dsp-arrow">
+                        <rect class="dsp-arrow-shaft" x="0" y="-0.5" width="0" height="1"/>
+                        <use class="dsp-arrow-head" href="#dsp-arrowhead"/>
+                    </g>
+                    <circle class="dsp-arrow-dot" r="2.67"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+    <p class="dsp-status visually-hidden" role="status" aria-live="polite"></p>
+</div>

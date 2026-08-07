@@ -1,0 +1,60 @@
+<!-- NB: no blank lines anywhere in this file — a blank line closes the Markdown HTML block
+     and the rest of the SVG gets re-parsed as prose.
+     Hand-authored from Figma node 1430:3328. The export's arrows are outlined strokes that
+     JS cannot lengthen, and its grabber is a 20-line feMorphology/feGaussianBlur stack, so
+     both are rebuilt here as plain shapes. Geometry (disc centres and radius, arrowhead
+     size, bar widths) is taken verbatim from that export.
+     role="group", not role="img": role="img" would make the sliders inside presentational. -->
+<svg viewBox="0 0 700 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="group" aria-labelledby="qam-title" aria-describedby="qam-desc">
+<title id="qam-title">Multiplying two quantum amplitudes</title>
+<desc id="qam-desc">Two draggable arrows, each one a complex number drawn from the centre of its own circle, multiplied together to give a third, read-only arrow. Multiplying two amplitudes adds their angles and multiplies their lengths.</desc>
+<defs>
+    <!-- Two legs of length 7.86 running back from a tip at the origin. Fixed size: the head
+         does not grow with the arrow, so the shaft is the only thing JS has to resize. -->
+    <path id="qam-arrowhead" d="M-5.56 -5.56L0 0L-5.56 5.56"/>
+</defs>
+<!-- FIRST FACTOR -->
+<g class="qam-dial qam-dial--factor" data-role="a" data-angle="10" data-magnitude="0.85" transform="translate(104.738 120.738)">
+    <circle class="qam-dial-face" r="87.2818"/>
+    <path class="qam-dial-zero" d="M0 0H87"/>
+    <g class="qam-arrow">
+        <!-- Sits behind the shaft and head, exactly as in the Figma frame. -->
+        <g class="qam-grabber-group" role="slider" tabindex="0" aria-label="First amplitude" aria-valuemin="0" aria-valuemax="359" aria-valuenow="10">
+            <circle class="qam-grabber-glow" r="22.5"/>
+            <circle class="qam-grabber" r="12.5"/>
+        </g>
+        <rect class="qam-arrow-shaft" x="0" y="-0.873" width="0" height="1.746"/>
+        <use class="qam-arrow-head" href="#qam-arrowhead"/>
+    </g>
+    <circle class="qam-arrow-dot" r="5.3"/>
+</g>
+<!-- MULTIPLICATION SIGN -->
+<path class="qam-operator" d="M223.906 113.804L237.516 127.394M223.906 127.394L237.516 113.804" stroke-width="2.78"/>
+<!-- SECOND FACTOR -->
+<g class="qam-dial qam-dial--factor" data-role="b" data-angle="27" data-magnitude="0.85" transform="translate(352.282 120.738)">
+    <circle class="qam-dial-face" r="87.2818"/>
+    <path class="qam-dial-zero" d="M0 0H87"/>
+    <g class="qam-arrow">
+        <g class="qam-grabber-group" role="slider" tabindex="0" aria-label="Second amplitude" aria-valuemin="0" aria-valuemax="359" aria-valuenow="27">
+            <circle class="qam-grabber-glow" r="22.5"/>
+            <circle class="qam-grabber" r="12.5"/>
+        </g>
+        <rect class="qam-arrow-shaft" x="0" y="-0.873" width="0" height="1.746"/>
+        <use class="qam-arrow-head" href="#qam-arrowhead"/>
+    </g>
+    <circle class="qam-arrow-dot" r="5.3"/>
+</g>
+<!-- EQUALS SIGN -->
+<path class="qam-operator" d="M470.582 116.594H486.642M470.582 124.624H486.642" stroke-width="2.851"/>
+<!-- PRODUCT — read only. No grabber, no glow, no tabindex: quantum.js only ever writes here. -->
+<g class="qam-dial qam-dial--result" data-role="result" transform="translate(595.282 120.738)">
+    <circle class="qam-dial-face" r="87.2818"/>
+    <path class="qam-dial-zero" d="M0 0H87"/>
+    <g class="qam-arrow">
+        <rect class="qam-arrow-shaft" x="0" y="-0.873" width="0" height="1.746"/>
+        <use class="qam-arrow-head" href="#qam-arrowhead"/>
+    </g>
+    <circle class="qam-arrow-dot" r="5.3"/>
+</g>
+<text class="qam-label" x="595.282" y="22" text-anchor="middle">Result</text>
+</svg>
