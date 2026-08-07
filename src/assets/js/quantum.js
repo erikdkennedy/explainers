@@ -82,6 +82,87 @@
     const EM_MAX_FRAME = 0.05; // seconds — clamp dt so a backgrounded tab does not jump
     const EM_EPSILON = 1e-6; // "strictly past the current t", in the face of float error
 
+    // The Ramsey experiment: two microwave pulses with a wait between them. Every length here
+    // is in the units of the stage's own 469 x 220 drawing, which is the Figma frame's stage
+    // column with the 58px header cropped off the top — so coordinates paste straight across
+    // from the design file. See qm/ramsey-stage.svg.
+    //
+    // The widget runs on TWO clocks, and the split is what makes it work:
+    //
+    //   s    the story position, a continuous float in [0, 4]. Positions, radii, opacities,
+    //        connectors, the pulse and the Bloch trail are all pure functions of it, which is
+    //        the whole of "clicking an earlier breadcrumb runs the animation backwards".
+    //   tau  physical time in ms, which only ever drives how far the arrows have turned. It
+    //        free-runs while the widget is on screen, because the arrows are meant to keep
+    //        spinning while the reader reads — and it is parked at rest on steps 1 and 2,
+    //        because those are the two steps that make a claim about where the state *is* on
+    //        the Bloch sphere's equator, and a turning relative angle would be the state
+    //        sliding around that equator rather than sitting at the point being described.
+    //
+    // One clock cannot do both: a pure function of s cannot idle, and a pure function of tau
+    // cannot be rewound. What keeps them from disagreeing is that every claim the widget makes
+    // is a claim about a *relative* angle between two arrows of the same energy — and those are
+    // fixed by the phase column of RM_CAST, not by tau.
+    const RM_STEPS = 5; // START, blast #1, WAIT, blast #2, RESULT
+    const RM_UNIT_RADIUS = 31; // px at amplitude 1; every disc is this times |amplitude|
+    const RM_HALF_RADIUS = RM_UNIT_RADIUS / Math.SQRT2; // 21.92 — Figma rounds it to 22
+    const RM_SMALL_RADIUS = RM_UNIT_RADIUS / 2; // 15.5 — Figma rounds it to 15
+    const RM_HALO = { ground: 4, excited: 16 }; // added to the radius; see the note in the SCSS
+    const RM_ARROW_LONG = 41; // Figma's arrow on the full and half-sized atoms
+    const RM_ARROW_SHORT = 33; // and on the quarter-sized ones
+    const RM_ARROW_FADE = 12; // an arrow shorter than this fades, so a newborn copy has none
+
+    // One turn of the ground-state arrow. The excited one turns faster in proportion to its
+    // energy, which is the claim the WAIT step's caption makes.
+    const RM_PERIOD_GROUND = 1800; // ms
+    const RM_ENERGY_RATIO = 1.5; // excited turns per ground turn
+    // Picking 3/2 for the ratio is what makes the two poses this widget has to land in exactly
+    // fall on the *same* grid: after any whole number of ground turns both arrows are back to
+    // upright, and their relative angle is a half turn different each time. So the even turns
+    // are "parallel" — the equal superposition the first blast leaves the atom in, drawn at the
+    // left of the equator — and the odd turns are "opposed", where the wait ends. Any other
+    // ratio would have parked the pair at some arbitrary rotation instead of on Figma's frames.
+    const RM_POSE_PARALLEL = 0; // an even number of ground turns
+    const RM_POSE_OPPOSED = 1; // an odd one
+    const RM_POSE_STEP = [null, RM_POSE_PARALLEL, RM_POSE_OPPOSED, null, null]; // per keyframe
+    const RM_POSE_MIN = 250; // ms — never aim at a pose so close it reads as a jump rather than a turn
+    // Under reduced motion tau never runs, so it is placed by keyframe instead. These are the
+    // values at which each step's Figma frame is reproduced exactly: nought turns for the two
+    // steps whose arrows are parallel, one for the three whose excited arrows are inverted.
+    const RM_REDUCED_TAU = [0, 0, RM_PERIOD_GROUND, RM_PERIOD_GROUND, RM_PERIOD_GROUND];
+
+    const RM_TWEEN = 1400; // ms for a single hop — long enough to watch a pulse cross the frame
+    const RM_TWEEN_MAX = 2600; // ms — a four-step rewind should not plod
+    const RM_TWEEN_SPAN = 0.7; // duration grows as span^this, so long hops are not four times as long
+    const RM_MAX_FRAME = 50; // ms — clamp dt so a backgrounded tab does not jump
+
+    const RM_PHOTON_COUNT = 166; // the count in the Figma frame, which is also about right
+    const RM_PACKET_LENGTH = 188; // measured: the pulse spans x 280..468 at the keyframe
+    const RM_PACKET_SIGMA = 10; // measured spread about the atom row
+    const RM_PACKET_HALF_BAND = 19.5; // measured: y runs 149..188
+    const RM_PACKET_ROW = 168.5; // measured centre, which is the atom row
+    const RM_PACKET_CLEAR = 8; // and this much past each edge, so no dot is caught half-clipped
+    const RM_PACKET_START = -(RM_PACKET_LENGTH + RM_PACKET_CLEAR);
+    const RM_PACKET_TRAVEL = 469 + RM_PACKET_LENGTH + RM_PACKET_CLEAR * 2; // off one edge to off the other
+    // Sampled over s, and over s - 2 for the second blast. The whole crossing happens inside the
+    // blast's own hop: the pulse is off to the left at the step it starts from and clear of the
+    // right-hand edge by the step it lands on, so a keyframe never shows it hanging in mid-air.
+    // (The Figma frames do draw it mid-exit, but that was to check the visuals, not a resting
+    // state.) Both ends being off-stage is also why the pulse needs no opacity of its own — the
+    // SVG's viewport clips it away, and the seam at s = 2, where it jumps from off the right
+    // back to off the left, happens where there is nothing to see.
+    const RM_PACKET_TRACK = [0, 1, 1];
+    // The copies have to look *caused* by the pulse, so the split is held back until the pulse's
+    // leading edge has reached the atoms and finishes while its tail is still on its way out.
+    // Measured against the crossing: the leading edge is level with the atoms at 0.37 of the hop
+    // and the trailing edge has cleared them by 0.65.
+    const RM_SPLIT_DELAY = 0.34; // where the copies start to separate, as a fraction of the hop
+    const RM_SPLIT_SPAN = 0.46; // and how much of the hop they take to finish
+
+    const RM_LINK_TAIL_GAP = 2; // a connector starts this far outside its parent's rim
+    const RM_LINK_HEAD_GAP = 16; // and stops this far short of its child's
+    const RM_LINK_HEAD = 10; // the arrowhead's own length, in qm/ramsey-stage.svg
+
     // Pending render per widget, so a drag never queues up more than one.
     const _doubleSlitFrames = new WeakMap();
     const _doubleSlitPathFrames = new WeakMap();
@@ -89,6 +170,7 @@
     // Per-widget simulation state: the frozen dot seeds, the clock, and the rAF handle.
     const _electronClouds = new WeakMap();
     const _emissionFields = new WeakMap();
+    const _ramseyStates = new WeakMap();
 
 
     /*****************************************
@@ -472,6 +554,255 @@
         return candidates[Math.floor(Math.random() * candidates.length)];
     }
 
+    // The Ramsey experiment, as a table. Eight copies, five keyframes, and every row says where
+    // the copy sits, how big its amplitude is, the structural phase of its arrow, and whether it
+    // is live (1), retired to a ghost (0.1) or gone (0). Coordinates are the Figma frame's,
+    // unchanged, because the stage's viewBox is that frame's stage column.
+    //
+    // `mag` is the one curve everything else reads: the disc's radius is RM_UNIT_RADIUS times
+    // it, and so is the arrow's length. The physics behind the numbers is one pulse matrix
+    // applied twice — G goes to (G + E)/sqrt(2) and E to (-G + E)/sqrt(2) — which turns the
+    // opposed pair of step 2 into four quarter-amplitude copies whose two excited members are
+    // exactly opposed and whose two ground members are exactly in step. That is why the excited
+    // pair cancels and the ground pair adds, and it is the point of the whole widget.
+    //
+    // `phase` is deliberately NOT folded into a signed amplitude. Lerping a signed number
+    // through zero would collapse a disc to nothing halfway through a split and then flip its
+    // arrow in a single frame; kept apart, the size and the direction each move sensibly.
+    //
+    // A `null` row means the copy does not exist yet. It is filled in at init from its parent's
+    // row at that step with mag 0, so a second-generation copy visibly *buds* out of the copy it
+    // came from instead of fading in on top of it. That matters here more than usual: CLAUDE.md's
+    // "two cross-fading discs are not a cross-fade" would bite twice over, since e1 is red and
+    // the parent it grows out of is blue. Rows past the last given one carry it forward at
+    // opacity 0, so a copy that has served its purpose fades where it stands rather than
+    // shrinking away to a point.
+    //
+    // Exactly one phase in the table ever moves: g2b turns 180 -> 360 during the second pulse.
+    // That half turn *is* the minus sign in the pulse's ground-from-excited term, and it is why
+    // the two ground copies end up adding rather than cancelling — the caption calls it out. It
+    // is written as 360 rather than 0 so that the lerp turns through the half circle instead of
+    // snapping, and `birthPhase` is what it turns *from*: the direction its parent was pointing.
+    const RM_CAST = [
+        {
+            key: 'orig', state: 'ground', parent: null,
+            rows: [
+                { x: 234, y: 168, mag: 1, phase: 0, op: 1 },
+                { x: 146, y: 168, mag: 1, phase: 0, op: 0.1 },
+            ],
+        },
+        {
+            key: 'e1', state: 'excited', parent: 'orig',
+            rows: [
+                null,
+                { x: 240, y: 125, mag: Math.SQRT1_2, phase: 0, op: 1 },
+                { x: 240, y: 125, mag: Math.SQRT1_2, phase: 0, op: 1 },
+                { x: 140, y: 125, mag: Math.SQRT1_2, phase: 0, op: 0.1 },
+            ],
+        },
+        {
+            key: 'g1', state: 'ground', parent: 'orig',
+            rows: [
+                null,
+                { x: 240, y: 214, mag: Math.SQRT1_2, phase: 0, op: 1 },
+                { x: 240, y: 214, mag: Math.SQRT1_2, phase: 0, op: 1 },
+                { x: 140, y: 214, mag: Math.SQRT1_2, phase: 0, op: 0.1 },
+            ],
+        },
+        {
+            key: 'e2a', state: 'excited', parent: 'e1',
+            rows: [
+                null, null, null,
+                { x: 261, y: 125, mag: 0.5, phase: 0, op: 1 },
+                { x: 107, y: 125, mag: 0.5, phase: 0, op: 0.1 },
+            ],
+        },
+        {
+            key: 'e2b', state: 'excited', parent: 'g1',
+            rows: [
+                null, null, null,
+                { x: 328, y: 125, mag: 0.5, phase: 180, op: 1 },
+                { x: 174, y: 125, mag: 0.5, phase: 180, op: 0.1 },
+            ],
+        },
+        {
+            key: 'g2a', state: 'ground', parent: 'g1',
+            rows: [
+                null, null, null,
+                { x: 261, y: 214, mag: 0.5, phase: 0, op: 1 },
+                { x: 107, y: 214, mag: 0.5, phase: 0, op: 0.1 },
+            ],
+        },
+        {
+            key: 'g2b', state: 'ground', parent: 'e1', birthPhase: 180,
+            rows: [
+                null, null, null,
+                { x: 328, y: 214, mag: 0.5, phase: 360, op: 1 },
+                { x: 174, y: 214, mag: 0.5, phase: 360, op: 0.1 },
+            ],
+        },
+        {
+            key: 'result', state: 'ground', parent: 'g2b',
+            rows: [
+                null, null, null, null,
+                { x: 340, y: 168, mag: 1, phase: 0, op: 1 },
+            ],
+        },
+    ];
+
+    // A connector is drawn from its parent's rim to its child's, so its geometry is derived
+    // rather than tabled — it stretches correctly all the way through a split with nothing to
+    // keep in sync. All it carries of its own is when it is on screen: each pulse shows only
+    // its own connectors, so a linear sample of this is the fade in and out for free.
+    const RM_LINKS = [
+        { from: 'orig', to: 'e1', track: [0, 1, 0, 0, 0] },
+        { from: 'orig', to: 'g1', track: [0, 1, 0, 0, 0] },
+        { from: 'e1', to: 'e2a', track: [0, 0, 0, 1, 0] },
+        { from: 'e1', to: 'g2b', track: [0, 0, 0, 1, 0] },
+        { from: 'g1', to: 'e2b', track: [0, 0, 0, 1, 0] },
+        { from: 'g1', to: 'g2a', track: [0, 0, 0, 1, 0] },
+        { from: 'g2b', to: 'result', track: [0, 0, 0, 0, 1] },
+    ];
+
+    // Fill in the nulls once, at module scope: births from the parent's row at that step with no
+    // amplitude, deaths by carrying the last row forward at opacity 0. RM_CAST lists parents
+    // before children, so one forward pass is enough. Render then never has to branch, and the
+    // expanded table is directly assertable.
+    function expandRamseyCast() {
+        const byKey = {};
+
+        RM_CAST.forEach(copy => {
+            byKey[copy.key] = copy;
+
+            const parent = copy.parent ? byKey[copy.parent] : null;
+            let last = null;
+
+            for (let i = 0; i < RM_STEPS; i++) {
+                const row = copy.rows[i] || null;
+
+                if (row) {
+                    last = row;
+                    continue;
+                }
+
+                if (last) {
+                    // Gone: hold the last pose and fade it out where it stands.
+                    copy.rows[i] = { x: last.x, y: last.y, mag: last.mag, phase: last.phase, op: 0 };
+                    continue;
+                }
+
+                // Not born yet: sit inside whatever the copy will grow out of, at no size. The
+                // first copy has no parent, so it simply starts where it starts.
+                const seat = parent ? parent.rows[i] : copy.rows.find(Boolean);
+                const phase = copy.birthPhase === undefined ? copy.rows.find(Boolean).phase : copy.birthPhase;
+
+                copy.rows[i] = { x: seat.x, y: seat.y, mag: 0, phase, op: 1 };
+            }
+        });
+    }
+
+    expandRamseyCast();
+
+    // Linear between the two keyframes s falls between. The tween is what eases; the table is
+    // read straight, so `s` stays a story position rather than a curve.
+    function sampleRamseyTrack(track, s) {
+        const i = clampNumber(Math.floor(s), 0, track.length - 2);
+        const u = clampNumber(s - i, 0, 1);
+
+        return track[i] + (track[i + 1] - track[i]) * u;
+    }
+
+    function sampleRamseyRow(rows, s) {
+        const i = clampNumber(Math.floor(s), 0, rows.length - 2);
+        const u = clampNumber(s - i, 0, 1);
+        const a = rows[i];
+        const b = rows[i + 1];
+        const mix = key => a[key] + (b[key] - a[key]) * u;
+
+        return { x: mix('x'), y: mix('y'), mag: mix('mag'), phase: mix('phase'), op: mix('op') };
+    }
+
+    // Degrees per millisecond. The excited arrow turns faster in proportion to its energy, which
+    // is the one piece of physics the reader is asked to take on trust.
+    function ramseyOmega(state) {
+        return (360 / RM_PERIOD_GROUND) * (state === 'excited' ? RM_ENERGY_RATIO : 1);
+    }
+
+    // Figma draws two arrow lengths — 41 on the full and half atoms, 33 on the quarter ones —
+    // and they are not proportional to the disc. This is the one continuous rule through both,
+    // which matters because a newborn copy has to grow its arrow out of nothing rather than
+    // spring a full-length one out of a disc that is not there yet.
+    function ramseyArrowLength(radius) {
+        if (radius <= RM_SMALL_RADIUS) return RM_ARROW_SHORT * (radius / RM_SMALL_RADIUS);
+
+        const u = clampNumber((radius - RM_SMALL_RADIUS) / (RM_HALF_RADIUS - RM_SMALL_RADIUS), 0, 1);
+
+        return RM_ARROW_SHORT + (RM_ARROW_LONG - RM_ARROW_SHORT) * u;
+    }
+
+    // How far the excited arrow has drawn ahead of the ground one, in degrees. This is the only
+    // angle in the widget that means anything on its own: 0 is the equal superposition the first
+    // blast leaves behind, 180 is the opposition the wait ends on, and everything between is a
+    // position along the equator.
+    function ramseyRelativeAngle(tau) {
+        return (RM_ENERGY_RATIO - 1) * 360 * tau / RM_PERIOD_GROUND;
+    }
+
+    // The nearest moment in the direction of travel at which the arrows strike a given pose — an
+    // even number of ground turns for parallel, an odd number for opposed. Tweening tau to one of
+    // these is what makes a step land on its Figma frame exactly rather than nearly.
+    function ramseyPoseTau(from, parity, forward) {
+        const turns = from / RM_PERIOD_GROUND;
+        let n = forward ? Math.ceil(turns) : Math.floor(turns);
+
+        if ((((n % 2) + 2) % 2) !== parity) n += forward ? 1 : -1;
+
+        return n * RM_PERIOD_GROUND;
+    }
+
+    // Two blasts, one track: the second is the first replayed over s - 2.
+    function ramseyPacketX(s) {
+        const phase = sampleRamseyTrack(RM_PACKET_TRACK, s < 2 ? s : s - 2);
+
+        return RM_PACKET_START + phase * RM_PACKET_TRAVEL;
+    }
+
+    // Where the *cast* stands, which on a blast hop is behind where the story stands. Holding the
+    // copies still until the pulse has reached them, and finishing before it has left, is the
+    // whole of making the blast look like the cause rather than a coincidence. Outside a blast
+    // hop this is the identity, so nothing else in the widget has to know it exists — and it
+    // agrees with `s` exactly at every keyframe, so no keyframe is affected either.
+    function ramseyCastPosition(s) {
+        const step = Math.floor(s);
+
+        if (step !== 0 && step !== 2) return s;
+
+        return step + easeInOutCubic(clampNumber((s - step - RM_SPLIT_DELAY) / RM_SPLIT_SPAN, 0, 1));
+    }
+
+    // Frozen at init, exactly as the emission widget freezes its spray: the pulse then moves as
+    // one rigid group, so a frame's work is a single transform rather than 166 positions.
+    function seedRamseyPhotons($widget) {
+        const $photons = $widget.querySelector('.rm-photons');
+        if (!$photons) return null;
+
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < RM_PHOTON_COUNT; i++) {
+            const $dot = document.createElementNS(SVG_NS, 'circle');
+            const offset = clampNumber(randomNormal() * RM_PACKET_SIGMA, -RM_PACKET_HALF_BAND, RM_PACKET_HALF_BAND);
+
+            $dot.setAttribute('class', 'rm-photon');
+            $dot.setAttribute('cx', (Math.random() * RM_PACKET_LENGTH).toFixed(2));
+            $dot.setAttribute('cy', (RM_PACKET_ROW + offset).toFixed(2));
+            fragment.appendChild($dot);
+        }
+
+        $photons.appendChild(fragment);
+
+        return $photons;
+    }
+
 
     function readDoubleSlitPathsParams($widget) {
         const $slider = param => $widget.querySelector(`.dsp-slider[data-param="${param}"]`);
@@ -682,6 +1013,208 @@
 
         if ($prev) $prev.disabled = state.t <= EM_STEPS[0] + EM_EPSILON;
         if ($next) $next.disabled = state.t >= EM_STEPS[EM_STEPS.length - 1] - EM_EPSILON;
+    }
+
+    // Everything the Ramsey stage shows, from the two clocks and nothing else. Called from the
+    // rAF loop, from every settle, and from init — there is no other way anything gets drawn.
+    //
+    // Deliberately whole rather than split into an s-part and a tau-part: while the widget is only
+    // idling, the connectors, the pulse and the trail are rewritten with the values they already
+    // had. That is about a hundred property writes a frame, in the same range as the traveling
+    // electron's seventy dots, and buying them back would mean a dirty flag that has to be right
+    // every time — the kind of cache that is correct for one review. If this ever needs to go, the
+    // honest fix is to measure first, in a real browser: performance.now() is clamped under
+    // --virtual-time-budget and will report the timer floor for any version of this.
+    function renderRamsey($widget) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        // The cast runs behind the story through a blast, so that the copies separate in the
+        // pulse's wake rather than alongside it. The pulse itself reads the story position.
+        const castS = ramseyCastPosition(state.s);
+        const poses = {};
+
+        state.copies.forEach(copy => {
+            const row = sampleRamseyRow(copy.rows, castS);
+            const radius = RM_UNIT_RADIUS * row.mag;
+            const length = ramseyArrowLength(radius);
+
+            poses[copy.key] = { x: row.x, y: row.y, radius, op: row.op };
+
+            // Position is JS's, because it is recomputed every frame anyway; everything else
+            // goes through a custom property so the look stays in the stylesheet. Units are
+            // written here rather than added in a calc(), which is the silent-failure trap.
+            copy.$g.setAttribute('transform', `translate(${row.x.toFixed(2)} ${row.y.toFixed(2)})`);
+            copy.$g.style.setProperty('--rm-radius', `${radius.toFixed(2)}px`);
+            // The halo's width is a constant in Figma, added to whatever the disc's radius is.
+            // It cannot stay constant all the way down, though: a copy waiting to be born has no
+            // disc, and a bare 16-unit red wash sitting where the atom will appear reads as a
+            // bruise on the picture. Fading it in with the disc it belongs to costs one clamp.
+            const halo = radius + RM_HALO[copy.state] * clampNumber(radius / RM_SMALL_RADIUS, 0, 1);
+
+            copy.$g.style.setProperty('--rm-halo', `${halo.toFixed(2)}px`);
+            copy.$g.style.setProperty('--rm-opacity', row.op.toFixed(3));
+            copy.$g.style.setProperty('--rm-arrow-length', `${length.toFixed(2)}px`);
+            // A stub of an arrow on a disc that is barely there reads as a speck of dirt, so it
+            // fades in over the first few units of its own length rather than being clipped.
+            copy.$g.style.setProperty('--rm-arrow-opacity', clampNumber(length / RM_ARROW_FADE, 0, 1).toFixed(3));
+            // The structural phase from the table, plus however far this copy's arrow has turned.
+            // Two copies of the same energy therefore always differ by exactly what the table
+            // says they differ by, whatever tau happens to be — which is what lets the arrows
+            // keep spinning without ever making the captions untrue.
+            copy.$g.style.setProperty('--rm-angle', `${(row.phase + ramseyOmega(copy.state) * state.tau).toFixed(2)}deg`);
+            copy.$tip.setAttribute('transform', `translate(0 ${(-length).toFixed(2)})`);
+        });
+
+        state.links.forEach(link => {
+            const from = poses[link.from];
+            const to = poses[link.to];
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            const span = Math.hypot(dx, dy);
+            const opacity = sampleRamseyTrack(link.track, castS);
+            // Rim to rim, so the connector stretches as the split opens. While the child is
+            // still inside its parent there is no room for an arrowhead, and drawing one would
+            // leave a stray wedge at the parent's edge — so it simply is not there yet.
+            const length = span - from.radius - to.radius - RM_LINK_TAIL_GAP - RM_LINK_HEAD_GAP;
+
+            if (opacity <= 0 || span <= 0 || length <= RM_LINK_HEAD) {
+                link.$g.style.setProperty('--rm-opacity', '0');
+                return;
+            }
+
+            const unitX = dx / span;
+            const unitY = dy / span;
+            const tailX = from.x + (from.radius + RM_LINK_TAIL_GAP) * unitX;
+            const tailY = from.y + (from.radius + RM_LINK_TAIL_GAP) * unitY;
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            link.$g.setAttribute('transform', `translate(${tailX.toFixed(2)} ${tailY.toFixed(2)}) rotate(${angle.toFixed(2)})`);
+            link.$g.style.setProperty('--rm-opacity', opacity.toFixed(3));
+            link.$g.style.setProperty('--rm-link-length', `${length.toFixed(2)}px`);
+            link.$g.style.setProperty('--rm-link-shaft', `${(length - RM_LINK_HEAD).toFixed(2)}px`);
+        });
+
+        if (state.$photons) {
+            state.$photons.setAttribute('transform', `translate(${ramseyPacketX(state.s).toFixed(2)} 0)`);
+        }
+
+        renderRamseyBloch(state, castS);
+    }
+
+    // The trail is three arcs, one per hop that moves the state, and each is revealed by pulling
+    // its own dash back. pathLength="1" in the markup is what makes the progress writable
+    // directly, with nothing measured; the px unit is mandatory, since stroke-dashoffset takes a
+    // length and a bare number is dropped on the floor.
+    //
+    // The two meridian arcs are the blasts, so they follow the cast rather than the story and the
+    // trail leaves the pole in the pulse's wake. The equator arc is the wait, and it is the one
+    // thing here driven by tau instead: the state's position along the equator *is* the angle
+    // between the two arrows, so reading it off anything else would have the sphere arriving at
+    // "minus" while the two arrows on the left are still visibly short of opposition.
+    // How far round the equator the state has travelled — the angle between the two arrows,
+    // measured against the half turn that separates “plus” from “minus”. Only asked while the
+    // widget is on the wait itself: a hop that spans several steps has no relative rotation to
+    // keep pace with, and there the story position is the honest answer.
+    function ramseyEquatorProgress(state) {
+        if (state.s <= 1) return 0;
+        if (state.s >= 2) return 1;
+        if (!state.tween || !state.tween.wait) return state.s - 1;
+
+        return clampNumber(normalizeAngle(ramseyRelativeAngle(state.tau)) / 180, 0, 1);
+    }
+
+    function renderRamseyBloch(state, castS) {
+        const progress = [
+            clampNumber(castS, 0, 1),
+            ramseyEquatorProgress(state),
+            clampNumber(castS - 2, 0, 1),
+        ];
+
+        state.trails.forEach(($trail, i) => {
+            $trail.style.setProperty('--rm-trail', `${(1 - progress[i]).toFixed(4)}px`);
+        });
+
+        // A marker lights as the trail passes over it, a node when the arc arriving at it lands.
+        // Ground starts lit because that is where the atom begins, and the trail returns to it;
+        // excited is never lit, which is the picture's whole point.
+        state.markers.forEach(($marker, i) => {
+            $marker.classList.toggle('is-lit', progress[i] >= 0.5);
+        });
+
+        const lit = { ground: true, plus: progress[0] >= 1, minus: progress[1] >= 1, excited: false };
+
+
+        state.nodes.forEach($node => {
+            $node.classList.toggle('is-lit', !!lit[$node.dataset.node]);
+        });
+    }
+
+    // Captions belong to keyframes, not to moments: while the clock is moving there is no step
+    // to caption, so none of them show and the live region is emptied.
+    function setRamseyCaption($widget, step) {
+        $widget.querySelectorAll('.rm-caption').forEach($caption => {
+            $caption.classList.toggle('is-visible', Number($caption.dataset.step) === step);
+        });
+
+        const $status = $widget.querySelector('.rm-status');
+        if (!$status) return;
+
+        const $current = step === null ? null : $widget.querySelector(`.rm-caption[data-step="${step}"]`);
+        $status.textContent = $current ? $current.textContent.replace(/\s+/g, ' ').trim() : '';
+    }
+
+    // The trail only shows where the reader has already been, so steps still ahead are not in
+    // the rail at all — it grows as they advance, which is how the Figma frames draw it.
+    function syncRamseyChrome($widget) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        const reached = state.tween ? Math.max(state.step, state.tween.step) : state.step;
+
+        $widget.querySelectorAll('.rm-crumb').forEach($crumb => {
+            const step = Number($crumb.dataset.step);
+            const $item = $crumb.closest('.rm-crumb-item');
+
+            if ($item) $item.hidden = step > reached;
+
+            $crumb.classList.toggle('is-current', step === reached);
+            // Deliberately never disabled. Steps ahead are hidden outright, so the only crumb
+            // that is not somewhere to go is the current one — and disabling it would throw a
+            // keyboard reader's focus onto the body the instant they pressed Enter on it, since
+            // the crumb they just used becomes the current step. goToRamseyStep() already
+            // ignores a request to go where it already is.
+            if (step === reached) {
+                $crumb.setAttribute('aria-current', 'step');
+            } else {
+                $crumb.removeAttribute('aria-current');
+            }
+        });
+
+        const $back = $widget.querySelector('.rm-button--back');
+        const $next = $widget.querySelector('.rm-button--next');
+
+        if ($back) $back.disabled = reached <= 0;
+        if ($next) $next.disabled = reached >= RM_STEPS - 1;
+
+        scrollRamseyCrumbIntoView($widget, reached);
+    }
+
+    // Not scrollIntoView(): this page scrolls in a container of its own, and asking an element
+    // to bring itself into view there moves the article instead of the rail. Setting scrollLeft
+    // from the crumb's own offset does only what it says.
+    function scrollRamseyCrumbIntoView($widget, step) {
+        const $rail = $widget.querySelector('.rm-rail');
+        const $crumb = $widget.querySelector(`.rm-crumb[data-step="${step}"]`);
+        if (!$rail || !$crumb) return;
+
+        const $item = $crumb.closest('.rm-crumb-item') || $crumb;
+        const overflow = $item.offsetLeft + $item.offsetWidth - $rail.clientWidth;
+
+        if (overflow > $rail.scrollLeft) $rail.scrollLeft = overflow;
+        else if ($item.offsetLeft < $rail.scrollLeft) $rail.scrollLeft = $item.offsetLeft;
+
+        $rail.classList.toggle('is-scrolled', $rail.scrollLeft > 0);
     }
 
     function describeArrow(angle, magnitude) {
@@ -1319,6 +1852,173 @@
         syncEmissionControls($widget);
     }
 
+    // One MediaQueryList rather than a fresh matchMedia() per frame, since the spin loop asks
+    // every time — and asking every time is the point: a reader who turns the setting on
+    // mid-article should have the arrows stop, not wait for a reload.
+    const _ramseyReduced = window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)')
+        : { matches: false };
+
+    // The arrows turn while the reader is reading, except on the two steps that pin the state to
+    // a named point on the equator. There they hold: a relative angle that kept growing would be
+    // the state sliding on past the point the caption is describing. Under reduced motion they
+    // never turn at all, and settleRamseyStep places tau by keyframe instead.
+    function ramseySpinning(state) {
+        if (_ramseyReduced.matches) return false;
+
+        return RM_POSE_STEP[state.step] === null;
+    }
+
+    // One loop, both clocks. Through a hop tau is interpolated to the pose the hop is aiming at
+    // rather than merely advanced, so a dropped frame cannot leave the arrows a fraction of a
+    // turn short of where the step says they are.
+    function stepRamseyClock($widget, timestamp) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        state.frame = 0;
+
+        // A loop restarted after scrolling back into view has no previous timestamp to measure
+        // against; skip one frame rather than jumping either clock.
+        if (!state.last) state.last = timestamp;
+
+        const elapsed = Math.min(RM_MAX_FRAME, timestamp - state.last);
+        state.last = timestamp;
+
+        if (state.tween) {
+            const tween = state.tween;
+
+            tween.elapsed += elapsed;
+
+            const u = clampNumber(tween.elapsed / tween.duration, 0, 1);
+
+            state.s = tween.from + (tween.to - tween.from) * easeInOutCubic(u);
+            // Linear on the wait, because there the duration was measured out in turns and a
+            // steady rate is real time exactly — which is what lets the sphere's equator arc be
+            // read straight off the arrows. Eased everywhere else, so that a hop which has to
+            // cover an awkward amount of turning does not start and stop with a jolt.
+            state.tau = tween.tauFrom + (tween.tauTo - tween.tauFrom) * (tween.wait ? u : easeInOutCubic(u));
+
+            if (u >= 1) {
+                settleRamseyStep($widget, tween.step);
+                return;
+            }
+        } else if (ramseySpinning(state)) {
+            state.tau += elapsed;
+        }
+
+        renderRamsey($widget);
+
+        if (state.visible && (state.tween || ramseySpinning(state))) {
+            state.frame = requestAnimationFrame(ts => stepRamseyClock($widget, ts));
+        }
+    }
+
+    // Arriving at a keyframe: land exactly on it, caption it, and let the spin pick up again
+    // unless this is the step that holds still.
+    function settleRamseyStep($widget, step) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        if (state.frame) cancelAnimationFrame(state.frame);
+
+        state.frame = 0;
+        state.last = 0;
+
+        // Put tau exactly where the hop was aiming rather than wherever the last partial frame
+        // left it — otherwise the arrows strike their pose to within a frame instead of exactly.
+        if (state.tween) state.tau = state.tween.tauTo;
+
+        state.tween = null;
+        state.step = step;
+        state.s = step;
+
+        if (_ramseyReduced.matches) state.tau = RM_REDUCED_TAU[step];
+
+        renderRamsey($widget);
+        syncRamseyChrome($widget);
+        setRamseyCaption($widget, step);
+        updateRamseyPlayback($widget);
+    }
+
+    // Both the buttons and the breadcrumbs come through here, so going back four steps and
+    // going forward one are the same operation with a different destination — and because every
+    // drawn value is a function of s, going backwards runs the whole picture in reverse: the
+    // pulse flies right to left and the copies fold back into the atom they came from.
+    function goToRamseyStep($widget, step) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        const target = clampNumber(Math.round(step), 0, RM_STEPS - 1);
+        // Aim from where the clock is heading rather than where it happens to be, so a reader
+        // pressing next twice in quick succession gets two steps instead of restarting one.
+        const heading = state.tween ? state.tween.step : state.step;
+
+        if (target === heading) return;
+
+        setRamseyCaption($widget, null);
+
+        if (_ramseyReduced.matches) {
+            settleRamseyStep($widget, target);
+            return;
+        }
+
+        // A step that pins the state to a point on the equator has to land on the exact moment
+        // the arrows strike that pose; the other three leave tau free and simply let it run on
+        // through the hop. Rewinding aims at the pose *behind* where the clock stands, so the
+        // arrows unwind — which is what makes the equator arc retrace itself rather than lurch.
+        const forward = target > state.s;
+        const parity = RM_POSE_STEP[target];
+        const pose = parity === null
+            ? null
+            : ramseyPoseTau(state.tau + (forward ? RM_POSE_MIN : -RM_POSE_MIN), parity, forward);
+
+        // Walking forward into the wait is the one hop whose length is not a design decision: it
+        // is however long the arrows really take to come into opposition, because watching that
+        // happen is the whole of the step. Since step 1 parks them parallel, that is always
+        // exactly one turn of the slow arrow. Every other hop takes a fixed time, grown
+        // sub-linearly so a four-step rewind does not plod.
+        const wait = (heading === 1 && target === 2) || (heading === 2 && target === 1);
+        const duration = wait && forward
+            ? Math.abs(pose - state.tau)
+            : Math.min(RM_TWEEN_MAX, RM_TWEEN * Math.pow(Math.abs(target - state.s), RM_TWEEN_SPAN));
+
+        state.tween = {
+            from: state.s,
+            to: target,
+            step: target,
+            tauFrom: state.tau,
+            tauTo: pose === null ? state.tau + duration : pose,
+            wait,
+            elapsed: 0,
+            duration,
+        };
+        state.last = 0;
+
+        syncRamseyChrome($widget);
+        updateRamseyPlayback($widget);
+    }
+
+    // The loop runs only while the widget is on screen, so a post carrying seven widgets is not
+    // paying for the ones the reader has scrolled past. A hop interrupted by scrolling away is
+    // finished rather than abandoned — coming back to a half-arrived keyframe with no caption
+    // would look broken.
+    function updateRamseyPlayback($widget) {
+        const state = _ramseyStates.get($widget);
+        if (!state) return;
+
+        if (state.tween && !state.visible) {
+            settleRamseyStep($widget, state.tween.step);
+            return;
+        }
+
+        if (state.frame || !state.visible) return;
+        if (!state.tween && !ramseySpinning(state)) return;
+
+        state.last = 0;
+        state.frame = requestAnimationFrame(ts => stepRamseyClock($widget, ts));
+    }
+
 
     /*****************************************
                   LISTENER WIRING
@@ -1514,6 +2214,80 @@
         });
     }
 
+    function initRamsey() {
+        const $widgets = document.querySelectorAll('.ramsey-widget');
+
+        $widgets.forEach($widget => {
+            // The cast is in the markup; this only pairs each entry with the group that draws
+            // it, so a missing one is a missing widget rather than a thrown error mid-render.
+            const copies = RM_CAST.map(copy => {
+                const $g = $widget.querySelector(`.rm-atom[data-copy="${copy.key}"]`);
+
+                return $g && {
+                    key: copy.key,
+                    state: copy.state,
+                    rows: copy.rows,
+                    $g,
+                    $tip: $g.querySelector('.rm-arrow-tip'),
+                };
+            });
+
+            const links = RM_LINKS.map(link => {
+                const $g = $widget.querySelector(`.rm-connector[data-connector="${link.from}:${link.to}"]`);
+
+                return $g && { from: link.from, to: link.to, track: link.track, $g };
+            });
+
+            if (copies.some(copy => !copy) || links.some(link => !link)) return;
+
+            const state = {
+                copies,
+                links,
+                $photons: seedRamseyPhotons($widget),
+                trails: [...$widget.querySelectorAll('.rm-bloch-trail')],
+                markers: [...$widget.querySelectorAll('.rm-bloch-marker[data-segment]')],
+                nodes: [...$widget.querySelectorAll('.rm-bloch-node')],
+                s: 0,
+                step: 0,
+                tau: 0,
+                tween: null,
+                frame: 0,
+                last: 0,
+                visible: true,
+            };
+
+            _ramseyStates.set($widget, state);
+
+            $widget.querySelectorAll('.rm-crumb').forEach($crumb => {
+                $crumb.addEventListener('click', () => goToRamseyStep($widget, Number($crumb.dataset.step)));
+            });
+
+            const $back = $widget.querySelector('.rm-button--back');
+            const $next = $widget.querySelector('.rm-button--next');
+            const heading = () => (state.tween ? state.tween.step : state.step);
+
+            if ($back) $back.addEventListener('click', () => goToRamseyStep($widget, heading() - 1));
+            if ($next) $next.addEventListener('click', () => goToRamseyStep($widget, heading() + 1));
+
+            if (window.IntersectionObserver) {
+                new IntersectionObserver(entries => {
+                    state.visible = entries[entries.length - 1].isIntersecting;
+                    updateRamseyPlayback($widget);
+                }).observe($widget);
+            }
+
+            // The rail's overflow is measured in layout pixels, so the one thing that does not
+            // survive a resize on its own is which crumb is scrolled into view.
+            if (window.ResizeObserver) {
+                new ResizeObserver(() => syncRamseyChrome($widget)).observe($widget);
+            }
+
+            // settleRamseyStep starts the spin loop if there is spinning to do, and places tau
+            // by keyframe if there is not — so reduced motion needs no separate branch here.
+            settleRamseyStep($widget, 0);
+        });
+    }
+
 
     /*****************************************
                    INITIALIZATION
@@ -1526,6 +2300,7 @@
         initDoubleSlitPattern();
         initTravelingElectron();
         initEmission();
+        initRamsey();
     }
 
     document.addEventListener('DOMContentLoaded', init, { once: true });

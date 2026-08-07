@@ -259,6 +259,11 @@ trio; `src/_includes/qm/hong-ou-mandel.svg` is the reference for a Figma-derived
 `src/_includes/qm/double-slit-paths.html` is the reference for a widget whose several inline SVGs
 are all one picture — chart, setup and arrow equation sharing one coordinate story, with the
 sliders locked to them (see *Welding a slider to the diagram it scrubs* and *Phase as hue*).
+`src/_includes/qm/ramsey.html` is the reference for the biggest shape: a widget that *is* the whole
+card — its own header, two panels and a caption panel rather than a drawing sitting inside the usual
+30px of padding — stepped through five keyframes, reversible, and idling between them (see *Two
+clocks*, *Copies that come and go* and *Reserving the height of the tallest of N cross-fading
+panels*).
 
 ## The three-way split
 
@@ -313,6 +318,22 @@ queries, no `transform: scale()`. A fixed-size SVG diagram needs none of that: `
 `max-width: <natural width>` scales it fluidly on its own.
 
 State classes use the `is-` prefix (`is-running`, `is-used`, `is-lit`).
+
+### Reserving the height of the tallest of N cross-fading panels is a grid job
+
+When a widget swaps between several blocks of prose — Ramsey's five captions, and anything like
+them — the height has to be reserved by the longest, or the page jolts every time the reader steps.
+Do **not** measure them in JS. Put them all in the same grid cell:
+
+```scss
+.rm-captions { display: grid; }
+.rm-caption  { grid-area: 1 / 1; opacity: 0; transition: opacity 220ms ease; pointer-events: none; }
+.rm-caption.is-visible { opacity: 1; pointer-events: auto; }
+```
+
+The row's height is the max of its items for free, it stays correct through a resize and at every
+breakpoint, and there is nothing to recompute. This is strictly better than the absolute positioning
+`emission` uses for its mobile label band, and that widget is worth retrofitting.
 
 ### Controls
 
@@ -546,6 +567,105 @@ rather than watching play. It keeps the four rules above and adds three.
   a button or under the reader's thumb) and come back only on arrival. Reduced motion drops the
   tween and snaps — the step still happens, so nothing goes in the CSS media query.
 
+### Two clocks, when a widget has to both step *and* idle
+
+`initRamsey` in `quantum.js` is the reference. Emission gets by on one clock because it is still
+whenever the reader is. Ramsey is not: its arrows have to keep turning while the reader reads, the
+reader has to be able to rewind, and one step has to freeze the arrows in an exact pose. No single
+clock does all three — a pure function of story position cannot idle, and a free-running clock
+cannot be rewound. So there are two, and the split is by *what each one owns*:
+
+| | `s` — the story | `tau` — physical time |
+|---|---|---|
+| range | a float in `[0, stepCount - 1]` | milliseconds |
+| owns | positions, radii, opacities, connectors, particles | how far each arrow has turned |
+| driven by | the tween, and only the tween | real time when idle; interpolated through a hop |
+| reversible | exactly | on a hop, yes — it aims at the pose *behind* it |
+
+**The rule that keeps them from disagreeing: every claim the widget makes must be a claim about a
+*relative* angle between two arrows turning at the same rate, and those come from `s`.** Ramsey's
+captions say the two ground copies are in step and the two excited ones oppose; both are differences
+of same-rate arrows, so they hold at every `tau`, and `tau` is free to run without ever making a
+caption untrue. An assertion about one arrow's absolute direction would not survive, and should be
+a red flag that something belongs in the `s` table instead.
+
+Consequences worth copying:
+
+- **Pause the idle wherever the picture names a place.** Ramsey's arrows turn on three of its five
+  steps and hold on the other two, and the reason is not decoration: the angle between the ground
+  and excited arrows *is* the state's position on the Bloch sphere's equator, so leaving them
+  turning while the caption says "we are at plus" would have the state quietly sliding past the
+  point being described. Ask of every idle animation what quantity it is secretly changing.
+- **Land on a pose, do not merely arrive.** Each step that names a place gets a *parity* rather than
+  a time: even whole turns of the slow arrow put the pair parallel, odd ones put it opposed. A hop
+  aiming at such a step interpolates `tau` to the nearest such moment in its direction of travel —
+  forwards for NEXT, backwards for a rewind, which is what makes the arrows unwind and the equator
+  arc retrace instead of lurching. `settle` then snaps `tau` to that target, so a dropped frame
+  cannot leave the arrows a fraction of a turn short of what the step claims.
+- **Choose the rates so the poses are the design file's.** With `ω_excited = 1.5 ω_ground`, every
+  whole turn of the slow arrow brings *both* arrows back to upright while flipping their relative
+  angle by half a turn — so the parallel and opposed poses land on one grid, and both are Figma
+  frames. Picking 2× or 3× instead would have parked the pair at an arbitrary rotation. Solve for
+  this; do not tune it.
+- **One hop's length can be physics rather than taste.** Walking forward into the wait takes exactly
+  as long as the arrows really need to come into opposition, because watching that happen is the
+  whole of the step — and since the previous step parks them parallel, that is always exactly one
+  turn of the slow arrow. Every other hop uses a designed duration and interpolates `tau` across it;
+  nobody has a reference by which to judge an absolute rotation rate mid-transition.
+- **Reduced motion needs a `tau` table, not `tau = 0`.** With no spin at all, the WAIT step would
+  show two arrows both pointing up — the widget's central claim, drawn wrong. `RM_REDUCED_TAU` gives
+  each keyframe the value of physical time at which it reproduces its own frame (`[0, 0, τ₁, τ₁,
+  τ₁]`). This is also what makes reduced motion the right harness for fidelity diffs: it is the only
+  mode in which every keyframe has one canonical pose.
+
+### Two readouts of one quantity have to be driven by that quantity
+
+Ramsey draws the relative angle between its two arrows twice: as the arrows themselves, and as how
+far a blue arc has crept along the sphere's equator. Drive the second off the story position and
+they drift — the sphere announces arrival at "minus" while the arrows on the left are still visibly
+short of opposition, and no amount of tuning the easing fixes it, because one is eased in story time
+and the other is linear in physical time. Drive the arc off `tau` and they cannot disagree:
+`progress = relativeAngle(tau) / 180`. The test is worth writing as a *tracking* assertion sampled
+every frame of the hop rather than a check at the endpoints, since the endpoints agree either way.
+
+The exception proves the rule: on a hop that spans several steps there is no relative rotation to
+keep pace with, so the arc falls back to the story position — a flag on the tween, not a guess.
+
+### Make the effect follow its cause
+
+The first version of Ramsey's blast tweened the pulse and the split over the same interval, so the
+copies drifted apart *while* the microwaves were still approaching. Everything was smooth and it
+read as two unrelated things happening at once. The fix is a second, delayed position — the story
+runs on, the cast lags it — with the delay measured against the drawing rather than guessed:
+
+```js
+// the pulse's leading edge is level with the atoms at 0.37 of the hop, its tail clear by 0.65
+const RM_SPLIT_DELAY = 0.34, RM_SPLIT_SPAN = 0.46;
+function ramseyCastPosition(s) { … }   // identity outside a blast; equals s at every keyframe
+```
+
+Because it agrees with `s` exactly at the integers, no keyframe and nothing else in the widget has
+to know it exists. And assert it as causation, not as timing: *at the frame the copies first
+separate, where is the pulse?* — a test that survives every later change to the durations.
+
+### Copies that come and go: `null` rows, and why birth is not a fade
+
+A stepped widget whose cast changes needs a rule for a copy that does not exist yet. Ramsey's table
+carries `null` for those rows and `expandRamseyCast()` fills them once at module scope:
+
+- **Before a copy exists** it sits at its *parent's* position with magnitude 0. Since radius and
+  arrow length are both derived from magnitude, it grows out of the copy it came from — and because
+  it is fully opaque the whole time, there is never a moment where two translucent discs overlap.
+  That matters more than it sounds: see *Two cross-fading discs are not a cross-fade* below, and
+  note that here the parent is blue and the child is red, so a fade would have tinted it.
+- **After a copy is gone** the last row is carried forward at opacity 0, so it fades where it stands
+  rather than shrinking away to a point.
+
+⚠️ **Anything added to the radius has to fade with it too.** The halo is `radius + 4` (or `+ 16`),
+constant in the design file at every size — but at magnitude 0 that leaves a bare 16-unit red wash
+sitting where the atom is about to appear, which reads as a bruise on the picture and looks nothing
+like a bug in the table. Multiply the offset by `clamp(radius / smallestRadius, 0, 1)`.
+
 ### Derive every visual from one curve, not from several tuned to agree
 
 The emission widget's photon count, red nucleus and orbital cloud all read
@@ -559,6 +679,23 @@ mutually inconsistent decay rates (their own dot counts say one thing, their ato
 another), and Figma's angular spray is four rotated copies of one hand-placed cluster. Take the
 distribution as the source of truth and the frames as illustration — then expect a permanent
 residual when you diff, and do not "fix" it.
+
+Ramsey is the same story with the numbers going the other way: `RM_UNIT_RADIUS * |amplitude|` gives
+31 / 21.92 / 15.5 where Figma draws 31 / 22 / 15, and the arithmetic is right. Take the formula and
+accept a half-pixel residual on the small copies.
+
+⚠️ **A keyframe is a still, and some of what it draws is there to be looked at rather than to be a
+resting state.** Ramsey's blast frames show the microwave pulse hanging in the middle of the picture
+— which is how you check the dots read at all, not where the pulse is supposed to stop. Built that
+way it looks frozen, because everything around it is moving. Ask which parts of a frame are the
+state and which are the photographer; the answer is not in the file.
+
+⚠️ **And the frames can disagree with *each other*.** Ramsey's Bloch sphere carries six little
+direction arrows; frame 4 has the two upper ones pointing the opposite way to frames 1–3, and only
+frames 1–3 agree with the direction the blue trail is actually drawn in. Decide which frame is the
+spec **before** you diff, write down which one and why, and expect the other to score badly forever.
+The tell that you are looking at a slip rather than at intent is that the odd frame contradicts
+something the widget itself computes.
 
 ### ⚠️ Two cross-fading discs are not a cross-fade
 
@@ -705,6 +842,43 @@ SVG2 promoted `x`, `y`, `width`, `height`, `r`, `cx`, `cy` to CSS geometry prope
 `x1`/`y1`/`x2`/`y2` on `<line>`. So a line's length can't be driven by a custom property. Either
 draw the shaft as a `<rect>` (whose `width` *is* a CSS property) or set it with `setAttribute`.
 The split used here: rotation via `transform: rotate(var(--qam-angle))`, length via `setAttribute`.
+
+### ⚠️ A CSS `transform` *replaces* a `transform` attribute — it does not compose with it
+
+The natural way to place a repeated `<use>` is a transform attribute: `<use href="#tri"
+transform="translate(68.44 43.44) rotate(135)"/>`. Add a counter-scale in the stylesheet
+(`.tri { transform: scale(var(--scale)) }`) and the attribute is gone — all six of Ramsey's Bloch
+direction markers collapsed onto the sphere's centre, which does not look like a cascade problem,
+it looks like the placement maths is wrong. If both are needed, either nest a second `<g>` or scale
+the referenced path inside `<defs>` instead. Usually the counter-scale is the thing to drop.
+
+### Revealing a path progressively
+
+Give it `pathLength="1"` in the markup and the progress is writable with nothing measured:
+
+```scss
+.rm-bloch-trail { stroke-dasharray: 1px 1px; stroke-dashoffset: var(--rm-trail, 1px); }
+```
+```js
+$trail.style.setProperty('--rm-trail', `${(1 - progress).toFixed(4)}px`);   /* px is mandatory */
+```
+
+**One path per segment, not one path with computed fractions.** Ramsey's trail is three arcs, and
+each hop of the story drives exactly one of them from 1 to 0, so the joins land on the labelled
+points by construction rather than on a fraction of a combined arc length that has to be right to
+four decimals. Note the unit: `stroke-dashoffset` takes a `<length>`, so a bare `0.42` is dropped
+silently — the same family as the `calc()` trap above, and the same symptom (nothing moves).
+
+### ⚠️ `offsetLeft` needs a positioned ancestor to mean what you want
+
+Scrolling a horizontal rail to keep its active item in view compares `item.offsetLeft` against
+`rail.scrollLeft` — but `offsetLeft` is measured from the nearest *positioned* ancestor, which for a
+rail with no `position` is something much further up the page. The rail then scrolls to a plausible
+wrong number, and only at the widths where it actually overflows, so it looks like an off-by-one in
+the arithmetic. `position: relative` on the scroller fixes it.
+
+(And it must be `scrollLeft`, not `scrollIntoView`: this site's post page scrolls in a container of
+its own, so asking an element to bring itself into view moves the article instead.)
 
 ---
 
@@ -947,7 +1121,33 @@ and only adds the 45px padding at `w900`. Measured SVG width for a `max-width: 7
 ⚠️ Headless Chromium enforces a **~500px minimum window width**, so `--window-size=375,x` silently
 runs at 500. The media queries under test are then the 500px ones, not the 375px ones. Pin the
 column with an explicit CSS width and read `window.innerWidth` back in the log rather than trusting
-the flag; for anything below 500 the Browser pane's `resize_window` is the only real option.
+the flag. `--headless=new` does not lift the floor and neither does `--force-device-scale-factor`;
+the Browser pane's `resize_window` did not move the page's viewport either, when tried.
+
+**The way that does work below 500: put the widget in an `<iframe>` of the width you want.** Media
+queries inside an iframe evaluate against the iframe's own viewport, so a 375-wide frame in a
+1200-wide headless window is a genuine 375px test — `window.innerWidth` inside reads 375, the
+breakpoints fire, and the outer page can reach in and measure:
+
+```bash
+brave --headless --allow-file-access-from-files --window-size=1200,1400 --dump-dom frame.html
+```
+
+Two things that will bite: `--allow-file-access-from-files` is required or `contentWindow` is
+cross-origin, and drive the widget with `--force-prefers-reduced-motion` so clicks snap — otherwise
+every measurement is taken mid-tween and reads as a plausible zero.
+
+### Counter-scaling two panels that do not scale together
+
+Ramsey has a stage that fills whatever column it is given and a Bloch sphere capped at its natural
+215px, side by side. One `--counter-scale` would over-correct the sphere, which sits at 1.0 through
+the whole narrow range. Give each panel its own variable and comment why they differ.
+
+The other non-obvious bit: **the stage's correction is not monotonic in viewport width.** It grows
+as the column narrows, and then the breakpoint that stacks the sphere underneath hands the stage the
+whole card back — so the scale jumps *up* and the correction has to be withdrawn (`under-w600`
+resets `--rm-counter-scale` to 1). A band that resets rather than increases looks like a mistake;
+say what it is for.
 
 ### Annotation labels over a drawing
 

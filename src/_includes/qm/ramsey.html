@@ -1,0 +1,68 @@
+<!-- The two SVGs carry static title/desc ids, so include this widget at most once per page. -->
+<div id="ramsey" class="widget ramsey-widget">
+    <div class="rm-header">
+        <!-- A trail rather than a set of tabs: only steps the reader has already reached are
+             shown, and clicking one rewinds to it — the whole animation runs backwards, since
+             every drawn value is a function of one story position. Steps still ahead are
+             hidden entirely, which is how the Figma frames draw it, so the rail grows as the
+             reader advances rather than dangling four dead links from the start.
+             The separators are a CSS ::before on every item but the first; they are decoration
+             and would only be noise to a screen reader. -->
+        <nav class="rm-rail" aria-label="Steps">
+            <ol class="rm-crumbs">
+                <li class="rm-crumb-item"><button type="button" class="rm-crumb" data-step="0"><span class="rm-crumb-long">Start</span><span class="rm-crumb-short">Start</span></button></li>
+                <li class="rm-crumb-item"><button type="button" class="rm-crumb" data-step="1"><span class="rm-crumb-long">Microwave Blast #1</span><span class="rm-crumb-short">Blast #1</span></button></li>
+                <li class="rm-crumb-item"><button type="button" class="rm-crumb" data-step="2"><span class="rm-crumb-long">Wait</span><span class="rm-crumb-short">Wait</span></button></li>
+                <li class="rm-crumb-item"><button type="button" class="rm-crumb" data-step="3"><span class="rm-crumb-long">Microwave Blast #2</span><span class="rm-crumb-short">Blast #2</span></button></li>
+                <li class="rm-crumb-item"><button type="button" class="rm-crumb" data-step="4"><span class="rm-crumb-long">Result</span><span class="rm-crumb-short">Result</span></button></li>
+            </ol>
+        </nav>
+        <div class="rm-buttons">
+            <!-- Figma draws only NEXT and leaves rewinding to the breadcrumbs. Going back one
+                 step is worth a control of its own, but it does not deserve as much room as
+                 going forwards — hence an icon, and the same drawn chevron the emission widget
+                 uses so it does not wait on the mono webfont to render. -->
+            <button type="button" class="rm-button rm-button--back" aria-label="Previous step">
+                <svg class="rm-button-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+                    <path d="M14 9H4M8.5 4.75 4.25 9l4.25 4.25"/>
+                </svg>
+            </button>
+            <button type="button" class="rm-button rm-button--next">Next</button>
+        </div>
+    </div>
+    <div class="rm-body">
+        <div class="rm-panel rm-panel--stage">{% include qm/ramsey-stage.svg %}</div>
+        <div class="rm-panel rm-panel--bloch">{% include qm/ramsey-bloch.svg %}</div>
+    </div>
+    <!-- All five captions ship and share one grid cell, so the panel is always as tall as the
+         longest of them at whatever width the reader is at — the height is reserved with no
+         measuring and no JS, and stepping never nudges the page. Only the arrived-at one is
+         opaque; while the clock is moving there is no keyframe to caption, so none are. -->
+    <div class="rm-captions">
+        <div class="rm-caption" data-step="0">
+            <p>We begin with an atom in its ground state.</p>
+            <p>The spinning arrow isn’t a property of the atom; it’s the special quantum probability of finding the atom in this state. Note: the classical probability is constant (it’s based on the <em>length</em> of the arrow). But the spinning means that, <em>were</em> the atom to split into phantom copies that end up in the same state, they’d have a chance to cancel each other out.</p>
+            <p>Guess what the next step is… 😉</p>
+        </div>
+        <div class="rm-caption" data-step="1">
+            <p>A precise microwave blast splits the atom into two phantom copies: one ground-state and one excited. The power of the blast is calibrated so that, if you were to look immediately, there’s a 50% chance of finding the atom in its ground state, and 50% chance of finding it in its excited state. Hence their arrow lengths are equal.</p>
+        </div>
+        <div class="rm-caption" data-step="2">
+            <p>Each phantom copy’s probability rotates at a speed proportional to the atom’s energy – meaning the excited atom’s arrow spins faster than the ground atom’s arrow. Now we simply wait until the two arrows are pointed in precisely opposite directions.</p>
+        </div>
+        <div class="rm-caption" data-step="3">
+            <p>At precisely the moment when the copies’ quantum probabilities are equal and opposite, we shoot the second pulse of microwave photons. That splits each phantom copy into two <em>more</em> copies.</p>
+            <p>There is still only one atom; we are simply splitting possible states we could find it in.</p>
+            <p>Note that the ground copy formed from the energized copy has its direction flipped.</p>
+        </div>
+        <div class="rm-caption" data-step="4">
+            <p>Next…</p>
+            <ol>
+                <li>The equal and opposite probabilities of the excited copies cancel each other out</li>
+                <li>The in-sync probabilities of the ground copies <em>add together</em></li>
+            </ol>
+            <p>We are left, 100% of the time we look at the energy state of the atom, with <em>only</em> a ground state copy. All of this despite having shot two “randomizing” bursts of photons at it! A magic coin.</p>
+        </div>
+    </div>
+    <p class="rm-status visually-hidden" role="status" aria-live="polite"></p>
+</div>

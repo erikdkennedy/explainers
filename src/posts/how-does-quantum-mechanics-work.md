@@ -316,6 +316,8 @@ Let’s get started 😎
 
 ## Experiment 2: the Ramsey experiment {data-ordinal="VI." #ramsey-experiment}
 
+{% include qm/ramsey.html %}
+
 
 
 ## Experiment 3: the Hong-Ou-Mandel experiment {data-ordinal="VII." #hong-ou-mandel}
