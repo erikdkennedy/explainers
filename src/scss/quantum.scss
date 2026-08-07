@@ -1005,6 +1005,354 @@
     }
 
 
+/*****************************************
+                 EMISSION
+*****************************************/
+
+.emission-widget {
+    /* VARIABLES */
+    --em-dot-size: 3px; /* tweakable */
+    --em-dot-color: #333; /* Figma's dot grey, matching the traveling electron's cloud */
+    --em-excited-color: #E54C2E;
+    --em-ground-color: #007BFC;
+    --em-cloud-blur: 15px; /* Figma's feGaussianBlur stdDeviation, which CSS blur() matches 1:1 */
+    --em-cloud-lobe-opacity: 0.5;
+    --em-atom-radius: 10px; /* carries its unit — see the calc() note in CLAUDE.md */
+
+    /* The atom's height within the stage, as a percentage. JS reads this back once per
+       resize so the dots orbit the same point the SVG is drawn at — the drawing's
+       vertical placement stays CSS's business even though the maths is in JS. */
+    --em-atom-y: 51.25%; /* Figma: 205 of the 400px drawing area */
+
+    --em-track-height: 6px;
+    --em-track-color: rgba(0, 0, 0, 0.2);
+    --em-thumb-size: 28px;
+    --em-button-width: 58px;
+    --em-button-height: 38px;
+    --em-button-gap: 4px;
+    --em-controls-gap: 10px;
+    --em-label-transition: 220ms;
+    --em-stage-bleed: 30px; /* must equal .widget's padding — see .em-stage */
+
+    /* Written by renderEmissionField(). Both ride the same decay curve, so the cloud and
+       the red nucleus fade out at exactly the rate the phantom copies appear. */
+    --em-excited-opacity: 1;
+    --em-cloud-opacity: 1;
+}
+
+    /* Scaled by width alone; the dots and the atom keep their pixel size at every width,
+       which a viewBox stretched over the stage would not have allowed — and the cloud's
+       blur radius would have smeared differently at every size. */
+    .em-stage {
+        position: relative;
+        aspect-ratio: 700 / 400;
+
+        /* Full-bleed to the card, so the phantom copies that outrun the frame are cut off
+           by the picture's own edge rather than by an invisible inset. */
+        margin: calc(0px - var(--em-stage-bleed, 30px)) calc(0px - var(--em-stage-bleed, 30px)) 0;
+
+        /* Matches the card, so the corners clip the dots on the same curve. */
+        border-radius: 40px 40px 0 0;
+        overflow: hidden;
+    }
+
+        /* The three layers all hang off the same point — the nucleus — so they share one
+           placement. Paint order is the markup's, with two exceptions spelled out below:
+           the atom sits above the copies, and the labels above everything. */
+        .em-cloud,
+        .em-nucleus {
+            position: absolute;
+            left: 50%;
+            top: var(--em-atom-y, 51.25%);
+            transform: translate(-50%, -50%);
+        }
+
+        .em-cloud {
+            width: 180px; /* the lobes are 72 x 138; the rest is room for the blur to fall off */
+            height: 240px;
+            margin: 0; /* _posts.scss centres bare svg in prose; this one is placed */
+            opacity: var(--em-cloud-opacity, 1);
+        }
+
+            .em-cloud-lobe {
+                fill: var(--em-excited-color, #E54C2E);
+                opacity: var(--em-cloud-lobe-opacity, 0.5);
+                filter: blur(var(--em-cloud-blur, 15px));
+            }
+
+        /* Above the phantom copies: the ones that have only just left are still at the
+           atom, and drawn over it they turn a clean circle into a smudge. Behind it they
+           become the halo the picture wants. */
+        .em-nucleus {
+            z-index: 1;
+            width: calc(var(--em-atom-radius, 10px) * 2);
+            height: calc(var(--em-atom-radius, 10px) * 2);
+            border-radius: 50%;
+        }
+
+            /* The base disc, never faded — see the note in emission.html. What the reader
+               sees of it is exactly what the excited disc above has stopped covering, so
+               the blue still reads at the decayed fraction without being drawn at it. */
+            .em-nucleus--ground {
+                background-color: var(--em-ground-color, #007BFC);
+            }
+
+            .em-nucleus--excited {
+                background-color: var(--em-excited-color, #E54C2E);
+                opacity: var(--em-excited-opacity, 1);
+            }
+
+        /* Positioned in percentages by quantum.js, so the spray keeps its shape through a
+           resize; only the vertical aspect correction needs recomputing. */
+        .em-photon {
+            position: absolute;
+            width: var(--em-dot-size, 3px);
+            height: var(--em-dot-size, 3px);
+            border-radius: 50%;
+            background-color: var(--em-dot-color, #333);
+            transform: translate(-50%, -50%);
+        }
+
+
+    /* LABELS */
+
+    /* All five ship and only the arrived-at step is opaque, so stepping never reflows
+       anything — and a label that is mid-fade is still in the layout it will land in. */
+    .em-label {
+        position: absolute;
+        /* Above the spray. By the last two steps the copies have spread across the whole
+           frame, and a dot landing mid-word is the one thing here that reads as a bug. */
+        z-index: 2;
+        width: 32.8%; /* Figma: 229 of 700 */
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 100%;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.7);
+        opacity: 0;
+        transition: opacity var(--em-label-transition, 220ms) ease;
+        pointer-events: none;
+    }
+
+        .em-label.is-visible {
+            opacity: 1;
+        }
+
+        /* Figma anchors this one by its top edge and lets it set its own width; every
+           other label is centred on its y and wraps inside the 229px column. */
+        .em-label--intro {
+            left: 68.71%;
+            top: 49.25%;
+            width: auto;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .em-label[data-step="1"],
+        .em-label[data-step="2"],
+        .em-label[data-step="3"] {
+            left: 64.43%; /* Figma: 451 of 700 */
+            transform: translateY(-50%);
+        }
+
+        .em-label[data-step="1"] { top: 45.5%; }
+        .em-label[data-step="2"] { top: 63%; }
+        .em-label[data-step="3"] { top: 90.25%; }
+
+        /* The last step swaps sides: by then the surviving photon is out on the left and
+           the label would sit on top of it. */
+        .em-label[data-step="4"] {
+            left: 3.86%;
+            top: 80.75%;
+            transform: translateY(-50%);
+        }
+
+
+    /* CONTROLS */
+
+    .em-controls {
+        display: flex;
+        align-items: center;
+        gap: var(--em-controls-gap, 10px);
+        margin-top: 20px;
+    }
+
+        /* Deliberately *not* welded to the drawing the way .dsp-slider--position is. The
+           thumb's left edge travels the full track, which is the convention Figma laid the
+           five keyframe dial positions out in, and there is no diagram beneath it whose
+           x-axis has to agree. */
+        .em-scrubber {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            min-width: 0; /* a flex item's default min-width would floor this at its intrinsic size */
+            height: var(--em-thumb-size, 28px);
+            background: transparent;
+            cursor: pointer;
+
+            &:focus {
+                outline: none;
+            }
+
+            &:focus-visible::-webkit-slider-thumb {
+                border-color: var(--link-color);
+            }
+
+            &:focus-visible::-moz-range-thumb {
+                border-color: var(--link-color);
+            }
+        }
+
+            .em-scrubber::-webkit-slider-runnable-track {
+                height: var(--em-track-height, 6px);
+                border-radius: 999px;
+                background: var(--em-track-color, rgba(0, 0, 0, 0.2));
+            }
+
+            .em-scrubber::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: var(--em-thumb-size, 28px);
+                height: var(--em-thumb-size, 28px);
+                /* Centres a 28px thumb over a 6px track. */
+                margin-top: calc((var(--em-track-height, 6px) - var(--em-thumb-size, 28px)) / 2);
+                border-radius: 50%;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                background: #fff;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .em-scrubber::-moz-range-track {
+                height: var(--em-track-height, 6px);
+                border-radius: 999px;
+                background: var(--em-track-color, rgba(0, 0, 0, 0.2));
+            }
+
+            .em-scrubber::-moz-range-thumb {
+                width: var(--em-thumb-size, 28px);
+                height: var(--em-thumb-size, 28px);
+                box-sizing: border-box;
+                border-radius: 50%;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                background: #fff;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            }
+
+        .em-buttons {
+            flex: none;
+            display: flex;
+            gap: var(--em-button-gap, 4px);
+        }
+
+            .em-step {
+                display: grid;
+                place-items: center;
+                width: var(--em-button-width, 58px);
+                height: var(--em-button-height, 38px);
+                padding: 0;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+
+                &:focus-visible {
+                    outline: 2px solid var(--link-color);
+                    outline-offset: 2px;
+                }
+
+                /* Figma draws no disabled state, but the ends of the timeline need one —
+                   otherwise the two buttons look identically live at t = 0 and t = 1. */
+                &[disabled] {
+                    opacity: 0.3;
+                    cursor: default;
+                }
+            }
+
+            .em-step--prev {
+                color: var(--brand-color);
+                background-color: transparent;
+                box-shadow: inset 0 0 0 2px var(--brand-color);
+            }
+
+            .em-step--next {
+                color: #fff;
+                background-color: var(--brand-color);
+            }
+
+            .em-step-icon {
+                width: 18px;
+                height: 18px;
+                margin: 0; /* _posts.scss centres bare svg in prose */
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.75; /* Figma's glyph is a 15px mono arrow — light, not chunky */
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+
+    /* RESPONSIVE */
+
+    /* The labels are the only thing that does not survive a narrow column: 229px of 12px
+       mono is a third of a 700px card but four fifths of a phone. Two stages of retreat. */
+    .emission-widget {
+        /* Still an overlay, just a smaller one. The column keeps its 32.8% — widening it to
+           win back the lost characters would push its right edge past the stage, since the
+           left edge is already at 64.43%. A smaller face fits more of them anyway. */
+        @include under-w700 {
+            .em-label {
+                font-size: 11px;
+            }
+
+            .em-label--intro {
+                font-size: 12px;
+            }
+
+            /* The longest label, sitting lowest, and the one that gains a line first as the
+               column narrows — centred on a y it runs out of frame just before the stacked
+               layout takes over. Anchored to the floor instead, it cannot. */
+            .em-label[data-step="3"] {
+                top: auto;
+                bottom: 4%;
+                transform: none;
+            }
+        }
+
+        /* Below this the overlay stops working at any size, so the labels leave the
+           drawing entirely and stack into a band beneath it. The stage grows taller to
+           make room and the atom rides up with it — one shape, no clipping, and the
+           height is reserved by the tallest label so stepping never jolts the page. */
+        @include under-w600 {
+            --em-atom-y: 34%;
+
+            .em-stage {
+                aspect-ratio: 700 / 620;
+            }
+
+            .em-label {
+                left: 6%;
+                right: 6%;
+                top: auto;
+                bottom: 5%;
+                width: auto;
+                transform: none;
+                white-space: normal;
+                font-size: 12px;
+            }
+
+            .em-label--intro {
+                font-size: 12px;
+            }
+
+            /* The <br> in the first label is Figma's line break for a wide column; down
+               here the band is wide enough that it only wastes a line. */
+            .em-label--intro br {
+                display: none;
+            }
+        }
+    }
+
+
 /* Respect reduced motion: static dashes are still an affordance, and everything the lamp
    and the imprints do is opacity-only, so all of that survives untouched. */
 @media (prefers-reduced-motion: reduce) {
@@ -1034,4 +1382,8 @@
     /* Nothing to switch off here — the cloud's motion is driven from JS, which starts
        paused under the same query. Scrubbing by hand still moves the dots, which is the
        reader asking for it. See initTravelingElectron() in quantum.js. */
+
+    /* Emission is the same story: the tween between keyframes is JS, and goToEmissionStep()
+       snaps straight to the keyframe under this query instead. What is left here is the
+       label cross-fade, which is opacity-only and is what conveys the state — so it stays. */
 }

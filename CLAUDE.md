@@ -528,6 +528,55 @@ would be worse without:
 DOM particles beat SVG here: a `viewBox` scaled to `width: 100%` would shrink 3px dots to 1.5px on
 a phone, whereas absolutely-positioned divs in a `aspect-ratio` stage keep their pixel size.
 
+### Stepping through keyframes over a continuous clock
+
+`initEmission` in `quantum.js` is the reference for a widget the reader advances a step at a time
+rather than watching play. It keeps the four rules above and adds three.
+
+- **The clock stays continuous; keyframes are just values of `t`.** `EM_STEPS = [0, 0.05, 0.10,
+  0.90, 1]` and the state is still one normalised `t`. The buttons search for the nearest keyframe
+  *strictly past* the current `t` (hence `EM_EPSILON`, against float error), which is what makes
+  them behave identically whether the reader arrived by pressing a button or by dragging the
+  scrubber to some moment in between. A `currentStep` integer as the source of truth cannot answer
+  "what comes next" from a scrubbed position at all.
+- **Scale the tween duration with the distance travelled.** A lopsided timeline — three keyframes
+  inside the first tenth, then one long haul to 0.9 — either crawls through the short hops or
+  blurs past the long one under a fixed duration. `EM_TWEEN_MIN + (MAX - MIN) * span`.
+- **Captions belong to keyframes, not to moments.** Labels hide the instant the clock moves (under
+  a button or under the reader's thumb) and come back only on arrival. Reduced motion drops the
+  tween and snaps — the step still happens, so nothing goes in the CSS media query.
+
+### Derive every visual from one curve, not from several tuned to agree
+
+The emission widget's photon count, red nucleus and orbital cloud all read
+`emissionEmittedFraction(t)` — one exponential. When four fifths of the phantom copies have left,
+the atom is four fifths grounded because it is *the same number*, not because two curves were
+tuned until they looked right. A second hand-fitted opacity ramp is the kind of thing that stays
+correct for one review and then quietly makes the physics wrong.
+
+Corollary worth stating: **the design file is not a physics spec.** The emission frames imply three
+mutually inconsistent decay rates (their own dot counts say one thing, their atom opacities
+another), and Figma's angular spray is four rotated copies of one hand-placed cluster. Take the
+distribution as the source of truth and the frames as illustration — then expect a permanent
+residual when you diff, and do not "fix" it.
+
+### ⚠️ Two cross-fading discs are not a cross-fade
+
+The obvious way to fade a red atom into a blue one is two stacked circles, red at `1 - p` and blue
+at `p`. It is wrong: total coverage is `1 - (1-0.8)(1-0.2) = 0.88`, so at mid-transition **12% of
+the background shows through** — the card, and any particles behind it, come up through the middle
+of the atom. It does not read as transparency; it reads as a muddy smudge, and the instinct is to
+blame the colours.
+
+Put the end state underneath at full opacity and fade only the top disc. What the reader sees of
+the blue is exactly what the red has stopped covering, so the relationship still holds exactly
+while the pair stays opaque at every `t`. One custom property instead of two.
+
+Related, in the same widget: **paint order is three layers, not two.** The blurred orbital goes
+under the particles (over them, its red tints them), the nucleus goes over the particles (under
+them, copies that have only just left are drawn on top of the atom they left), and labels go over
+everything (`z-index: 2`) or a dot lands mid-word once the spray fills the frame.
+
 ### ⚠️ Headless Chromium never fires `requestAnimationFrame`
 
 Not with `--virtual-time-budget`, not with `--headless=new`, not with
@@ -538,17 +587,41 @@ the harness *before* the widget script loads, then pump it with synthetic timest
 
 ```html
 <script>
-  window.__q = [];
-  window.requestAnimationFrame = fn => { window.__q.push(fn); return window.__q.length; };
-  window.cancelAnimationFrame = id => { window.__q[id - 1] = null; };
-  window.__pump = ts => { const q = window.__q.slice(); window.__q = []; q.forEach(fn => fn && fn(ts)); };
+  window.__q = new Map();
+  window.__id = 0;
+  window.requestAnimationFrame = fn => { const id = ++window.__id; window.__q.set(id, fn); return id; };
+  window.cancelAnimationFrame = id => { window.__q.delete(id); };
+  window.__pump = ts => { const q = [...window.__q]; window.__q.clear(); q.forEach(([, fn]) => fn(ts)); };
+  window.__pumpCount = () => window.__q.size;
 </script>
 ```
+
+⚠️ **Key the queue by id, not by array index.** An earlier version of this shim pushed onto an array
+and cancelled with `__q[id - 1] = null`, while `__pump` reset the array — so after the first pump
+every id was off by however many frames had run, and `cancelAnimationFrame` silently cancelled the
+wrong callback or none at all. Anything that cancels a frame (a scrub interrupting a tween, an
+`IntersectionObserver` stopping a loop) then cannot be tested, and the symptom is a stray callback
+resurrecting state a later assertion just set.
+
+`__pumpCount()` earns its place: "a step queues a frame" and "reduced motion queues none" are the
+cheapest way to assert that a tween started, or didn't.
 
 This is better than wall-clock anyway — it makes the assertions exact. Pumping 3000 ms in 16.7 ms
 steps advanced the electron's clock to 0.332 against a predicted 0.333, and a synthetic 4000 ms gap
 confirmed the `dt` clamp by advancing exactly one 50 ms frame. Use `--force-prefers-reduced-motion`
 on the same harness for the reduced-motion path.
+
+⚠️ **Don't read a widget's clock off its scrubber.** `<input type=range max="1000">` quantises to
+1/1000, which is coarser than one frame of an eased tween — so "50 ms advanced it" and "4000 ms
+advanced it" both read back as the same integer and the `dt`-clamp assertion passes vacuously. Read
+a float the widget already publishes instead and invert it: emission's `--em-excited-opacity` is
+`exp(-3t)`, so `t = -ln(opacity) / 3` at full precision. Any assertion about sub-step motion needs a
+continuous readout; the tell is a "passing" test whose before and after are identical.
+
+Same trap one level up: **make sure the control is on the far side of the clamp you are testing.**
+The first version of that test compared a 4000 ms frame against a 100 ms one — but `EM_MAX_FRAME` is
+50 ms, so the control was clamped too and the test compared two identical numbers. Bracket the
+threshold (30 ms / 50 ms / 4000 ms), don't straddle it.
 
 Note the Browser pane also lays this site out at **zero width** — every `offsetWidth` reads 0 and
 every geometric assertion silently passes. Check `document.body.offsetWidth` before believing any
@@ -870,6 +943,35 @@ and only adds the 45px padding at `w900`. Measured SVG width for a `max-width: 7
 | Viewport | 375 | 500 | 768 | 1280 |
 |---|---|---|---|---|
 | Rendered scale | 0.40 | 0.58 | 0.96 | 0.91 |
+
+⚠️ Headless Chromium enforces a **~500px minimum window width**, so `--window-size=375,x` silently
+runs at 500. The media queries under test are then the 500px ones, not the 375px ones. Pin the
+column with an explicit CSS width and read `window.innerWidth` back in the log rather than trusting
+the flag; for anything below 500 the Browser pane's `resize_window` is the only real option.
+
+### Annotation labels over a drawing
+
+`emission` is the reference. Figma places its labels at fixed pixel offsets in a 700px frame; the
+translation that survives a resize is **percentages of the stage**, so the label tracks the thing it
+points at for free. Two things that are not obvious:
+
+- **A label's left edge and its width have to add up.** `left: 64.43%` plus `width: 36%` overflows by
+  0.43% — three pixels, on the one edge nobody looks at. When a narrow band needs to win back
+  characters, shrink the font, don't widen the column: the left edge is already fixed by the drawing.
+- **Anchor the longest label to the floor, not to its centre.** A label centred on a `top` percentage
+  grows both ways as the column narrows and it gains lines, and the lowest one runs out of the frame
+  just before the breakpoint that would have rescued it. `top: auto; bottom: 4%` cannot.
+
+Below `under-w600` the overlay stops working at any font size — a 229px column is a third of a 700px
+card but four fifths of a phone. There the labels leave the drawing and stack into a band beneath it:
+the stage's `aspect-ratio` grows (`700 / 620`), `--em-atom-y` moves the atom up to 34% to clear the
+band, and every label lands in the same bottom-anchored slot with only the current one opaque — so
+the height is reserved by the tallest and stepping never jolts the page.
+
+That `--em-atom-y` is worth copying as a pattern: the drawing's placement stays in CSS (where the
+media query lives) and `measureEmissionStage()` reads it back with `getComputedStyle` **once per
+resize**, not per frame. JS gets the number it needs for the particle maths without owning the
+layout, and there is no second copy of "where the atom is" to drift.
 
 ## Counter-scaling a wide diagram instead of reflowing it
 
