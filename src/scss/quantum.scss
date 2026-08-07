@@ -1,5 +1,1037 @@
 @use "./posts" as *;
 
-/* Post-specific styles can go here later */
+/*****************************************
+         HONG-OU-MANDEL EXPERIMENT
+*****************************************/
+
+.hong-ou-mandel-widget {
+    /* VARIABLES */
+    --hom-ants-speed: 900ms; /* tweakable */
+    --hom-ants-dash: 4px; /* a length, not a bare number — see the keyframes below */
+    --hom-mark-fade: 9s; /* tweakable */
+    --hom-lit-time: 700ms; /* tweakable */
+    --hom-lit-color: var(--brand-red);
+
+    /* The diagram is drawn at 390 x 312 and simply scales down from there. */
+    svg {
+        display: block;
+        width: 100%;
+        max-width: 390px;
+        margin: 0 auto 16px;
+
+        /* The labels are real <text>, so clicking a source would otherwise rubber-band a
+           selection across them. They stay in the DOM for search engines and screen readers. */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+    /* Matches the widget card, so it reads as no background at all — it exists purely
+       to give the overlay-blended parts something to composite against. */
+    .hom-backdrop {
+        fill: var(--widget-background-color);
+    }
+
+    .hom-label {
+        font-family: var(--font-mono);
+        font-size: 15px;
+        fill: var(--text-color);
+    }
+
+    .hom-beam-guide {
+        stroke: var(--text-color);
+        stroke-dasharray: 4 4;
+        opacity: 0.2;
+    }
 
 
+    /* PHOTON SOURCES */
+
+    .hom-source {
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+        }
+
+        /* The tap target doubles as the focus ring. Deliberately not the ants —
+           those retire on first use, and a keyboard user still needs a ring. */
+        &:focus-visible .hom-hit {
+            stroke: var(--link-color);
+            stroke-width: 2;
+        }
+    }
+
+        /* Transparent, generously padded tap target over each cylinder. */
+        .hom-hit {
+            fill: transparent;
+            stroke: none;
+        }
+
+        /* A <use> of the cylinder outline. fill/stroke are inherited properties, so they
+           reach the referenced path inside the shadow tree — including the animated
+           stroke-dashoffset, which is what makes the ants march. */
+        .hom-ants {
+            fill: none;
+            stroke: var(--text-color);
+            stroke-width: 1.5;
+            stroke-dasharray: var(--hom-ants-dash) var(--hom-ants-dash);
+            animation: homAntsMarch var(--hom-ants-speed) linear infinite;
+            transition: opacity 350ms ease-out;
+        }
+
+        /* Each source retires its own affordance the first time it is used. */
+        .hom-source.is-used .hom-ants {
+            opacity: 0;
+            animation: none;
+        }
+
+    /* One dash plus one gap, so the pattern lands back on itself every cycle.
+       --hom-ants-dash has to carry a unit: calc() on a bare number yields a <number>,
+       which is not a valid stroke-dashoffset, and the whole animation silently freezes. */
+    @keyframes homAntsMarch {
+        to { stroke-dashoffset: calc(var(--hom-ants-dash) * -2); }
+    }
+
+
+    /* SENSORS */
+
+        /* Photon imprints, appended by quantum.js and removed once faded. */
+        .hom-mark {
+            fill: var(--brand-orange);
+            animation: homMarkFade var(--hom-mark-fade) ease-out forwards;
+        }
+
+    @keyframes homMarkFade {
+        0%, 8% { opacity: 1; }
+        100%   { opacity: 0; }
+    }
+
+        /* The lamp is purely a lighting effect — the bulb itself never moves. */
+        .hom-bulb-glow,
+        .hom-bulb-lit {
+            opacity: 0;
+        }
+
+        .hom-bulb-lit {
+            fill: var(--hom-lit-color);
+        }
+
+        .hom-sensor.is-lit .hom-bulb-lit {
+            animation: homLampFlash var(--hom-lit-time) ease-out;
+        }
+
+        .hom-sensor.is-lit .hom-bulb-glow {
+            animation: homLampGlow var(--hom-lit-time) ease-out;
+        }
+
+    /* Snap on, dip, come back, then decay — an alarm lamp rather than a smooth dimmer. */
+    @keyframes homLampFlash {
+        0%   { opacity: 0; }
+        5%   { opacity: 1; }
+        18%  { opacity: 0.55; }
+        30%  { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    @keyframes homLampGlow {
+        0%   { opacity: 0; }
+        8%   { opacity: 1; }
+        22%  { opacity: 0.6; }
+        34%  { opacity: 0.95; }
+        100% { opacity: 0; }
+    }
+
+
+/*****************************************
+     QUANTUM AMPLITUDE MULTIPLICATION
+*****************************************/
+
+.amplitude-multiplication-widget {
+    /* VARIABLES */
+    --qam-dial-fill: #EFEFEF; /* Figma's #D9D9D9 at 20%, baked flat against the card */
+    /* Figma had this a pale #91D8F2, which all but disappeared against the card. */
+    --qam-glow-color: var(--brand-orange); /* tweakable */
+    --qam-glow-opacity: 0.4; /* tweakable */
+    --qam-pulse-speed: 1300ms; /* tweakable */
+    --qam-glow-fade: 400ms; /* how long the glow takes to retire, once used */
+
+    /* Multipliers on the fine details only — see RESPONSIVE COUNTER-SCALING below.
+       Strokes and type get the full boost; filled marks, which stay visible on their own,
+       get a gentler one. */
+    --qam-counter-scale: 1;
+    --qam-counter-scale-fill: 1;
+
+    /* The diagram is drawn at 700 x 220 and simply scales down from there. */
+    svg {
+        display: block;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+
+        /* Dragging across the RESULT label would otherwise rubber-band a text selection.
+           It stays a real <text> for search engines and screen readers. */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+    .qam-dial-face {
+        fill: var(--qam-dial-fill);
+    }
+
+    /* Figma draws this as black at 10%. Ours is --text-color, which is lighter to start
+       with, so the opacity is calibrated to land on the same rendered grey rather than
+       copied across. */
+    .qam-dial-zero {
+        stroke: var(--text-color);
+        stroke-width: calc(1 * var(--qam-counter-scale));
+        stroke-dasharray: calc(2px * var(--qam-counter-scale)) calc(2px * var(--qam-counter-scale));
+        opacity: 0.085;
+    }
+
+    .qam-label {
+        font-family: var(--font-mono);
+        font-size: calc(13px * var(--qam-counter-scale));
+        text-transform: uppercase;
+        fill: var(--text-color);
+    }
+
+    /* Figma's two glyphs differ by 0.07 of a unit (2.78 vs 2.851) — font metrics, not intent.
+       Unified so they counter-scale off one number like every other stroke here. */
+    .qam-operator {
+        stroke: var(--text-color);
+        stroke-width: calc(2.8 * var(--qam-counter-scale));
+    }
+
+
+    /* DIALS */
+
+    .qam-dial--factor {
+        cursor: grab;
+
+        /* Without this a touch-drag scrolls the page instead of turning the arrow. */
+        touch-action: none;
+    }
+
+    .qam-dial--factor.is-dragging {
+        cursor: grabbing;
+    }
+
+    /* Purely an output — it must never look or behave like something you can take hold of. */
+    .qam-dial--result {
+        pointer-events: none;
+    }
+
+
+    /* ARROWS */
+
+    /* Screen rotation, so clockwise-positive; quantum.js negates the maths angle once
+       on the way in. Length is a <rect> width, which is not reachable from CSS. */
+    .qam-arrow {
+        transform: rotate(var(--qam-angle, 0deg));
+    }
+
+        .qam-arrow-dot,
+        .qam-arrow-shaft {
+            fill: var(--text-color);
+        }
+
+        .qam-arrow-dot {
+            r: calc(5.3px * var(--qam-counter-scale-fill));
+        }
+
+        /* The shaft is a <rect> rather than a <line> precisely because x/y/width/height are
+           CSS geometry properties and x1/x2/y1/y2 are not. JS writes the width; the
+           thickness is CSS's business. Geometry properties need a unit — a bare number is
+           not a <length>, and the declaration is dropped. */
+        .qam-arrow-shaft {
+            y: calc(-0.873px * var(--qam-counter-scale));
+            height: calc(1.746px * var(--qam-counter-scale));
+        }
+
+        /* A <use> of the shared arrowhead. stroke is an inherited property, so it reaches
+           the referenced path inside the shadow tree. */
+        .qam-arrow-head {
+            fill: none;
+            stroke: var(--text-color);
+            stroke-width: calc(1.746 * var(--qam-counter-scale));
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+
+    /* GRABBERS */
+
+    .qam-grabber-group {
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible .qam-grabber {
+            stroke: var(--link-color);
+            stroke-width: 2;
+        }
+    }
+
+        .qam-grabber {
+            fill: #fff;
+            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.25));
+        }
+
+        /* Figma draws this as a 10px dilate of the knob knocked out of itself. An opaque
+           knob sits on top, so a plain concentric circle is identical — and animatable. */
+        .qam-grabber-glow {
+            fill: var(--qam-glow-color);
+            opacity: var(--qam-glow-opacity);
+            animation: qamGlowPulse var(--qam-pulse-speed) ease-in-out infinite;
+        }
+
+        /* The glow is an invitation, so each dial withdraws its own the moment it has been
+           taken up — and only its own: using A leaves B still calling for attention. */
+        .qam-dial--factor.is-used .qam-grabber-glow {
+            animation: qamGlowRetire var(--qam-glow-fade) ease-out forwards;
+        }
+
+    /* The circle sits at its group's origin, so scale() already pivots on its own centre. */
+    @keyframes qamGlowPulse {
+        0%, 100% { transform: scale(0.88); opacity: calc(var(--qam-glow-opacity) * 0.65); }
+        50%      { transform: scale(1.1); opacity: var(--qam-glow-opacity); }
+    }
+
+    /* Deliberately an animation and not a `transition: opacity` on the rule above: Chrome
+       will not start a transition on a property a CSS animation was controlling when that
+       animation is removed, so the glow snapped out instead of fading (measured — it went
+       0.318 -> 0 with no CSSTransition ever created). Replacing one animation with another
+       sidesteps that. It picks up from the pulse's own top of cycle rather than from
+       wherever the pulse happened to be, which costs at most 0.14 of opacity and reads as
+       the glow swelling once and dissipating. */
+    @keyframes qamGlowRetire {
+        from { transform: scale(1.1); opacity: var(--qam-glow-opacity); }
+        to   { transform: scale(1.35); opacity: 0; }
+    }
+
+
+    /* RESPONSIVE COUNTER-SCALING */
+
+    /* The whole 700-wide frame scales with its container, which drags the type and the line
+       weights down with it: at a 375px viewport the SVG renders at 0.40, making the label
+       5.2px and the arrow shaft a 0.7px hairline. The dials themselves are fine — 70px still
+       beats the 44px touch target, and the whole disc is draggable, not the knob — so only
+       the fine detail needs help. Each step below multiplies the *design* values (stated once,
+       at their selectors above) back up to roughly their desktop rendered size: the label
+       stays in a 10–13px band all the way down, and the strokes in a 1.3–1.7px one.
+       Deliberately excluded: the grabber and its glow. Their radii are load-bearing —
+       quantum.js's GRABBER_RADIUS is what keeps magnitude 1 flush inside the disc — so
+       growing them here would push the knob out through the rim.
+       Bands are max-width so the design values stay untouched above 700. */
+    .amplitude-multiplication-widget {
+        @include under-w700 { --qam-counter-scale: 1.12; --qam-counter-scale-fill: 1.06; }
+        @include under-w600 { --qam-counter-scale: 1.32; --qam-counter-scale-fill: 1.15; }
+        @include under-w500 { --qam-counter-scale: 1.60; --qam-counter-scale-fill: 1.28; }
+        @include under-w400 { --qam-counter-scale: 1.95; --qam-counter-scale-fill: 1.42; }
+    }
+
+
+/*****************************************
+    DOUBLE-SLIT DIFFRACTION PATTERN
+*****************************************/
+
+.double-slit-widget {
+    /* VARIABLES */
+    --ds-track-height: 4px;
+    --ds-thumb-size: 20px;
+    --ds-track-color: #D7D7D7;
+    --ds-wall-height: 3px;
+    --ds-wall-color: #333;
+    --ds-stage-radius: 8px;
+    /* Matches .dsp-chart in the double-slit-paths widget — the reader meets the two charts
+       one after the other, so they are drawn the same way: a pale panel with a hairline
+       border, and the curve in brand orange. */
+    --ds-panel-color: var(--iso-top);
+    --ds-panel-border-color: rgba(0, 0, 0, 0.1);
+    --ds-curve-color: var(--brand-orange);
+    --ds-curve-width: 1px;
+    --ds-curve-fill-opacity: 0.1; /* set to 0 for a bare line */
+
+    /* Written by quantum.js, as percentages of the pattern's width. The wall is
+       symmetric about the centre, so the two slit edges are all it takes. */
+    --ds-slit-outer: 45%;
+    --ds-slit-inner: 48%;
+}
+
+    /* Three across at every width — "SLIT SEPARATION" wraps to two lines on a phone
+       rather than the row breaking apart. */
+    .ds-controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 12px;
+
+        @include under-w900 {
+            gap: 12px;
+
+            label {
+                font-size: 13px;
+            }
+        }
+    }
+
+        /* The 1fr row pushes the label down, so the three sliders stay in line even
+           when only one of the labels wraps. */
+        .ds-control {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            gap: 3px;
+        }
+
+        .ds-value {
+            opacity: 0.5;
+            font-variant-numeric: tabular-nums;
+        }
+
+
+    /* SLIDERS */
+
+    .ds-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        display: block;
+        width: 100%;
+        height: var(--ds-thumb-size, 20px);
+        background: transparent;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible::-webkit-slider-thumb {
+            border-color: var(--link-color);
+        }
+
+        &:focus-visible::-moz-range-thumb {
+            border-color: var(--link-color);
+        }
+    }
+
+        .ds-slider::-webkit-slider-runnable-track {
+            height: var(--ds-track-height, 4px);
+            border-radius: 999px;
+            background: var(--ds-track-color, #D7D7D7);
+        }
+
+        .ds-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: var(--ds-thumb-size, 20px);
+            height: var(--ds-thumb-size, 20px);
+            /* Centres a 20px thumb over a 4px track. */
+            margin-top: calc((var(--ds-track-height, 4px) - var(--ds-thumb-size, 20px)) / 2);
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        .ds-slider::-moz-range-track {
+            height: var(--ds-track-height, 4px);
+            border-radius: 999px;
+            background: var(--ds-track-color, #D7D7D7);
+        }
+
+        .ds-slider::-moz-range-thumb {
+            width: var(--ds-thumb-size, 20px);
+            height: var(--ds-thumb-size, 20px);
+            box-sizing: border-box;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+
+    /* PROBABILITY DISTRIBUTION */
+
+    .ds-panel-label {
+        margin-bottom: 3px;
+    }
+
+        /* The viewBox is 600 x 58 — the same width as the pattern's buffer, so a point on
+           the curve sits over the stripe it is measuring. The aspect ratio is pinned so the
+           curve is never stretched. */
+        .ds-distribution {
+            display: block;
+            width: 100%;
+            aspect-ratio: 600 / 58;
+            margin-bottom: 12px;
+        }
+
+            /* The panel is a rect rather than a CSS background so the hairline border can
+               sit inside the viewBox, exactly as .dsp-chart-bg does. */
+            .ds-distribution-bg {
+                fill: var(--ds-panel-color, #E9E9E9);
+                stroke: var(--ds-panel-border-color, rgba(0, 0, 0, 0.1));
+                stroke-width: 1;
+            }
+
+            .ds-distribution-area {
+                fill: var(--ds-curve-color, #FFA530);
+                opacity: var(--ds-curve-fill-opacity, 0.1);
+            }
+
+            .ds-distribution-line {
+                fill: none;
+                stroke: var(--ds-curve-color, #FFA530);
+                stroke-width: var(--ds-curve-width, 1px);
+                stroke-linejoin: round;
+
+                /* Holds the line at its stated width whatever size the SVG is drawn at,
+                   rather than letting it thicken with everything else. */
+                vector-effect: non-scaling-stroke;
+            }
+
+
+    /* DIFFRACTION PATTERN */
+
+    .ds-stage {
+        position: relative;
+        border-radius: var(--ds-stage-radius, 8px);
+        overflow: hidden;
+    }
+
+        /* The canvas buffer is deliberately much smaller than the rendered size — the
+           field is soft, so the browser's upscale is free resolution. */
+        .ds-canvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 600 / 240;
+            background: #000;
+        }
+
+        /* Slits at the bottom, pattern spreading upward. */
+        .ds-wall {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: var(--ds-wall-height, 3px);
+        }
+
+            .ds-wall__bar {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                background-color: var(--ds-wall-color, #333);
+            }
+
+            .ds-wall__bar--left {
+                left: 0;
+                width: var(--ds-slit-outer, 45%);
+            }
+
+            .ds-wall__bar--middle {
+                right: var(--ds-slit-inner, 48%);
+                left: var(--ds-slit-inner, 48%);
+            }
+
+            .ds-wall__bar--right {
+                right: 0;
+                width: var(--ds-slit-outer, 45%);
+            }
+
+
+/*****************************************
+            TRAVELING ELECTRON
+*****************************************/
+
+.traveling-electron-widget {
+    /* VARIABLES */
+    --te-dot-size: 3px; /* tweakable */
+    --te-dot-color: #333; /* Figma's dot grey, a touch darker than --text-color */
+    --te-track-height: 6px;
+    --te-track-color: #C4C4C4;
+    --te-thumb-size: 28px;
+    --te-button-width: 68px;
+    --te-button-height: 38px;
+    --te-controls-gap: 10px;
+    --te-stage-bleed: 30px; /* must equal .widget's padding — see .te-stage */
+}
+
+    /* Scaled by width alone; the dots keep their pixel size at every width, which a
+       viewBox would not have allowed. */
+    .te-stage {
+        position: relative;
+        aspect-ratio: 700 / 380;
+
+        /* Full-bleed to the card. The packet enters and leaves through the card's own
+           edge, so the clipping reads as the frame of the picture — inset by the widget's
+           padding instead, the cloud would appear to be cut off by nothing at all. */
+        margin: calc(0px - var(--te-stage-bleed, 30px)) calc(0px - var(--te-stage-bleed, 30px)) 0;
+
+        /* Matches the card, so the corners clip the dots on the same curve. */
+        border-radius: 40px 40px 0 0;
+        overflow: hidden;
+    }
+
+        /* Positioned in percentages by quantum.js, so the cloud keeps its shape through a
+           resize; only the vertical aspect correction needs recomputing. */
+        .te-dot {
+            position: absolute;
+            width: var(--te-dot-size, 3px);
+            height: var(--te-dot-size, 3px);
+            border-radius: 50%;
+            background-color: var(--te-dot-color, #333);
+            transform: translate(-50%, -50%);
+        }
+
+
+    /* CONTROLS */
+
+    .te-controls {
+        display: flex;
+        align-items: center;
+        gap: var(--te-controls-gap, 10px);
+        margin-top: 20px;
+    }
+
+        .te-scrubber {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            min-width: 0; /* a flex item's default min-width would floor this at its intrinsic size */
+            height: var(--te-thumb-size, 28px);
+            background: transparent;
+            cursor: pointer;
+
+            &:focus {
+                outline: none;
+            }
+
+            &:focus-visible::-webkit-slider-thumb {
+                border-color: var(--link-color);
+            }
+
+            &:focus-visible::-moz-range-thumb {
+                border-color: var(--link-color);
+            }
+        }
+
+            .te-scrubber::-webkit-slider-runnable-track {
+                height: var(--te-track-height, 6px);
+                border-radius: 999px;
+                background: var(--te-track-color, #C4C4C4);
+            }
+
+            .te-scrubber::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: var(--te-thumb-size, 28px);
+                height: var(--te-thumb-size, 28px);
+                /* Centres a 28px thumb over a 6px track. */
+                margin-top: calc((var(--te-track-height, 6px) - var(--te-thumb-size, 28px)) / 2);
+                border-radius: 50%;
+                border: 1px solid transparent;
+                background: #fff;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+            }
+
+            .te-scrubber::-moz-range-track {
+                height: var(--te-track-height, 6px);
+                border-radius: 999px;
+                background: var(--te-track-color, #C4C4C4);
+            }
+
+            .te-scrubber::-moz-range-thumb {
+                width: var(--te-thumb-size, 28px);
+                height: var(--te-thumb-size, 28px);
+                box-sizing: border-box;
+                border-radius: 50%;
+                border: 1px solid transparent;
+                background: #fff;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+            }
+
+        .te-toggle {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: var(--te-button-width, 68px);
+            height: var(--te-button-height, 38px);
+            padding: 0;
+            border: none;
+            border-radius: 999px;
+            background-color: var(--brand-color);
+            cursor: pointer;
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color);
+                outline-offset: 2px;
+            }
+        }
+
+            .te-icon {
+                width: 18px;
+                height: 18px;
+                fill: #fff;
+            }
+
+            /* One glyph at a time: pause while it runs, play while it is stopped. */
+            .te-icon-play {
+                display: none;
+            }
+
+            .traveling-electron-widget:not(.is-playing) .te-icon-pause {
+                display: none;
+            }
+
+            .traveling-electron-widget:not(.is-playing) .te-icon-play {
+                display: block;
+            }
+
+
+/*****************************************
+            DOUBLE-SLIT PATHS
+*****************************************/
+
+.double-slit-paths-widget {
+    /* VARIABLES */
+    --dsp-track-height: 4px;
+    --dsp-thumb-size: 20px;
+    --dsp-track-color: #D7D7D7;
+    --dsp-column-width: 200px; /* the setup's own drawing width — see .dsp-body */
+    --dsp-column-gap: 42px; /* Figma: 208 -> 250 */
+    --dsp-panel-radius: 2px;
+    --dsp-panel-shadow: 4px 4px 18px rgba(0, 0, 0, 0.06);
+    --dsp-wall-color: #ABABAB;
+    --dsp-path-width: 3; /* stroke-width takes a bare <number>, not a <length> */
+    --dsp-dial-fill: #EFEFEF; /* Figma's #D9D9D9 at 20%, baked flat against the card */
+
+    /* Multipliers on the equation's fine detail only — see RESPONSIVE COUNTER-SCALING
+       below. Strokes and type get the full boost; filled marks, which stay visible on
+       their own, get a gentler one. */
+    --dsp-counter-scale: 1;
+    --dsp-counter-scale-fill: 1;
+}
+
+    /* Left column is the drawing width and no more; the equation takes the rest. Under
+       w700 they stack — the position slider stays welded to the setup by travelling with
+       it, which is why it lives in that column rather than in a row of three. */
+    .dsp-body {
+        display: grid;
+        grid-template-columns: minmax(0, var(--dsp-column-width, 200px)) 1fr;
+        gap: var(--dsp-column-gap, 42px);
+        align-items: start;
+
+        @include under-w700 {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 24px;
+        }
+    }
+
+        .dsp-column--setup {
+            width: 100%;
+
+            /* Room to breathe on a phone, where the column no longer has to share the
+               row. The slider stays locked at any width — the lock is proportional. */
+            @include under-w700 {
+                max-width: 260px;
+                margin-inline: auto;
+            }
+        }
+
+
+    /* CONTROLS */
+
+    .dsp-controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--dsp-column-gap, 42px);
+
+        @include under-w900 {
+            gap: 20px;
+        }
+    }
+
+        /* The 1fr row pushes the label down against its slider, so a row stays aligned
+           even when only one of the labels wraps to two lines. */
+        .dsp-control {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            gap: 3px;
+            margin-bottom: 12px;
+
+            label {
+                @include under-w900 {
+                    font-size: 13px;
+                }
+            }
+        }
+
+        .dsp-value {
+            opacity: 0.5;
+            font-variant-numeric: tabular-nums;
+        }
+
+
+    /* SLIDERS */
+
+    .dsp-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        display: block;
+        width: 100%;
+        height: var(--dsp-thumb-size, 20px);
+        background: transparent;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible::-webkit-slider-thumb {
+            border-color: var(--link-color);
+        }
+
+        &:focus-visible::-moz-range-thumb {
+            border-color: var(--link-color);
+        }
+    }
+
+        /* ⚠️ This is the whole "slider locked to the diagram" trick, and it is CSS-only.
+           A native thumb's centre travels [half a thumb, width - half a thumb], so a
+           plain 100%-wide slider would run out before the wall did and the paths would
+           lag it at both ends. Widening the input by one thumb and pulling it back by
+           half puts the thumb's *centre* range exactly over the column — which is exactly
+           the setup's 0–200. It then holds at every rendered width, with no measuring and
+           no ResizeObserver. The overhang sits inside the card's 30px padding. */
+        .dsp-slider--position {
+            width: calc(100% + var(--dsp-thumb-size, 20px));
+            margin-inline: calc(var(--dsp-thumb-size, 20px) / -2);
+        }
+
+        .dsp-slider::-webkit-slider-runnable-track {
+            height: var(--dsp-track-height, 4px);
+            border-radius: 999px;
+            background: var(--dsp-track-color, #D7D7D7);
+        }
+
+        .dsp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: var(--dsp-thumb-size, 20px);
+            height: var(--dsp-thumb-size, 20px);
+            /* Centres a 20px thumb over a 4px track. */
+            margin-top: calc((var(--dsp-track-height, 4px) - var(--dsp-thumb-size, 20px)) / 2);
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        .dsp-slider::-moz-range-track {
+            height: var(--dsp-track-height, 4px);
+            border-radius: 999px;
+            background: var(--dsp-track-color, #D7D7D7);
+        }
+
+        .dsp-slider::-moz-range-thumb {
+            width: var(--dsp-thumb-size, 20px);
+            height: var(--dsp-thumb-size, 20px);
+            box-sizing: border-box;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+
+    /* PROBABILITY CHART */
+
+    /* 200 units wide, the same as the setup below it and the same as the position
+       slider's thumb travel above it, so all three describe the same wall. */
+    .dsp-chart {
+        display: block;
+        width: 100%;
+        margin-bottom: 7px;
+    }
+
+        .dsp-chart-bg {
+            fill: var(--iso-top);
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 1;
+        }
+
+        .dsp-chart-area {
+            fill: var(--brand-orange);
+            opacity: 0.1;
+        }
+
+        .dsp-chart-line {
+            fill: none;
+            stroke: var(--brand-orange);
+            stroke-width: 1;
+            stroke-linejoin: round;
+
+            /* Holds the line at its stated width whatever size the SVG is drawn at. */
+            vector-effect: non-scaling-stroke;
+        }
+
+
+    /* EXPERIMENTAL SETUP */
+
+    .dsp-setup {
+        display: block;
+        width: 100%;
+        border-radius: var(--dsp-panel-radius, 2px);
+
+        /* The panel's own drop shadow. The ground rect fills the viewBox exactly, so the
+           shadow can go on the box rather than into an SVG filter. */
+        box-shadow: var(--dsp-panel-shadow, 4px 4px 18px rgba(0, 0, 0, 0.06));
+
+        /* Otherwise the walls' drop shadow is clipped at the right-hand edge. */
+        overflow: visible;
+    }
+
+        .dsp-ground {
+            fill: var(--iso-top);
+            stroke: rgba(0, 0, 0, 0.05);
+            stroke-width: 1;
+        }
+
+        /* Colour comes from the phase gradients in the markup; everything else is here. */
+        .dsp-path-leg {
+            stroke-width: var(--dsp-path-width, 3);
+            stroke-linecap: round;
+        }
+
+        .dsp-wall {
+            fill: var(--dsp-wall-color, #ABABAB);
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 1;
+            filter: url(#dsp-wall-shadow);
+        }
+
+        .dsp-source-body {
+            fill: url(#dsp-source-body);
+        }
+
+        .dsp-source-edge {
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 1;
+        }
+
+        .dsp-source-gleam {
+            stroke: rgba(255, 255, 255, 0.5);
+            stroke-width: 1;
+        }
+
+
+    /* AMPLITUDE EQUATION */
+
+    /* Drawn at 384 x 120 and simply scales down from there. */
+    .dsp-equation {
+        display: block;
+        width: 100%;
+        max-width: 384px;
+        margin-inline: auto;
+
+        /* Dragging the position slider across the labels would otherwise rubber-band a
+           text selection. They stay real <text> for search engines and screen readers. */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+        .dsp-label {
+            font-family: var(--font-mono);
+            font-size: calc(14px * var(--dsp-counter-scale));
+            text-transform: uppercase;
+            fill: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .dsp-operator {
+            stroke: var(--text-color);
+            stroke-width: calc(1.6 * var(--dsp-counter-scale));
+            stroke-linecap: round;
+        }
+
+        .dsp-dial-face {
+            fill: var(--dsp-dial-fill, #EFEFEF);
+        }
+
+        /* Screen rotation, so clockwise-positive; quantum.js negates the maths angle once
+           on the way in. Length is a <rect> width, which is not reachable from CSS. */
+        .dsp-arrow {
+            transform: rotate(var(--dsp-angle, 0deg));
+        }
+
+            .dsp-arrow-dot,
+            .dsp-arrow-shaft {
+                fill: var(--text-color);
+            }
+
+            .dsp-arrow-dot {
+                r: calc(2.67px * var(--dsp-counter-scale-fill));
+            }
+
+            /* The shaft is a <rect> rather than a <line> precisely because x/y/width/height
+               are CSS geometry properties and x1/x2/y1/y2 are not. JS writes the width; the
+               thickness is CSS's business. Geometry properties need a unit — a bare number
+               is not a <length>, and the declaration is dropped. */
+            .dsp-arrow-shaft {
+                y: calc(-0.5px * var(--dsp-counter-scale));
+                height: calc(1px * var(--dsp-counter-scale));
+            }
+
+            /* A <use> of the shared arrowhead. stroke is an inherited property, so it
+               reaches the referenced path inside the shadow tree. */
+            .dsp-arrow-head {
+                fill: none;
+                stroke: var(--text-color);
+                stroke-width: calc(1 * var(--dsp-counter-scale));
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+
+    /* RESPONSIVE COUNTER-SCALING */
+
+    /* Only the equation needs this, and only well down the range: it is drawn at 384
+       rather than 700, so it still renders at full size on a 500px viewport. Below that,
+       each band multiplies the *design* values (stated once, at their selectors above)
+       back up, keeping the label in an 11–14px band and the shaft off the sub-pixel
+       floor. The setup and chart are excluded — nothing in them is fine detail, and the
+       position lock is proportional, so scaling would only break it. */
+    .double-slit-paths-widget {
+        @include under-w500 { --dsp-counter-scale: 1.10; --dsp-counter-scale-fill: 1.06; }
+        @include under-w400 { --dsp-counter-scale: 1.25; --dsp-counter-scale-fill: 1.15; }
+    }
+
+
+/* Respect reduced motion: static dashes are still an affordance, and everything the lamp
+   and the imprints do is opacity-only, so all of that survives untouched. */
+@media (prefers-reduced-motion: reduce) {
+    .hom-ants {
+        animation: none;
+    }
+
+    /* Likewise the glow — it still marks the two arrows as the things you can grab.
+       Both selectors, because the retirement rule is three classes deep and would
+       otherwise outrank a bare .qam-grabber-glow here and go on animating. */
+    .qam-grabber-glow,
+    .qam-dial--factor.is-used .qam-grabber-glow {
+        animation: none;
+    }
+
+    /* The glow must still go away once its dial has been used — that is state, not
+       decoration. With no animation left owning opacity, this transition does fire, and
+       it is opacity-only, so it stays. */
+    .qam-grabber-glow {
+        transition: opacity var(--qam-glow-fade) ease-out;
+    }
+
+    .qam-dial--factor.is-used .qam-grabber-glow {
+        opacity: 0;
+    }
+
+    /* Nothing to switch off here — the cloud's motion is driven from JS, which starts
+       paused under the same query. Scrubbing by hand still moves the dots, which is the
+       reader asking for it. See initTravelingElectron() in quantum.js. */
+}

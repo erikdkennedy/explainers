@@ -1,0 +1,38 @@
+<!-- The slider ids are static, so include this widget at most once per page. -->
+<div id="double-slit-pattern" class="widget double-slit-widget">
+    <div class="ds-controls">
+        <div class="ds-control">
+            <label for="ds-wavelength">Wavelength <span class="ds-value" data-value-for="wavelength"></span></label>
+            <input type="range" class="ds-slider" id="ds-wavelength" data-param="wavelength" min="15" max="90" step="1" value="40" data-initial-value="40">
+        </div>
+        <div class="ds-control">
+            <label for="ds-separation">Slit separation <span class="ds-value" data-value-for="separation"></span></label>
+            <input type="range" class="ds-slider" id="ds-separation" data-param="separation" min="0" max="400" step="1" value="200" data-initial-value="200">
+        </div>
+    </div>
+    <p class="label ds-panel-label">Probability at sensor</p>
+    <!-- Reads the top row of the pattern below. The viewBox is the pattern's buffer width,
+         so a point on the curve sits over the fringe it is measuring. SVG rather than a
+         canvas so the line stays crisp however wide the widget is drawn; quantum.js fills
+         in the two `d` attributes. -->
+    <svg class="ds-distribution" viewBox="0 0 600 58" role="img" aria-label="Curve of where a particle is likely to land along the sensor. Highest at the centre, dropping to zero where the two paths cancel.">
+        <rect class="ds-distribution-bg" x="0.5" y="0.5" width="599" height="57" rx="1"/>
+        <path class="ds-distribution-area" d=""></path>
+        <path class="ds-distribution-line" d=""></path>
+    </svg>
+    <div class="ds-stage">
+        <!-- Sized by CSS; the width/height attributes are the simulation buffer, not the
+             display size. See initDoubleSlitPattern() in quantum.js. -->
+        <canvas class="ds-canvas" width="600" height="240" role="img" aria-label="Interference pattern behind the two slits. Hue shows the phase of the amplitude, brightness its length."></canvas>
+        <!-- The wall sits along the bottom edge of the pattern, and its two gaps are the
+             slits the wave is coming through — so it has to track the separation slider.
+             The gaps are drawn a few pixels wide to be visible; the maths treats each as a
+             single point. Turn the separation down and the two gaps merge into one. -->
+        <div class="ds-wall">
+            <div class="ds-wall__bar ds-wall__bar--left"></div>
+            <div class="ds-wall__bar ds-wall__bar--middle"></div>
+            <div class="ds-wall__bar ds-wall__bar--right"></div>
+        </div>
+    </div>
+    <p class="ds-status visually-hidden" role="status" aria-live="polite"></p>
+</div>

@@ -7,8 +7,19 @@
     --border-color: #D3D3D3;
     --link-color: #5B5BFD;
     --brand-color: #31359D;
+    --brand-orange: #FFA530;
+    --brand-red: #E64C2E;
     --background-color: #FAF9F7;
     --widget-background-color: #F5F5F5;
+
+    /* Isometric illustration shading, mirroring the Figma variables of the same
+       names. `-far` is the 30%-white wash Figma paints over receding faces. */
+    --iso-top: #E9E9E9;
+    --iso-left: #D5D5D5;
+    --iso-right: #C4C4C4;
+    --iso-top-far: #F0F0F0;
+    --iso-left-far: #E2E2E2;
+    --iso-right-far: #D6D6D6;
     --serif: 'Newsreader', Georgia, serif;
     --sans: 'Figtree', system-ui;
     --mono: 'PP Supply Mono', monospace;
@@ -37,8 +48,11 @@
 
 $under-w400: "max-width: 401px";
 $w400: "min-width: 400px";
+$under-w500: "max-width: 499px";
 $w500: "min-width: 500px";
+$under-w600: "max-width: 599px";
 $w600: "min-width: 600px";
+$under-w700: "max-width: 699px";
 $w700: "min-width: 700px";
 $w800: "min-width: 800px";
 $under-w900: "max-width: 900px";
@@ -52,8 +66,11 @@ $w1440: "min-width: 1441px";
 
 @mixin under-w400 { @media ($under-w400) {@content;} }
 @mixin w400 { @media ($w400) {@content;} }
+@mixin under-w500 { @media ($under-w500) {@content;} }
 @mixin w500 { @media ($w500) {@content;} }
+@mixin under-w600 { @media ($under-w600) {@content;} }
 @mixin w600 { @media ($w600) {@content;} }
+@mixin under-w700 { @media ($under-w700) {@content;} }
 @mixin w700 { @media ($w700) {@content;} }
 @mixin w800 { @media ($w800) {@content;} }
 @mixin under-w900 { @media ($under-w900) {@content;} }
@@ -96,6 +113,9 @@ $w1440: "min-width: 1441px";
 a.logo:visited { //specificity
     @include serif;
 
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--brand-color);
     padding: 8px 0;
     font-weight: 700;
@@ -104,6 +124,12 @@ a.logo:visited { //specificity
     letter-spacing: -0.01em;
     text-decoration: none;
 }
+
+    .logo__mark {
+        flex: none;
+        width: 29px;
+        height: 28px;
+    }
 
     .logo-secondary {
         opacity: 0.6;

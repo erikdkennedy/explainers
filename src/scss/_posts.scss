@@ -482,6 +482,26 @@ hr.full-width {
         }
     }
 
+.double-wide {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    @include w900 {
+        flex-direction: row;
+        margin-inline: var(--margin-buster);
+    }
+}
+    .double-wide__item {
+        flex: 1 1 50%;
+
+        @include under-w900 {
+            &:not(:last-child) .post__figure {
+                margin-bottom: 0;
+            }
+        }
+    }
+
 .credits {
     margin-top: 50px;
     font-style: italic;
@@ -555,7 +575,7 @@ footer.post-footer {
     }
 
     .logo {
-        display: inline-block;
+        display: inline-flex;
         margin-bottom: 40px;
         color: white;
     }
