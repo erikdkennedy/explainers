@@ -8,7 +8,8 @@
     "serve": "npm-run-all --parallel sass:watch eleventy:serve",
     "sass:watch": "sass --watch src/scss:src/assets/css",
     "eleventy:serve": "eleventy --serve",
-    "clean": "rimraf _site src/assets/css"
+    "clean": "rimraf _site src/assets/css",
+    "check": "npm run build && node tools/check-post/check.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.2",

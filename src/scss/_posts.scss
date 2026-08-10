@@ -90,6 +90,20 @@ li {
     margin-bottom: 8px;
 }
 
+/* Verbatim quotations of someone else — the QM glossary has two. The body face already
+   carries the voice, so this is a brand rule and some room, not a change of type. Note the
+   sidenote transform in .eleventy.js hangs notes off `blockquote` as well as p/li, so a
+   footnote inside one still lands in the right place. */
+blockquote {
+    margin: 28px 0;
+    padding-left: 20px;
+    border-left: 3px solid var(--brand-color);
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .post__figure {
     margin: 40px 0;
     

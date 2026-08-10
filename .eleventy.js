@@ -158,7 +158,16 @@ export default function(eleventyConfig) {
         if (!/<\s*(p|ul|ol|table|div|blockquote|pre|figure)\b/i.test(html)) {
           html = `<p>${html}</p>`;
         } else {
-          const singleP = html.match(/^\s*<p>([\s\S]*?)<\/p>\s*$/i);
+          // Only a note that really is one paragraph may be split on its newlines. The test
+          // used to be the `^<p> … </p>$` match alone — but a two-paragraph note matches that
+          // too (it opens with <p> and ends with </p>), and the capture then swallowed the
+          // `</p>\n<p>` in the middle. Splitting on \n emitted a stray `</p>` on the first
+          // part and a stray `<p>` on the second, which serialise as two empty paragraphs
+          // wedged between the real ones. So count the openers first.
+          const paragraphCount = (html.match(/<\s*p[\s>]/gi) || []).length;
+          const singleP = paragraphCount === 1
+            ? html.match(/^\s*<p>([\s\S]*?)<\/p>\s*$/i)
+            : null;
           if (singleP && singleP[1] && singleP[1].includes('\n')) {
             const parts = singleP[1]
               .split(/\n+/)

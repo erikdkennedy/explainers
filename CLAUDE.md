@@ -9,7 +9,8 @@ npm run serve
 ```
 
 Runs Eleventy `--serve` (port 8080) and `sass --watch` in parallel, with live reload.
-`npm run build` for a one-off build, `npm run clean` to wipe `_site/` and generated CSS.
+`npm run build` for a one-off build, `npm run clean` to wipe `_site/` and generated CSS,
+`npm run check` to build and then run the post sanity checks (see *Verifying*).
 
 A `.claude/launch.json` entry named `explainers-dev` exists so the preview tooling can start
 the same thing by name.
@@ -149,6 +150,14 @@ Two options, and the choice is driven by cell contents:
 Google Docs exports multi-line cells as `&#10;`-joined text with `\*\*` escapes — that always
 means "rewrite this as an HTML table with a real `<ul>`".
 
+⚠️ **The two options conflict when a cell needs both a list *and* a footnote**, because a footnote
+marker inside a raw HTML block renders literally (see below). Pipe table wins: put an inline
+`<ul>` in the cell. But then you cannot class the table either — **`markdown-it-attrs` does not
+support attributes on a table**; `{.dense}` on the line after one lands on a *row*, and the
+kramdown form (`{: class="…"}`) isn't this parser at all and renders as literal text. Put the
+classes on a wrapper div and mirror the two declarations in the post's own stylesheet;
+`.qm-wide-table` in `quantum.scss` is the worked example, and it says why it exists.
+
 ## Footnotes / sidenotes
 
 `markdown-it-footnote`, plus an `inline-footnotes-sidenotes` transform in `.eleventy.js` that
@@ -163,10 +172,53 @@ And that's the story.[^1]
     Second paragraph of the sidenote, indented 4 spaces.
 ```
 
+⚠️ **A multi-paragraph note renders through two different code paths, so check both.**
+`markdown-it-footnote` builds the `<li>` at the bottom of the page; the transform then clones it
+into the `.sidenote`, and only the sidenote is what most readers actually see. The clone used to
+mangle them: its "split a single `<p>` on its newlines" fallback tested `^<p> … </p>$`, which a
+*two*-paragraph note matches just as well, so the capture swallowed the `</p>\n<p>` in the middle
+and the split emitted stray tags — two empty paragraphs wedged between every pair of real ones.
+Fixed by counting `<p` openers first, but the shape of the bug is worth remembering: the footnote
+list looked perfect while the sidenote beside it did not. Assert parity rather than eyeballing one
+of them — see *Verifying*.
+
 **Google Docs footnotes do not appear in the `read_file_content` text export.** To get them, call
 `download_file_content` with `exportMimeType: "text/markdown"` — that export *does* contain
 `[^n]` markers and definitions. It comes back base64-encoded and enormous (embedded images), so
 decode it to a file with python, strip `data:image/…` blobs, then locate markers by line number.
+
+⚠️ **But the Markdown export truncates multi-paragraph footnote bodies, and does it silently.**
+It gave the QM doc's `[^19]` two of its five paragraphs and `[^1]` *one of seven*, with no marker,
+no ellipsis, nothing — the definition simply ends early and reads as a complete note. Nothing
+downstream can catch this; the post shipped a review looking perfectly consistent.
+
+So take the markers and the figure positions from the Markdown export, but **take the footnote
+bodies from `exportMimeType: "text/plain"`**. That export carries no images, so it stays small, and
+it prints every note in full at the end of the document after a `________________` rule:
+
+```
+________________
+[1] I’ll use footnotes for more in-depth comments…
+
+Regarding my wording – “probabilities can cancel”…
+[2] Technically, you need QM to explain…
+```
+
+Two things when parsing it: paragraph breaks inside a note are blank lines, and the marker
+sometimes has **no space after it** (`[12]More specifically…`), so don't require one or you'll
+silently skip those notes. Cross-check the paragraph count of every note against this export
+before calling a transcription done. (`text/html` would carry it all too, but the export just
+fails with *"File too large for export"* on a doc this size.)
+
+**Don't just throw those blobs away — they are the doc's images, losslessly.** Every figure is a
+`![][imageN]` reference plus an `[imageN]: <data:image/png;base64,…>` definition at the bottom, so
+one `re.sub` over the definitions writes out every image *and* leaves a slim Markdown file whose
+`![][imageN]` markers show exactly where each one sits in the prose — which is also the only
+reliable way to see which figures are inside a table (i.e. a 2-wide or 3-wide) and which are
+standalone. It is the same pass that strips the blobs; just write the bytes instead of dropping
+them. Expect them at 1x (a 700 × 470 Figma frame comes back 700 × 470), so they are the finished
+asset for photos and screenshots but only a *reference* for anything that also exists in Figma,
+where you want a @2x export instead.
 
 ### Where footnote markers do and don't work
 
@@ -181,6 +233,13 @@ The reference must sit in markdown **inline** context. Places it silently fails:
 
 The include emits a `<figure>`, which makes that whole line an HTML block — so a caption can't
 carry a footnote. Move the marker into the prose that introduces the figure.
+
+⚠️ **A marker that fails this way doesn't just render literally — it deletes its own footnote.**
+`markdown-it-footnote` drops any definition nothing references, so the note vanishes from the
+bottom of the page, every footnote after it renumbers, and nothing warns you. The QM post shipped
+for a while with `[^2]` sitting in an `img.md` caption and the whole note silently gone. The tell
+is a count mismatch, which is why *Verifying* checks definitions against rendered refs rather than
+trusting that the page "looks fine".
 
 ### Sidenote placement in tables
 
@@ -217,6 +276,15 @@ uses it for `.triple-wide` and `.sticky-column-table-wrapper`.
 - `***triple***` for the occasional bold-italic key takeaway.
 - External links get `{target="_blank"}`.
 - The closing credits line ends with `{ .credits }`.
+- A verbatim quotation of someone else is a real `> blockquote` (styled in `_posts.scss`: a brand
+  rule and some room, no change of type). Reserve it for quoting *others* — where the author is
+  quoting his own earlier text back at the reader, the posts use a plain italic paragraph, and
+  that distinction is worth keeping.
+- Superscripts and subscripts don't survive the export — `10^80` arrives as a bare `1080`. Restore
+  with `<sup>`. Scan for suspicious runs of digits.
+- Google Docs' own footnote text is sometimes truncated mid-sentence in the export (`…which posit
+  that ` with nothing after it). That is the doc, not the export. Trim to a complete clause and
+  leave an HTML comment rather than inventing the ending.
 
 ### Google Docs export artifacts to strip
 
@@ -250,6 +318,36 @@ wrong scroll offset. Useful checks: no literal `{%` left in the rendered text, t
 [...document.querySelectorAll('.toc a')].map(a=>a.getAttribute('href')).filter(h=>!document.querySelector(h))
 ```
 
+Most of a transcription's failure modes are silent, so the mechanical checks live in a script that
+reads the **built** HTML rather than the Markdown:
+
+```bash
+npm run check
+```
+
+`tools/check-post/check.mjs`. Each check in it caught something real: literal `{%` or `[^n]` left
+in the body, a footnote defined but never referenced (dropped outright — the *count* is the only
+tell), a multi-paragraph footnote whose sidenote clone disagrees with its list entry, empty
+paragraphs, a figure filename that drifted from its asset, and any image displayed above its own
+resolution.
+
+⚠️ **Compare footnote labels inside the source, never against the output's ids.**
+`markdown-it-footnote` renumbers by order of first reference, so removing `[^2]` renumbers
+everything after it and a label-vs-id diff then reports the *last* footnote as missing. The first
+version of that check did exactly this and produced a confident false positive.
+
+### Telling a 1x export from a @2x one
+
+Aim for `natural ÷ CSS width ≥ 2` on everything, and print the ratio for every image rather than
+spot-checking. A Figma export that came back at 1x is invisible in review and obvious on a retina
+screen a week later.
+
+When the ratio is ambiguous — a 700-wide export could be a 700px frame at 1x or a 350px frame at
+2x — measure the type. The site's mono labels are 13–15px, so **cap height lands around 21px at
+@2x and around 11px at 1x**, whatever the frame size. Threshold the image and measure the ink
+bands; `bloch-coin.png` (800 wide, known @2x) reads 21 and is a good yardstick. Erik's exports
+have arrived as a mix of both in the same batch, so check each one.
+
 ---
 
 # Building an interactive widget
@@ -264,6 +362,24 @@ card — its own header, two panels and a caption panel rather than a drawing si
 30px of padding — stepped through five keyframes, reversible, and idling between them (see *Two
 clocks*, *Copies that come and go* and *Reserving the height of the tallest of N cross-fading
 panels*).
+
+## A still of a widget should be rendered *from* the widget
+
+Posts often walk through two or three frozen states of a thing before handing the reader the live
+version — the QM post does exactly that with `double-slit-paths`. Don't ship the design file's
+stills alongside it: they were drawn earlier, they drift, and here they were visibly a different
+design (black wall bars against the widget's grey ones). Render them out of the widget instead and
+they cannot disagree with it. `tools/double-slit-stills/render.mjs` is the pattern — it lifts the
+widget's markup out of `_site`, inlines the compiled CSS and the mono `@font-face` over `file://`,
+hides the controls the prose hasn't introduced yet, shims `requestAnimationFrame` onto `setTimeout`
+(headless Chromium never fires a real one), and screenshots at `--force-device-scale-factor=2`.
+Because the still and the live widget are laid out at the same width, they also line up exactly in
+the article's flow, which is a nice tell that nothing has drifted.
+
+Pick the frozen states by **solving** for them rather than dragging until it looks right: the three
+double-slit stills sit where the path difference is exactly 0, λ/4 and λ/2, so the arrows are
+aligned, a quarter turn apart, and exactly opposed by construction. Those numbers belong in the
+renderer, with a comment pointing at the function that defines the geometry.
 
 ## The three-way split
 
@@ -1109,6 +1225,24 @@ The post page uses a custom scroll container, so `scrollIntoView` / `window.scro
 you cannot bring a mid-article widget into view to drive it. For *measurement* that doesn't matter —
 `resize_window` then `javascript_tool` reading `getBoundingClientRect()` works at any scroll offset.
 But call `resize_window` first: a freshly opened pane reports width `0` for everything.
+
+**To actually *screenshot* something mid-article, drive it from a same-origin iframe.** Write a
+throwaway probe into `_site/` (so the dev server serves it, and `npm run build` cleans it up),
+point an iframe of the width you want at the post, then walk up from your target to whatever
+element is really scrolling and set its `scrollTop` — instead of assuming it's the window:
+
+```js
+let el = target.parentElement, scroller = null;
+while (el) {
+  if (el.scrollHeight - el.clientHeight > 50 && /auto|scroll/.test(getComputedStyle(el).overflowY)) { scroller = el; break; }
+  el = el.parentElement;
+}
+(scroller ?? window).scrollTop += target.getBoundingClientRect().top - 30;
+```
+
+Then `--screenshot` the outer page with headless Brave. It has to be same-origin — a `file://`
+harness pointing at `localhost` cannot reach `contentDocument`, and the error looks like a
+scripting bug rather than a CORS one.
 
 The content column is widest around 768–900px, not at desktop, because `content-width` caps at 790px
 and only adds the 45px padding at `w900`. Measured SVG width for a `max-width: 700px` widget
