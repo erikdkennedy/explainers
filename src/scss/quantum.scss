@@ -1914,3 +1914,25 @@
        exactly (RM_REDUCED_TAU). What survives here is the caption cross-fade and the trail's
        fill transition, both of which are what convey the state rather than decorate it. */
 }
+
+/*****************************************
+              POST FURNITURE
+*****************************************/
+
+/* The double-slit / Ramsey comparison table has to be a pipe table, because one of its cells
+   carries a footnote reference and markdown-it-attrs cannot put a class on a table (it lands
+   the attributes on a row instead). So the two classes it would otherwise have — `dense` for
+   the desktop margin-buster and `header-column` for the bolded first column — are applied
+   through the wrapper div instead. Same declarations as _posts.scss; see the note there. */
+.qm-wide-table {
+    > table {
+        @include w900 {
+            margin-inline: var(--margin-buster);
+        }
+
+        th:first-child,
+        td:first-child {
+            font-weight: 600;
+        }
+    }
+}
