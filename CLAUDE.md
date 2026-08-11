@@ -138,7 +138,14 @@ corresponding asset, drop an HTML comment carrying the doc's caption so the inte
 
 ## Tables
 
-Two options, and the choice is driven by cell contents:
+All tables span the column (`width: 100%`), so a two-column table of short values doesn't sit in a
+narrow stripe beside full-width body text. Two other things `_posts.scss` handles for you, so
+don't work around them per-post: a table with **no header row** (raw HTML whose first child is
+`<tbody>`) gets a top rule, since normally the header row's bottom border is what draws it; and a
+`<ul>` inside a cell is pulled back to the cell edge, because the body's reading indent is pure
+lost width in a column that has none to spare.
+
+Two options for the table itself, and the choice is driven by cell contents:
 
 - **Pipe tables** for simple one-line cells. Header row required.
 - **Raw HTML `<table>`** whenever a cell needs a list, `<br>`, or other block content — pipe
@@ -276,10 +283,22 @@ uses it for `.triple-wide` and `.sticky-column-table-wrapper`.
 - `***triple***` for the occasional bold-italic key takeaway.
 - External links get `{target="_blank"}`.
 - The closing credits line ends with `{ .credits }`.
-- A verbatim quotation of someone else is a real `> blockquote` (styled in `_posts.scss`: a brand
-  rule and some room, no change of type). Reserve it for quoting *others* — where the author is
-  quoting his own earlier text back at the reader, the posts use a plain italic paragraph, and
-  that distinction is worth keeping.
+- Any pulled-out quotation is a real `> blockquote` — both external ones (Aaronson, Deutsch) and
+  the author quoting his own earlier text back at the reader, which the QM post does three times.
+  Styled in `_posts.scss`: a brand rule, some room, and **italics**.
+
+  ⚠️ Because the whole quote is italic, `em`/`i` inside one is reset to upright — emphasis has to
+  invert to still read as emphasis. So write the emphasis on the *word that matters*, never on the
+  bulk of the sentence: `entire phantom *timelines* rather than simply phantom *copies*` is right,
+  and `*entire phantom* timelines *rather than*` inverts to nonsense inside a quote even though it
+  looks identical in a body paragraph.
+- **A figure's source goes in `image-credit`, not in the caption.** The doc writes captions like
+  “…performed with electrons by [Tonomura et al (1989)](…)”; split that — the caption keeps the
+  description, the link moves to `image-credit`, and the “by” goes away, since the include already
+  prefixes “Image: ”. That gets the source the small, dimmed, centred treatment every other credit
+  on the site has.
+- A displayed equation is a paragraph of its own carrying `{ .equation }` — centred and italic.
+  One-line identities only; anything with a fraction or a summation needs real math typesetting.
 - Superscripts and subscripts don't survive the export — `10^80` arrives as a bare `1080`. Restore
   with `<sup>`. Scan for suspicious runs of digits.
 - Google Docs' own footnote text is sometimes truncated mid-sentence in the export (`…which posit

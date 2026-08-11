@@ -90,14 +90,20 @@ li {
     margin-bottom: 8px;
 }
 
-/* Verbatim quotations of someone else — the QM glossary has two. The body face already
-   carries the voice, so this is a brand rule and some room, not a change of type. Note the
-   sidenote transform in .eleventy.js hangs notes off `blockquote` as well as p/li, so a
-   footnote inside one still lands in the right place. */
+/* Verbatim quotations of someone else — the QM glossary has two. A brand rule, some room, and
+   italics; the face doesn't change. Note the sidenote transform in .eleventy.js hangs notes off
+   `blockquote` as well as p/li, so a footnote inside one still lands in the right place. */
 blockquote {
     margin: 28px 0;
     padding-left: 20px;
     border-left: 3px solid var(--brand-color);
+    font-style: italic;
+
+    /* The whole quote is already italic, so emphasis inside it has to go the other way to
+       stay emphasis at all. */
+    em, i, cite {
+        font-style: normal;
+    }
 
     p:last-child {
         margin-bottom: 0;
@@ -142,12 +148,36 @@ a, a:visited {
     color: var(--link-color);
 }
 
+/* A displayed equation, set on a paragraph of its own: `x = y{ .equation }`. Centred, with
+   room around it, and italic because that is what italics are *for* in mathematical setting —
+   variables lean, operators and numerals don't. Worth doing by hand while the posts have a
+   handful of one-line identities between them; the moment one needs a fraction or a summation
+   sign this stops being enough and it's time for real math typesetting. */
+.equation {
+    margin-block: 28px;
+    text-align: center;
+    font-size: 1.15em;
+    font-style: italic;
+    line-height: 150%;
+}
+
 table {
     margin-block: 40px 50px;
     border-collapse: collapse;
     border-spacing: 0px;
     font-family: var(--font-sans);
     font-size: 16px;
+
+    /* Tables span the column rather than shrink to their contents — a two-column table of
+       short values otherwise sits in a narrow stripe against full-width body text. */
+    width: 100%;
+
+    /* A header row's bottom border doubles as the rule above the body. A table with no
+       header (raw HTML, `<tbody>` as the first child) has nothing playing that part, and
+       reads as though it were missing its first line. */
+    > tbody:first-child > tr:first-child {
+        border-top: 1px solid var(--border-color);
+    }
 
     &.dense {
         @include w900 {
@@ -188,6 +218,21 @@ table {
 
             &:not(:last-child) {
                 padding-right: 8px;
+            }
+        }
+
+        /* A list in a cell is the cell's whole content, so the body's reading indent is just
+           lost width in a column that has none to spare. Keep the markers outside the text
+           block (so wrapped lines stay aligned under each other, not under the bullet) and
+           pull the whole thing back to the cell edge. */
+        th, td {
+            ul, ol {
+                margin-block: 0;
+                padding-left: 15px;
+            }
+
+            li:last-child {
+                margin-bottom: 0;
             }
         }
 

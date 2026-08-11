@@ -38,21 +38,7 @@ OK, enough pre-amble. Let’s dive right in.
 As far as I can tell, basically *all* of the weirdness of QM is due to *two simple facts*. Neither is intuitive in everyday life, but they’re the foundation of the quantum:
 
 1. Probabilities can cancel
-2. Particles can split into many “phantom copies” of themselves[^1]
-
-[^1]: I’ll use footnotes for more in-depth comments or technical clarifications. They’re entirely optional to read.
-
-    Regarding my wording – “probabilities can cancel”, “many phantom copies” – I expect those with a physics background to be twitching. These are vast simplifications that I’m consciously making for pedagogical reasons. As I stated above, this is how I wish it had been explained to me.
-
-    I’ll only note two things for general readers.
-
-    First, QM does involve some “normal” (classical) probability, but is much more concerned with these special cancellable quantum probabilities. Unless explicitly mentioned (or clear from context), I’ll use “probability” to mean the latter. QM has a different term for this, and we’ll get to it towards the end.
-
-    Second, regarding “many phantom copies”, this idea is:
-
-    (a) implied by some equations in QM<br>(b) the most intuitive way to picture QM<br>(c) believed by many physicists to be what’s actually happening.
-
-    But! – it’s not a requirement from the equations that you believe there are multiple copies of things, and I will, much later on, mention ways of interpreting QM that do not believe this. Nonetheless, it’s absolutely the best way to get a tangible feel for the quantum. With that being said, onwards!
+2. Particles can split into many “phantom copies” of themselves
 
 Let’s talk about each of those.
 
@@ -265,17 +251,17 @@ Before we go on, I want to take a moment and say: this is kind of *it*. We will 
 
 Anyhow, this should be a “scales falling off your eyes” moment with respect to a few things I mentioned earlier:
 
-*I say “phantom copies” because they’re never observed directly.*
-
-*“So why talk about them at all?”*
-
-*Because they do leave a mysterious – and important – trace of their existence.*
+> I say “phantom copies” because they’re never observed directly.
+>
+> “So why talk about them at all?”
+>
+> Because they do leave a mysterious – and important – trace of their existence.
 
 The trace of their existence is when they cancel out and certain events do not happen.
 
 Or:
 
-*Perhaps more shockingly, there are phantom copies doing things that are never physically observed – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I will explain why you don’t see these things shortly)*
+> Perhaps more shockingly, there are phantom copies doing things that are never physically observed – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I will explain why you don’t see these things shortly)
 
 The events never observed are times when two or more ways in which those events could occur have special quantum probabilities that add up to zero.
 
@@ -296,7 +282,7 @@ There are 2 reasons why “multiple phantom copies” and “I don’t know” a
 1. Phantom copies that end up in the same state can **cancel each other out** (If you merely *don’t know* something, there’s no cancelling involved)
 2. As long as the phantom copies remain isolated enough so one outcome is not distinguishable, you can (carefully) **modify the probability** of various outcomes (not always, but sometimes)[^10]
 
-[^10]: And technically is true of some classical probability distributions as well. If you blindly throw a paper airplane north, then blow a fan east to west across the direction of throwing, *you’ve modified the probability distribution of where you’ll expect to find the paper airplane*. QED! That being said, the quantum mechanical version is much more shocking than something this mundane.
+[^10]: And technically is true of some classical probability distributions as well. If you blindly throw a paper airplane north, then blow a fan east-to-west across the direction of throwing, *you’ve modified the probability distribution of where you’ll expect to find the paper airplane*. QED! That being said, the quantum mechanical version is much more shocking than something this mundane.
 
 The first of these is the easiest to understand, and if it’s the only thing you get out of this article, that’s totally fine. The second reason is more subtle, and I’ll introduce it via analogy below.
 
@@ -359,10 +345,7 @@ Yeahhh. About that.
 
 When I said probabilities *cancel* in QM, it’s not as simple as “0.5” cancels with “-0.5”. That’s only part of the story. Truthfully, these special quantum probabilities aren’t *a* number, they’re *two* numbers. They’re – and I almost hate to say this – *two-dimensional probabilities*.[^11] Yes, it’s as weird as it sounds. No, we don’t know what it means. Sorry.
 
-[^11]: Technically, they’re complex numbers. Whether a complex number is technically “2-dimensional” is above my paygrade, but saying “2-D probabilities” sounds really cool – and gives you a good idea of how whack this is.
-
-<!-- The doc had these as two pencil sketches side by side; the Figma frame draws both in
-     one picture, so it goes in as a single figure rather than a .double-wide. -->
+[^11]: Technically, they’re complex numbers – there’s a real and imaginary component. So while “2-dimensional” is true, it’s not the full story. Complex numbers naturally allow for _rotation_, which is a property we’ll see shortly.
 
 {% include img.md, src: "classical-probabilities-vs-quantum-amplitudes.png", width: "467px", alt: "Left: a number line from 0 to 1. Right: a filled disc of radius 1, spanning -1 to 1 on both axes.", caption: "Classical probabilities can be anywhere on the line from 0 to 1 (inclusive). Special quantum probabilities can be anywhere on or within a circle of radius 1. WUT." %}
 
@@ -435,7 +418,7 @@ Let’s see how that looks.
 
 ### Quantum probabilities & the double-slit experiment
 
-First, I should say that one does not *require* phantom copies to travel in straight lines. They could loop and swoop every which way! But as far as this experiment is concerned, every zigzagging path *does* cancel out, due to a happy accident – or “accident” – of the math.
+First, I should say that one does not *require* phantom copies to travel in straight lines. They could loop and swoop every which way! But as far as this experiment is concerned, every zigzagging path *does* cancel out, due to a happy accident/“accident” of the math.
 
 That leaves only paths composed of straight lines that we need to worry about.
 
@@ -478,9 +461,9 @@ The last thing I want to draw your attention to is how profoundly strange this a
 
 Because experimentally, this is all very real. Double-slit experiments (and related multi-slit setups) have been performed with everything from photons and electrons, all the way to beastly 2,000-atom oligoporphyrin molecules. The specifics vary, but we see the same style of pattern again and again.
 
-{% include img.md, src: "tonomura-electron-double-slit.png", width: "500px", alt: "A black field scattered with white dots from individual electrons, clustering into vertical bands.", caption: "A double-slit type experiment result performed with electrons by <a href='https://sites.ifi.unicamp.br/aguiar/files/2014/02/tonomura-1989.pdf' target='_blank'>Tonomura et al (1989)</a>" %}
+{% include img.md, src: "tonomura-electron-double-slit.png", width: "500px", alt: "A black field scattered with white dots from individual electrons, clustering into vertical bands.", caption: "A double-slit type experiment result performed with electrons", image-credit: "<a href='https://sites.ifi.unicamp.br/aguiar/files/2014/02/tonomura-1989.pdf' target='_blank'>Tonomura et al (1989)</a>" %}
 
-{% include img.md, src: "juffmann-molecule-multi-slit.png", width: "400px", alt: "Orange fluorescent dots from individual dye molecules on a dark field, gathering into vertical stripes.", caption: "A multi-slit experiment performed with 58-atom dye molecules by <a href='https://arxiv.org/pdf/1402.1867' target='_blank'>Juffmann et al (2014)</a>" %}
+{% include img.md, src: "juffmann-molecule-multi-slit.png", width: "400px", alt: "Orange fluorescent dots from individual dye molecules on a dark field, gathering into vertical stripes.", caption: "A multi-slit experiment performed with 58-atom dye molecules", image-credit: "<a href='https://arxiv.org/pdf/1402.1867' target='_blank'>Juffmann et al (2014)</a>" %}
 
 Anyhow, if you’re with me this far, congrats! You now have a very tangible understanding of how the most famous experiment in all of quantum mechanics works.
 
@@ -608,7 +591,7 @@ These electron energy states map over to the coin analogy from the previous sect
 
 A version of the Ramsey experiment using a rubidium atom won the [Nobel prize in 2012](https://www.nobelprize.org/prizes/physics/2012/popular-information/){target="_blank"}. So we’ll use that going forward.
 
-| Coin analogy | Atom<br>e.g. rubidium in Rydberg n=50 state |
+| Coin analogy | Atom (e.g. rubidium in Rydberg n=50 state) |
 |--------------|------|
 | Heads | Lower electron energy state (“ground”) |
 | Tails | Higher electron energy state (“excited”) |
@@ -699,7 +682,7 @@ Next, let’s take the final conceptual step for this article. Let’s examine w
 
 The Hong-Ou-Mandel experiment is perhaps the simplest experiment that forces us to reckon with how QM deals with *multiple* particles. Since our goal is to be able to visualize things as tangibly as possible, I’ll keep the lede front and center:
 
-*When multiple particles are involved, it’s easier to visualize entire phantom* timelines *rather than simply phantom* copies*.*
+> when multiple particles are involved, it’s easier to visualize entire phantom *timelines* rather than simply phantom *copies*
 
 This will make more sense shortly.
 
@@ -830,7 +813,7 @@ It’s a bit crazy, no?
 
 And yet it’s reality.
 
-{% include img.md, src: "jachura-hong-ou-mandel.png", width: "448px", alt: "Sixteen numbered frames from a photon-counting camera, each showing green dots in either the Port V row or the Port H row, but almost never in both.", caption: "Both photons hit either one sensor (“Port V”) or the other (“Port H”), never both. Except frame 8. Experimental error! – making photons indistinguishable is hard. <a href='https://opg.optica.org/ol/fulltext.cfm?uri=ol-40-7-1540' target='_blank'>Jachura and Chrapkiewicz (2015)</a>" %}
+{% include img.md, src: "jachura-hong-ou-mandel.png", width: "448px", alt: "Sixteen numbered frames from a photon-counting camera, each showing green dots in either the Port V row or the Port H row, but almost never in both.", caption: "Both photons hit either one sensor (“Port V”) or the other (“Port H”), never both. Except frame 8. Experimental error! – making photons indistinguishable is hard.", image-credit: "<a href='https://opg.optica.org/ol/fulltext.cfm?uri=ol-40-7-1540' target='_blank'>Jachura and Chrapkiewicz (2015)</a>" %}
 
 In these experiments of quantum mechanics, a theme starts to emerge. The stuff the universe is composed of, when no one’s looking, endlessly splits into copies of itself in every permutation of possible paths and properties. The whole system is accounted for in an odd type of probability, a probability that spins (trillions of times per second, even). It’s a probability that cancels too, and while anything that can happen one way might occur, some things that can occur many ways are simply never seen.
 
@@ -934,7 +917,7 @@ Scientists have felt this tension very acutely for a century, and it’s called 
 
 This may only hit with the math folks, but it’s basically akin to saying:
 
-(A+B)×C = AC + BC = AC
+(A + B) × C = AC + BC = AC{ .equation }
 
 Why? Because I threw out the AB, that’s why!
 
@@ -994,12 +977,11 @@ According to the Many Worlds Interpretation (henceforth “MWI”), there’s no
 
 It’s pretty similar to the “phantom timeline” idea I’ve mentioned above. The MWI take on the double-slit experiment is that, for anywhere one *could* see the particle land, there’s a branch in which the particle did land there. And if you shoot 100 particles through the double slit, the universe splits into every possibility, every time.
 
-<!-- TODO figure → mwi-branches.png, width 679px. INITIAL SETUP above a row of branch panels,
-     headed “BRANCHES CONTAINING ALL POSSIBLE RESULTS…”. -->
+{% include img.md, src: "double-slit-branches.png", width: "700px", alt: "One double-slit setup labelled INITIAL SETUP, with arrows fanning down from it to a row of otherwise identical copies — “branches containing all possible results” — each with the particle landing at a different spot on the far wall." %}
 
 Of course, it’s not just quantum mechanics experiments that split the multiverse. The implication is that basically *every* particle interaction does. The roughly 10<sup>80</sup> atoms of the known visible universe are *constantly* spawning an unfathomable number of branches with every collision!
 
-{% include img.md, src: "possible-branches-of-quantum-particle-collision.png", width: "700px", alt: "A branching tree of isometric panels, each showing two particles colliding and scattering at a different pair of angles.", caption: "Remember this diagram? Every permutation of possible angles, times, energies, etc. for every collision." %}
+{% include img.md, src: "possible-branches-of-quantum-particle-collision.png", width: "700px", alt: "A branching tree of isometric panels, each showing two particles colliding and scattering at different angles and start times.", caption: "Remember this diagram? Every permutation of possible angles, times, energies, etc. for every collision." %}
 
 If this sounds wild, I’ll grant you that. But in its favor, it is a very clean resolution to the measurement problem. Why does the wavefunction collapse into a single state? It doesn’t! Sure, it *appears* to, here in our branch. But the rest of the wavefunction is still alive and well, spread out across other branches of the multiverse!
 
