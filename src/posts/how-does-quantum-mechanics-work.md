@@ -180,16 +180,12 @@ Perhaps more shockingly, there are phantom copies doing things that are *never p
 
 But in general, any measurable property of a particle or group of particles is a dimension in which these phantom copies can vary. Here’s a fuller list to give you a better idea:
 
-<div data-render-sidenote-in-place="true">
-
 | Condition | Examples |
 |-----------|----------|
 | Anytime a particle could take **different paths**[^4] | <ul><li>An electron goes through a slit vs. hits a wall</li><li>An atom hits another atom vs. flies past it</li><li>A photon bounces off glass vs. goes through it</li><li>A photon bounces in one direction vs another[^5]</li></ul> |
 | Anytime a particle could be somewhere at **different times** | <ul><li>A radioactive atom could emit various particles at different possible times[^6]</li><li>An atom with excited electrons could emit a photon at different possible times</li><li>A particle could travel to a spot faster or slower[^7]</li></ul> |
 | Anytime a particle could have **different properties** | <ul><li>The spin of a particle – e.g. proton, neutron, electron, etc. (changed by certain magnetic fields, particle collisions, etc.)</li><li>The polarization of a photon (changed by light hitting certain types of crystals, etc.)</li><li>The energy levels of an atom’s electrons (changed by bombarding it with other particles)</li><li>The rotational speed of a molecule (changed by collisions)</li><li>The amount of vibration between the nuclei of a molecule</li></ul> |
 | Other | <ul><li>Electrons in a tiny superconducting wire could travel clockwise or counterclockwise</li></ul> |
-
-</div>
 
 [^4]: The equations of QM don’t allow us to say the *particle* takes any one path. Instead, between the moments of “losing contact” and “regaining contact”, the particle is *only* phantom copies doing every possible permutation of things. As to the nature of the phantom copies, that’s up for debate, and something we’ll talk about in [Interpretations](#cocktail-party).
 
@@ -240,7 +236,7 @@ Here is the analog with classical probability. Read down each column.
 | Classical probability | Quantum mechanics |
 |-----------------------|-------------------|
 | When there are multiple ways… | When there are multiple phantom copies… |
-| For an event to happen… | That end up in the same state…[^9]{data-render-sidenote-in-place="true"} |
+| For an event to happen… | That end up in the same state…[^9] |
 | Each way has a probability of happening… | Each phantom copy has a special quantum probability of being found in that state… |
 | And if you add them together… | And if you add up the special quantum probabilities for each of the indistinguishable phantom copies… |
 | You get the total probability of the event. | You get the total quantum probability of the event – which can be 0 – and is directly related to the classical probability of the event |
@@ -627,10 +623,9 @@ Blast the atom once, it’s 50-50. But if you don’t look, and instead blast it
 
 Now the core idea of this article is that quantum weirdness is because of (1) cancelling probabilities and (2) phantom copies. So let’s write out this experiment in that framework:
 
-<!-- A pipe table rather than raw HTML, because [^17] sits in a cell and a footnote marker
-     inside an HTML block renders literally. The two classes markdown-it-attrs can't put on a
-     table (it lands them on a row) come from .qm-wide-table in quantum.scss instead. -->
-<div class="sticky-column-table-wrapper qm-wide-table" data-render-sidenote-in-place="true">
+<!-- A pipe table because the cells are one-liners. The two classes markdown-it-attrs can't
+     put on a table (it lands them on a row) come from .qm-wide-table in quantum.scss. -->
+<div class="sticky-column-table-wrapper qm-wide-table">
 
 |  | Double-slit experiment | Ramsey experiment |
 |--|------------------------|-------------------|

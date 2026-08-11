@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-sidenote-style="a">
 
 <head>
 	<meta charset="utf-8">
@@ -33,6 +33,7 @@
 
 <body>
 	{% include site-top-nav.md %}
+	{% include sidenote-style-switcher.html %}
 	{%- assign has_header_media = header_img or header_video -%}
 	<header class="layout-width post-header{% if has_header_media %} has-header-media{% endif %}">
 		{%- if has_header_media -%}
