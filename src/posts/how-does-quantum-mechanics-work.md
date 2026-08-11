@@ -347,13 +347,13 @@ When I said probabilities *cancel* in QM, it’s not as simple as “0.5” canc
 
 [^11]: Technically, they’re complex numbers – there’s a real and imaginary component. So while “2-dimensional” is true, it’s not the full story. Complex numbers naturally allow for _rotation_, which is a property we’ll see shortly.
 
-{% include img.md, src: "classical-probabilities-vs-quantum-amplitudes.png", width: "467px", alt: "Left: a number line from 0 to 1. Right: a filled disc of radius 1, spanning -1 to 1 on both axes.", caption: "Classical probabilities can be anywhere on the line from 0 to 1 (inclusive). Special quantum probabilities can be anywhere on or within a circle of radius 1. WUT." %}
+{% include img.md, src: "classical-probabilities-vs-quantum-amplitudes.png", width: "700px", alt: "Left: a number line from 0 to 1. Right: a filled disc of radius 1, spanning -1 to 1 on both axes.", caption: "Classical probabilities can be anywhere on the line from 0 to 1 (inclusive). Special quantum probabilities can be anywhere on or within a circle of radius 1. WUT." %}
 
 For classical probabilities, we just think of them as a *number* – e.g. “0.1” or “0.482”.
 
 But for these special quantum probabilities, it’s easiest to think of them as an *arrow* (i.e. a vector) – an arrow that starts at the origin and extends to some point on or within a circle of radius 1. Technically, we could achieve the same ends with x and y coordinates, but the arrow helps us think in terms that are more convenient for our purposes: *length* and *angle*.
 
-{% include img.md, src: "quantum-probability-angle-and-length.png", width: "300px", alt: "An arrow from the centre of a pale disc, with its LENGTH labelled along the shaft and its ANGLE labelled on an arc swept from the horizontal." %}
+{% include img.md, src: "quantum-probability-angle-and-length.png", width: "360px", alt: "An arrow from the centre of a pale disc, with its LENGTH labelled along the shaft and its ANGLE labelled on an arc swept from the horizontal." %}
 
 Let’s chat briefly about each.
 
@@ -396,7 +396,7 @@ Let’s build things up from the simplest possible example – a single particle
 
 If you were to look at a series of points along a line emanating from the particle’s starting position, you’d find that the special quantum probability of finding the particle at various points along the line *spins*, so to speak.
 
-{% include img.md, src: "two-visualizations-of-amplitude-for-finding-particle-along-straight-path.png", width: "600px", alt: "The same straight path drawn twice: once with a corkscrewing arrow turning along it, once as a line running through the full rainbow.", caption: "The special quantum probability of finding a particle at some point along a path “spins”." %}
+{% include img.md, src: "two-visualizations-of-amplitude-for-finding-particle-along-straight-path.png", width: "700px", alt: "The same straight path drawn twice: once with a corkscrewing arrow turning along it, once as a line running through the full rainbow.", caption: "The special quantum probability of finding a particle at some point along a path “spins”." %}
 
 It’s worth being super clear on *what* is doing the oscillating here. It’s *not* a property of the particle that spins. Rather, it’s a *probability* that spins (classical probabilities can only grow or shrink – but quantum probabilities, being 2-D, can spin). Specifically, it’s the quantum probability of finding a photon at a particular point, measured for a series of points along a straight line. And yes, this paragraph is highly unintuitive. Unfortunately, it’s pretty fundamental to how QM works, so re-read as necessary.
 
@@ -517,7 +517,7 @@ So here’s what we’ve got so far:
 
 And let’s say you go as far as necessary to convince yourself that indeed, this pattern loops endlessly. Despite the existential vertigo you have from handling a magic artifact, you feel like some progress is being made. There are essentially four “states” the coin can be in. And it just cycles through them:
 
-{% include img.md, src: "bloch-coin.png", width: "400px", alt: "A ring of four states — 100% heads at the top, 50-50 on each side, 100% tails at the bottom — joined by four FLIP arrows running clockwise." %}
+{% include img.md, src: "bloch-coin.png", width: "500px", alt: "A ring of four states — 100% heads at the top, 50-50 on each side, 100% tails at the bottom — joined by four FLIP arrows running clockwise." %}
 
 This is actually pretty curious. You notice that your map says “50-50” twice. Now *all* coins are 50-50 when you flip them once. But *this coin* has two distinct scenarios where it’s 50-50. And they’re subtly different. Not because of what you observe directly (they both yield half heads, half tails), but because of where they *lead to*. In one 50-50 state, if you don’t look and flip again, you’ll *definitely* get HEADS. And in the other 50-50 state, if you don’t look and flip again, you’ll *definitely* get TAILS. So the coin – or something – must have some memory, some way to track, some deeper variable for where it’s at in this cycle.
 
@@ -533,7 +533,7 @@ So you decide to flip it once, wait 2.41 seconds, then flip it *again*, and *THE
 
 So you tentatively draw a new path in your diagram:
 
-{% include img.md, src: "bloch-coin-2.png", width: "400px", alt: "The same ring of four coin states, now with a WAIT 2.4 S arrow crossing the middle from the left 50-50 state to the right one." %}
+{% include img.md, src: "bloch-coin-2.png", width: "500px", alt: "The same ring of four coin states, now with a WAIT 2.4 S arrow crossing the middle from the left 50-50 state to the right one." %}
 
 And then you wonder: if you go from left 50-50 (“L”) to the right 50-50 (“R”), *can you do the reverse*?
 
@@ -545,7 +545,7 @@ Your new theory: if you go L and wait 2.41 seconds, you’ll end up at R. But if
 
 You once again sketch another arrow in your burgeoning magic coin diagram:
 
-{% include img.md, src: "bloch-coin-3.png", width: "400px", alt: "The same ring, now with two WAIT 2.4 S arrows running in opposite directions between the left and right 50-50 states." %}
+{% include img.md, src: "bloch-coin-3.png", width: "500px", alt: "The same ring, now with two WAIT 2.4 S arrows running in opposite directions between the left and right 50-50 states." %}
 
 I appear again and ask if you’ve considered winning some bar bets with coin tricks. You say yes. I scoff and say you should use it to break RSA encryption and make billions. “Though you’d need to be able to read the flip without looking at it…” I mumble.
 
@@ -601,7 +601,7 @@ A version of the Ramsey experiment using a rubidium atom won the [Nobel prize in
 
 So here’s what our “map” looks like for this rubidium atom:
 
-{% include img.md, src: "bloch-rubidium.png", width: "400px", alt: "The coin ring redrawn for a rubidium atom: ground state at the top, excited at the bottom, “Plus” and “Minus” at the sides, joined by MICROWAVE PULSE arrows and two WAIT 9.8 PS arrows across the middle." %}
+{% include img.md, src: "bloch-rubidium.png", width: "500px", alt: "The coin ring redrawn for a rubidium atom: ground state at the top, excited at the bottom, “Plus” and “Minus” at the sides, joined by MICROWAVE PULSE arrows and two WAIT 9.8 PS arrows across the middle." %}
 
 The “ground” and “excited” electron states replace “heads” and “tails”, microwave pulses take the place of coin flips, and the waiting time between 50-50 states is much, *much* shorter (this picosecond duration can be arbitrarily lengthened in the lab, but for the sake of simplicity, we’ll continue referencing this one stupidly short value). Also, I’ve also renamed the 50-50 states to “Plus” and “Minus”.[^15]
 
@@ -613,11 +613,11 @@ Again, if you did not know quantum mechanics, you might think, “Ah, we’ve fo
 
 But if, instead of looking, you keep it isolated, wait precisely 9.8 picoseconds, and then blast it again, you’ll see that it’s 100% *ground* state.
 
-{% include img.md, src: "bloch-rubidium-path-to-ground.png", width: "400px", alt: "The same map with one route traced in blue: a microwave pulse to “Plus”, a 9.8 picosecond wait across to “Minus”, and a second pulse back up to the ground state." %}
+{% include img.md, src: "bloch-rubidium-path-to-ground.png", width: "500px", alt: "The same map with one route traced in blue: a microwave pulse to “Plus”, a 9.8 picosecond wait across to “Minus”, and a second pulse back up to the ground state." %}
 
 Alternatively, if you wait twice as long between blasts – a whole 19.6 picoseconds – the subsequent second blast will reveal an *excited* state atom every single time.
 
-{% include img.md, src: "bloch-rubidium-path-to-excited.png", width: "400px", alt: "The same map with a longer route traced in blue: a pulse to “Plus”, two 9.8 picosecond waits across and back, and a second pulse down to the excited state." %}
+{% include img.md, src: "bloch-rubidium-path-to-excited.png", width: "500px", alt: "The same map with a longer route traced in blue: a pulse to “Plus”, two 9.8 picosecond waits across and back, and a second pulse down to the excited state." %}
 
 On one hand, you’re probably like “Yeah, that’s exactly how the magic coin works, NBD”. But on the other hand, it means the magic coin is actually real (!)
 
