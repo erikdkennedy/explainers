@@ -404,7 +404,7 @@ Now I should say that there’s no *direct* way to measure the special quantum p
 
 But the spinning of a quantum probability *isn’t even picked up by repeated trials* per se. Remember: the classical probability is tied to the *length* of the arrow – which isn’t meaningfully changing.[^13] The *direction* of the arrow – which *is* changing – only comes into play when arrows are added together.
 
-[^13]: I should also add that the length of the quantum probability arrow slightly decreases over the length of the path, for inverse square law-related reasons.
+[^13]: I should also add that the length of the quantum probability arrow decreases over the length of the path – in inverse proportion to the length of the path.
 
 So to see any quantum weirdness at all, you need *two* phantom copies to end up in the exact same place, so their arrows can be added together. And to see *complete cancellation* (i.e. something that mysteriously doesn’t happen), the phantom copies’ arrows of quantum probability need to be equal and opposite.
 
@@ -1089,4 +1089,4 @@ In a sufficiently broad conversation on QM, these will all come up. However, eve
 * [**Quantum Country**](https://quantum.country/){target="_blank"} by Michael Nielsen & Andy Matuschak. A giant 4-part article on QC and QM. Michael Nielsen has (literally) written the textbook on QC, and while he’s one of the world’s best explainers of technical concepts, warning: this piece comes with the full mathematical formalism a practicing physicist would be interested in! Nonetheless, it builds up an understanding of quantum computing – including a quantum search algorithm – from the ground up. Incredibly good.
 * [**LessWrong Quantum Sequences**](https://www.lesswrong.com/w/the-quantum-physics-sequence){target="_blank"} by Eliezer Yudkowsky. For those comfortable with math (imaginary numbers, linear algebra), this is a surprisingly accessible introduction to QM. I recall it as being overly-wordy – and pretty smug regarding how MWI was *obviously* the correct interpretation of QM. Nonetheless, a worthwhile read for someone diving in.
 
-Thanks to Abhi Vyas and Matt Favero for their feedback.{ .credits }
+Thanks to Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }

@@ -45,7 +45,11 @@
                     <path d="M14 9H4M8.5 4.75 4.25 9l4.25 4.25"/>
                 </svg>
             </button>
+            <!-- Worded, because the scrubber beside it is the louder affordance and a reader
+                 who never presses this never meets a caption at a keyframe. The arrow stays,
+                 after the word. Ramsey does the same: icon back, worded forward. -->
             <button type="button" class="em-step em-step--next" aria-label="Next step">
+                <span class="em-step-text" aria-hidden="true">Next</span>
                 <svg class="em-step-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
                     <path d="M4 9h10M9.5 4.75 13.75 9l-4.25 4.25"/>
                 </svg>
