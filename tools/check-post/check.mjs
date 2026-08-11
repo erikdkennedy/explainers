@@ -10,9 +10,12 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 const SITE = '_site';
+// Take the post list from src, not from _site/posts — that directory is whatever the last
+// build left behind plus whatever Finder dropped in it, and a stray .DS_Store read as a slug
+// fails the run with "not built". From src, "not built" means what it says.
 const slugs = process.argv.slice(2).length
     ? process.argv.slice(2)
-    : readdirSync(join(SITE, 'posts'));
+    : readdirSync('src/posts').filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''));
 
 let failures = 0;
 const fail = m => { console.log(`  ✗ ${m}`); failures++; };
