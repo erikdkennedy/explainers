@@ -18,13 +18,22 @@ const CHROMIUM = process.env.CHROMIUM
 const PAGE = '_site/posts/how-does-quantum-mechanics-work/index.html';
 const OUT = 'src/assets/img/qm';
 
-// Slider positions, in the widget's own 0–1000. Solved rather than eyeballed: with the
-// shipped defaults (wavelength 12, separation 22) the two path lengths differ by 0, λ/4 and
-// λ/2 at these three spots — so the arrows land aligned, a quarter turn apart, and exactly
-// opposed. See computeDoubleSlitPaths() in quantum.js for the geometry.
+// Slider positions, in the widget's own 0–1000. Solved rather than eyeballed, against the
+// shipped defaults (wavelength 12, separation 22). See computeDoubleSlitPaths() in quantum.js
+// for the geometry; the drawing is DSP_WIDTH = 200 units wide with the slits at 100 ∓ 11.
+//
+//   500  detector on the centre line — the paths are the same length, so the arrows align.
+//   555  detector directly above the right slit (111 / 200). The right path is then exactly
+//        vertical, which is the *shortest* it can be, and the left path is at its longest so
+//        far — which is the pair of claims the prose beside this figure makes. Note this is
+//        deliberately no longer the λ/4 spot the other two are solved against: the path
+//        difference here is 1.74 of a 12-unit wavelength, so the arrows sit ~52° apart
+//        rather than a quarter turn. The picture illustrating "slightly out of sync" now
+//        matches the sentence rather than the arithmetic of the figure after it.
+//   696  path difference of exactly λ/2 — the arrows are opposed and the total is zero.
 const STILLS = [
     { position: 500, name: 'double-slit-paths-aligned' },
-    { position: 595, name: 'double-slit-paths-partial' },
+    { position: 555, name: 'double-slit-paths-partial' },
     { position: 696, name: 'double-slit-paths-cancelled' },
 ];
 
@@ -59,6 +68,11 @@ html, body { margin: 0; padding: 0; background: #fff; }
 /* And with the controls gone, the equation would hang off the top of a much taller setup
    column. This is the only difference between these stills and the live widget. */
 .dsp-body { align-items: center !important; }
+/* Square corners. The card's own 40px radius would be baked into the PNG, and .post__figure
+   img then rounds the image again at 20px — two different radii a few pixels apart, which
+   reads as a rendering fault rather than as a design. Let the stylesheet do the rounding:
+   the still is a plain rectangle and the article clips it. */
+#stage .widget { border-radius: 0 !important; }
 </style></head><body>
 <div id="stage">${widget}</div>
 <script>

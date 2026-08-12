@@ -435,7 +435,7 @@ If the two paths are the same length – e.g. for the very middle spot on the se
 
 For a spot on the screen just to the *right* of the center, the left path is slightly *longer*, and the right path is slightly *shorter*. This means the quantum probability arrow of the left path will be a little more advanced, and the right path won’t advance as much. They’ll be slightly out of sync, and only add to a moderately larger arrow – representing a *moderate* probability of the photon landing at that spot.
 
-{% include img.md, src: "double-slit-paths-partial.png", width: "700px", alt: "The two paths meet just right of centre. The arrows are a quarter turn out of sync, and the total is a middling arrow." %}
+{% include img.md, src: "double-slit-paths-partial.png", width: "700px", alt: "The two paths meet directly above the right slit, so the right path runs straight up and is as short as it can be. The arrows are slightly out of sync, and the total is a little shorter than before." %}
 
 Finally, if you take a spot even farther to the right, the difference in left/right path lengths will increase further. When the path difference is exactly half a wavelength, the quantum probability arrows for the two paths will be pointed in opposite directions, and they will add to zero. These are the dark bands at which the photon never lands!
 
