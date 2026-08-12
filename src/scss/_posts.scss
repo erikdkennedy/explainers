@@ -679,32 +679,27 @@ hr.full-width {
     }
 }
 
+    /* The note's own look is unchanged from before the sidenotes were rebuilt: a hairline
+       rule across the top, 12px of air under it, 15px sans. What the old rule carried and
+       this one doesn't is the float layout it needed — the negative margins, the `top: -48px`
+       fudge, and the two masking pseudo-elements that hid body text sliding under a floated
+       note. Positioning is post.js's job now, so all of that is gone rather than reproduced. */
     .sidenote {
         position: absolute;
         top: var(--sn-top, 0);
         left: 0;
         width: 100%;
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
         font-family: var(--font-sans);
         font-size: 15px;
-        line-height: 1.35;
+        line-height: 1.3;
         /* Nothing is placed until post.js has measured; without JS the notes would all
            stack at the top of the margin. */
         visibility: hidden;
 
         .sidenotes--ready & {
             visibility: visible;
-        }
-
-        /* The rule that opens the note. Lifted above the highlight wash beneath it. */
-        &::before {
-            content: "";
-            position: relative;
-            z-index: 1;
-            display: block;
-            margin-bottom: 10px;
-            width: 28px;
-            height: 2px;
-            background-color: var(--brand-color);
         }
 
         /* The highlight. Anchored to the top of the note and faded out well before its
