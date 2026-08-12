@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const wanted = anchor.top - origin.top + nudge;
             const top = Math.max(wanted, floor);
             pair.note.style.setProperty('--sn-top', `${Math.round(top)}px`);
-            pair.top = top;
             floor = top + pair.note.offsetHeight + gap;
             lowest = Math.max(lowest, top + pair.note.offsetHeight);
         }
@@ -120,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setSidenoteActive(pair, on) {
         pair.refs.forEach(ref => ref.classList.toggle('is-active', on));
-        pair.note.classList.toggle('is-active', on);
     }
 
     /*  INITIALIZATION  */
@@ -136,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!byLabel.has(label)) {
                 const note = $(`.sidenote[data-fn="${CSS.escape(label)}"]`, _notes);
                 if (!note) continue;
-                byLabel.set(label, { note, refs: [], top: 0 });
+                byLabel.set(label, { note, refs: [] });
             }
             byLabel.get(label).refs.push(ref);
         }

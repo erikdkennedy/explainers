@@ -174,7 +174,7 @@ export default function(eleventyConfig) {
         const k = (refCount.get(label) || 0) + 1;
         refCount.set(label, k);
         const id = k === 1 ? `fnref-${label}` : `fnref-${label}-${k}`;
-        return `<sup class="fn-ref" id="${id}" data-fn="${label}" data-fn-n="${n}">` +
+        return `<sup class="fn-ref" id="${id}" data-fn="${label}">` +
                `<a class="fn-ref__link" href="#fn-${label}">` +
                `<span class="fn-ref__marker" aria-hidden="true"></span>` +
                `<span class="fn-ref__n">${n}</span>` +
@@ -218,7 +218,7 @@ export default function(eleventyConfig) {
       // references. Keeping them out of the flow is what lets a note sit level with a
       // marker inside a table cell or a figure caption.
       const asides = seen.map((label, i) =>
-        `<aside class="sidenote" id="sn-${label}" data-fn="${label}" data-fn-n="${i + 1}">` +
+        `<aside class="sidenote" id="sn-${label}" data-fn="${label}">` +
         `<div class="sidenote__body">${defs.get(label)}</div>` +
         `</aside>`).join('');
       $('.post-body').append(`<div class="sidenotes">${asides}</div>`);
