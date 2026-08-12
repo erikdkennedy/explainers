@@ -1139,6 +1139,13 @@
             opacity: 1;
         }
 
+        /* Held up between keyframes while the reader scrubs — see setEmissionLabel(). Dimmed
+           because the picture on screen is *near* this keyframe rather than at it; solid would
+           be the widget asserting something it cannot back up. */
+        .em-label.is-visible.is-approximate {
+            opacity: 0.55;
+        }
+
         /* Figma anchors this one by its top edge and lets it set its own width; every
            other label is centred on its y and wraps inside the 229px column. */
         .em-label--intro {
@@ -1149,16 +1156,41 @@
             white-space: nowrap;
         }
 
+        /* Copies are emitted with a cos² dipole weighting, so they crowd the horizontal and
+           thin out directly above and below the atom. That is the whole story behind where
+           these three sit: a caption in the sideways lobe gets dots through the type within a
+           step or two, and the further from the atom's own latitude a caption is, the longer
+           it stays readable. Counted photons landing inside each label's box, sampled across
+           the span of t the caption is on screen for — the numbers are in the notes below. */
         .em-label[data-step="1"],
         .em-label[data-step="2"],
         .em-label[data-step="3"] {
-            left: 64.43%; /* Figma: 451 of 700 */
             transform: translateY(-50%);
         }
 
+        .em-label[data-step="1"],
+        .em-label[data-step="2"] {
+            left: 64.43%; /* Figma: 451 of 700 */
+        }
+
+        /* Only step 1 is shown early enough that nothing has reached it yet. */
         .em-label[data-step="1"] { top: 45.5%; }
-        .em-label[data-step="2"] { top: 63%; }
-        .em-label[data-step="3"] { top: 90.25%; }
+
+        /* Figma puts this at 63%, which is inside the sideways lobe: it collects a dot or two
+           by the end of its span. Dropping it to 80% measured clean over t = 0.1 … 0.4. */
+        .em-label[data-step="2"] { top: 80%; }
+
+        /* This one is on screen from its keyframe all the way to t = 1, so it takes the worst
+           of the spray, and no position beside the atom survives that. Centred *under* the
+           atom instead — 33.6% + the column's own 32.8% puts its middle on the atom's 50% —
+           which is both the thinnest part of the dipole pattern and the right place for a
+           caption that is about the atom rather than about the photons. Measured over
+           t = 0.4 … 1: 1.9 dots through the type beside the atom, 1.25 below it. */
+        .em-label[data-step="3"] {
+            left: 33.6%;
+            top: 90.25%;
+            text-align: center;
+        }
 
         /* The last step swaps sides: by then the surviving photon is out on the left and
            the label would sit on top of it. */
@@ -1251,6 +1283,8 @@
                 width: var(--em-button-width, 58px);
                 height: var(--em-button-height, 38px);
                 padding: 0;
+                /* Only .em-step--prev is a bare glyph now; --next carries a word as well and
+                   sets its own width below. */
                 border: none;
                 border-radius: 20px;
                 cursor: pointer;
@@ -1274,9 +1308,22 @@
                 box-shadow: inset 0 0 0 2px var(--brand-color);
             }
 
+            /* "Next →": the word first, the arrow after it, on one row. Auto width because
+               the word will not fit the 58px the icon-only button was drawn at. */
             .em-step--next {
+                grid-auto-flow: column;
+                gap: 6px;
+                width: auto;
+                padding: 0 16px;
                 color: #fff;
                 background-color: var(--brand-color);
+            }
+
+            .em-step-text {
+                font-family: var(--font-mono);
+                font-size: 13px;
+                line-height: 1;
+                text-transform: uppercase;
             }
 
             .em-step-icon {
@@ -1338,6 +1385,9 @@
                 transform: none;
                 white-space: normal;
                 font-size: 12px;
+                /* Step 3 is centred while it is an annotation hanging under the atom. Down
+                   here it is a row in a band with the other four, so it ranges left like them. */
+                text-align: left;
             }
 
             .em-label--intro {

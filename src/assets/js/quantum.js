@@ -76,9 +76,14 @@
     // which is the most decay that can be shown without the last stretch looking static.
     const EM_DECAY_RATE = 3;
     const EM_PHOTON_SPEED = 0.55; // stage widths per unit t — the earliest copies clear the frame
-    const EM_STEPS = [0, 0.05, 0.10, 0.90, 1]; // Figma's five dial positions, over a 530px track
+    const EM_SURVIVOR_POOL = 6; // how many of the outermost in-frame copies the survivor is drawn from
+    const EM_SURVIVOR_CLEARANCE = 0.02; // stage widths of air between the survivor and the last caption
+    // Figma's five dial positions, except the fourth: the atom's own phantom copies are worth
+    // meeting while copies are still visibly leaving, not once the spray has all but finished,
+    // so that keyframe sits at 0.40 rather than Figma's 0.90.
+    const EM_STEPS = [0, 0.05, 0.10, 0.40, 1];
     const EM_TWEEN_MIN = 450; // ms for the shortest hop, 0 -> 0.05
-    const EM_TWEEN_MAX = 1400; // ms for the long haul, 0.10 -> 0.90
+    const EM_TWEEN_MAX = 1400; // ms for the long haul, 0.40 -> 1
     const EM_MAX_FRAME = 0.05; // seconds — clamp dt so a backgrounded tab does not jump
     const EM_EPSILON = 1e-6; // "strictly past the current t", in the face of float error
 
@@ -518,6 +523,30 @@
         };
     }
 
+    // A label's box in the same frame the copies live in: stage widths, measured from the atom.
+    // Returns null when the label is not over the drawing at all (the stacked layout below
+    // w600), which is the honest answer — there is nothing there to collide with.
+    function emissionLabelBox($widget, state, step) {
+        const $label = $widget.querySelector(`.em-label[data-step="${step}"]`);
+        if (!$label) return null;
+
+        const stage = state.$stage.getBoundingClientRect();
+        const label = $label.getBoundingClientRect();
+        if (!stage.width || !stage.height) return null;
+        if (label.top >= stage.bottom || label.bottom <= stage.top) return null;
+
+        const atomX = stage.left + stage.width * 0.5;
+        const atomY = stage.top + stage.height * state.atomY;
+        const pad = EM_SURVIVOR_CLEARANCE * stage.width;
+
+        return {
+            x0: (label.left - pad - atomX) / stage.width,
+            x1: (label.right + pad - atomX) / stage.width,
+            y0: (label.top - pad - atomY) / stage.width,
+            y1: (label.bottom + pad - atomY) / stage.width,
+        };
+    }
+
     // A copy's radius grows from the moment it left, so at time t it sits at
     // speed * (t - tau) along its own direction — and does not exist at all before that.
     function emissionPhotonPosition(seed, t) {
@@ -533,7 +562,13 @@
     // Collapse leaves exactly one phantom copy behind, and it has to be one the reader can
     // actually see — a survivor that flew off the frame ten steps ago reads as a bug. Chosen
     // once, after the stage has been measured, so the choice is as frozen as the seeds are.
-    function pickEmissionSurvivor(state) {
+    //
+    // Of the copies still in frame, the survivor is one of the *furthest out*. A photon that has
+    // nearly crossed the frame has visibly travelled, which is the claim the last caption makes;
+    // one still hanging beside the atom looks like it never left. Since a copy's distance is
+    // set by how early it was emitted, this also means the survivor is one of the first copies
+    // to have gone — which is the honest reading of a decay that has already happened.
+    function pickEmissionSurvivor($widget, state) {
         const candidates = [];
 
         // Stage widths, measured from the atom: the frame runs half a width either side, and
@@ -543,15 +578,41 @@
         const up = state.atomY * state.heightInWidths * 0.9;
         const down = (1 - state.atomY) * state.heightInWidths * 0.9;
 
+        // Pushing the survivor out to the frame's edge walks it straight into the last caption,
+        // which is also out at an edge — measured at roughly one page load in fourteen before
+        // this. Read the caption's own box off the layout rather than restating its position
+        // here, so moving it in the stylesheet cannot silently re-open the collision. Empty
+        // below w600, where the labels leave the drawing altogether: nothing to avoid then.
+        const keepOut = emissionLabelBox($widget, state, 4);
+
         state.seeds.forEach((seed, i) => {
             const { x, dy, emitted } = emissionPhotonPosition(seed, 1);
 
-            if (emitted && Math.abs(x) < left && dy > -up && dy < down) candidates.push(i);
+            if (!emitted || Math.abs(x) >= left || dy <= -up || dy >= down) return;
+            if (keepOut && x > keepOut.x0 && x < keepOut.x1 && dy > keepOut.y0 && dy < keepOut.y1) return;
+
+            // How near the frame's edge this copy is, as a fraction of the distance available in
+            // its own direction: 0 at the atom, 1 against the clearance line. Per-axis rather
+            // than a plain radius, because the frame is much wider than it is tall — a radius
+            // would rank every sideways copy above every vertical one whatever its position.
+            const reach = Math.max(
+                Math.abs(x) / left,
+                dy < 0 ? -dy / up : dy / down,
+            );
+
+            candidates.push({ i, reach });
         });
 
         if (!candidates.length) return 0;
 
-        return candidates[Math.floor(Math.random() * candidates.length)];
+        // "One of the furthest", not "the furthest": picking the maximum would make the choice
+        // deterministic given the seeds, and the pool is reseeded every page load precisely so
+        // the picture is not the same twice. A shortlist keeps both.
+        candidates.sort((a, b) => b.reach - a.reach);
+
+        const shortlist = candidates.slice(0, Math.min(EM_SURVIVOR_POOL, candidates.length));
+
+        return shortlist[Math.floor(Math.random() * shortlist.length)].i;
     }
 
     // The Ramsey experiment, as a table. Eight copies, five keyframes, and every row says where
@@ -984,17 +1045,27 @@
         $widget.style.setProperty('--em-cloud-opacity', String(stillExcited));
     }
 
-    // Labels belong to keyframes, not to moments: while the clock is moving — under a step
-    // button or under the reader's own thumb — there is no step to caption, so none show.
-    function setEmissionLabel($widget, step) {
+    // Labels belong to keyframes, but not *only* to keyframes: a reader who takes hold of the
+    // scrubber rather than pressing the buttons would otherwise never meet a caption at all,
+    // which is the one failure this widget cannot afford. So between keyframes the caption of
+    // the last one passed stays up, dimmed (`approximate`) — near enough to keep the reader
+    // oriented, visibly not claiming that the picture in front of them *is* that keyframe.
+    // While a tween is running there is still no caption: the clock is nobody's choice then.
+    function setEmissionLabel($widget, step, approximate) {
         $widget.querySelectorAll('.em-label').forEach($label => {
-            $label.classList.toggle('is-visible', Number($label.dataset.step) === step);
+            const current = Number($label.dataset.step) === step;
+            $label.classList.toggle('is-visible', current);
+            $label.classList.toggle('is-approximate', current && !!approximate);
         });
 
         const $status = $widget.querySelector('.em-status');
         if (!$status) return;
 
-        const $current = step === null ? null : $widget.querySelector(`.em-label[data-step="${step}"]`);
+        // Only exact arrivals are announced. Reading a caption out on every frame of a drag
+        // would flood the live region with the same four sentences.
+        const $current = step === null || approximate
+            ? null
+            : $widget.querySelector(`.em-label[data-step="${step}"]`);
         $status.textContent = $current ? $current.textContent : '';
     }
 
@@ -1834,8 +1905,9 @@
         }
     }
 
-    // Taking hold of the scrubber is a request to look at one moment of your own choosing, so
-    // it abandons any tween and drops the caption — there is no keyframe here to caption.
+    // Taking hold of the scrubber is a request to look at one moment of your own choosing, so it
+    // abandons any tween. The thumb goes exactly where it was put — and the caption comes to it,
+    // dimmed between keyframes. See setEmissionLabel().
     function scrubEmissionField($widget, $scrubber) {
         const state = _emissionFields.get($widget);
         if (!state) return;
@@ -1847,9 +1919,22 @@
         state.tween = null;
         state.t = clampNumber(Number($scrubber.value) / Number($scrubber.max), 0, 1);
 
-        setEmissionLabel($widget, null);
+        const step = emissionStepAtOrBefore(state.t);
+
+        setEmissionLabel($widget, step, Math.abs(EM_STEPS[step] - state.t) > EM_EPSILON);
         renderEmissionField($widget);
         syncEmissionControls($widget);
+    }
+
+    // The last keyframe at or before t. Unlike findLastEmissionStep() this includes the keyframe
+    // the clock is standing exactly on, because the question here is "what is the reader looking
+    // at", not "where would Back go". Never -1: EM_STEPS starts at 0 and t is clamped to [0, 1].
+    function emissionStepAtOrBefore(t) {
+        for (let i = EM_STEPS.length - 1; i >= 0; i--) {
+            if (EM_STEPS[i] <= t + EM_EPSILON) return i;
+        }
+
+        return 0;
     }
 
     // One MediaQueryList rather than a fresh matchMedia() per frame, since the spin loop asks
@@ -2179,7 +2264,7 @@
             // depends on the stage's shape, which differs between the wide layout and the
             // taller one a phone gets.
             measureEmissionStage($widget);
-            state.survivor = pickEmissionSurvivor(state);
+            state.survivor = pickEmissionSurvivor($widget, state);
 
             const $scrubber = $widget.querySelector('.em-scrubber');
             if ($scrubber) {

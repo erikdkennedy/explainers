@@ -347,13 +347,13 @@ When I said probabilities *cancel* in QM, it’s not as simple as “0.5” canc
 
 [^11]: Technically, they’re complex numbers – there’s a real and imaginary component. So while “2-dimensional” is true, it’s not the full story. Complex numbers naturally allow for _rotation_, which is a property we’ll see shortly.
 
-{% include img.md, src: "classical-probabilities-vs-quantum-amplitudes.png", width: "467px", alt: "Left: a number line from 0 to 1. Right: a filled disc of radius 1, spanning -1 to 1 on both axes.", caption: "Classical probabilities can be anywhere on the line from 0 to 1 (inclusive). Special quantum probabilities can be anywhere on or within a circle of radius 1. WUT." %}
+{% include img.md, src: "classical-probabilities-vs-quantum-amplitudes.png", width: "700px", alt: "Left: a number line from 0 to 1. Right: a filled disc of radius 1, spanning -1 to 1 on both axes.", caption: "Classical probabilities can be anywhere on the line from 0 to 1 (inclusive). Special quantum probabilities can be anywhere on or within a circle of radius 1. WUT." %}
 
 For classical probabilities, we just think of them as a *number* – e.g. “0.1” or “0.482”.
 
 But for these special quantum probabilities, it’s easiest to think of them as an *arrow* (i.e. a vector) – an arrow that starts at the origin and extends to some point on or within a circle of radius 1. Technically, we could achieve the same ends with x and y coordinates, but the arrow helps us think in terms that are more convenient for our purposes: *length* and *angle*.
 
-{% include img.md, src: "quantum-probability-angle-and-length.png", width: "300px", alt: "An arrow from the centre of a pale disc, with its LENGTH labelled along the shaft and its ANGLE labelled on an arc swept from the horizontal." %}
+{% include img.md, src: "quantum-probability-angle-and-length.png", width: "360px", alt: "An arrow from the centre of a pale disc, with its LENGTH labelled along the shaft and its ANGLE labelled on an arc swept from the horizontal." %}
 
 Let’s chat briefly about each.
 
@@ -396,7 +396,7 @@ Let’s build things up from the simplest possible example – a single particle
 
 If you were to look at a series of points along a line emanating from the particle’s starting position, you’d find that the special quantum probability of finding the particle at various points along the line *spins*, so to speak.
 
-{% include img.md, src: "two-visualizations-of-amplitude-for-finding-particle-along-straight-path.png", width: "600px", alt: "The same straight path drawn twice: once with a corkscrewing arrow turning along it, once as a line running through the full rainbow.", caption: "The special quantum probability of finding a particle at some point along a path “spins”." %}
+{% include img.md, src: "two-visualizations-of-amplitude-for-finding-particle-along-straight-path.png", width: "700px", alt: "The same straight path drawn twice: once with a corkscrewing arrow turning along it, once as a line running through the full rainbow.", caption: "The special quantum probability of finding a particle at some point along a path “spins”." %}
 
 It’s worth being super clear on *what* is doing the oscillating here. It’s *not* a property of the particle that spins. Rather, it’s a *probability* that spins (classical probabilities can only grow or shrink – but quantum probabilities, being 2-D, can spin). Specifically, it’s the quantum probability of finding a photon at a particular point, measured for a series of points along a straight line. And yes, this paragraph is highly unintuitive. Unfortunately, it’s pretty fundamental to how QM works, so re-read as necessary.
 
@@ -404,7 +404,7 @@ Now I should say that there’s no *direct* way to measure the special quantum p
 
 But the spinning of a quantum probability *isn’t even picked up by repeated trials* per se. Remember: the classical probability is tied to the *length* of the arrow – which isn’t meaningfully changing.[^13] The *direction* of the arrow – which *is* changing – only comes into play when arrows are added together.
 
-[^13]: I should also add that the length of the quantum probability arrow slightly decreases over the length of the path, for inverse square law-related reasons.
+[^13]: I should also add that the length of the quantum probability arrow decreases over the length of the path – in inverse proportion to the length of the path.
 
 So to see any quantum weirdness at all, you need *two* phantom copies to end up in the exact same place, so their arrows can be added together. And to see *complete cancellation* (i.e. something that mysteriously doesn’t happen), the phantom copies’ arrows of quantum probability need to be equal and opposite.
 
@@ -435,7 +435,7 @@ If the two paths are the same length – e.g. for the very middle spot on the se
 
 For a spot on the screen just to the *right* of the center, the left path is slightly *longer*, and the right path is slightly *shorter*. This means the quantum probability arrow of the left path will be a little more advanced, and the right path won’t advance as much. They’ll be slightly out of sync, and only add to a moderately larger arrow – representing a *moderate* probability of the photon landing at that spot.
 
-{% include img.md, src: "double-slit-paths-partial.png", width: "700px", alt: "The two paths meet just right of centre. The arrows are a quarter turn out of sync, and the total is a middling arrow." %}
+{% include img.md, src: "double-slit-paths-partial.png", width: "700px", alt: "The two paths meet directly above the right slit, so the right path runs straight up and is as short as it can be. The arrows are slightly out of sync, and the total is a little shorter than before." %}
 
 Finally, if you take a spot even farther to the right, the difference in left/right path lengths will increase further. When the path difference is exactly half a wavelength, the quantum probability arrows for the two paths will be pointed in opposite directions, and they will add to zero. These are the dark bands at which the photon never lands!
 
@@ -451,9 +451,9 @@ Or, if we simply look at how long the resultant arrow is at every single point, 
 
 {% include qm/double-slit-pattern.html %}
 
-If you noticed the similarity to ripples on a pool, your thinking is in line with many scientists before you. You can recreate this same pattern with a double-slit wall set up in a pool of water.
+If you noticed the similarity to ripples on a pool, your thinking is in line with many scientists before you. You can recreate a similar pattern with water.
 
-{% include img.md, src: "water-ripples.png", width: "600px", alt: "Overlapping ripples in shallow water over a rocky streambed, crossing each other in a regular interference pattern." %}
+{% include img.md, src: "water-ripples.jpg", width: "600px", alt: "Two sets of circular ripples spreading across dark water and crossing one another, so that where they meet the crests and troughs interlock into a regular lattice of bright and dark patches.", image-credit: "<a href='https://www.needpix.com/photo/48550/wave-motion-waves-circles-water-wave-circle-rings-arrangement-nature-wallpaper' target='_blank'>geralt, via Needpix</a> (public domain)" %}
 
 There is a deep similarity in the underlying math, though let’s be precise. It’s not that the *particle* itself is a wave. Rather, the *quantum probability* is wave-like, allowing for even (the phantom copies of) a single particle to recreate the same patterns we see in the waves created by trillions of particles.
 
@@ -517,7 +517,7 @@ So here’s what we’ve got so far:
 
 And let’s say you go as far as necessary to convince yourself that indeed, this pattern loops endlessly. Despite the existential vertigo you have from handling a magic artifact, you feel like some progress is being made. There are essentially four “states” the coin can be in. And it just cycles through them:
 
-{% include img.md, src: "bloch-coin.png", width: "400px", alt: "A ring of four states — 100% heads at the top, 50-50 on each side, 100% tails at the bottom — joined by four FLIP arrows running clockwise." %}
+{% include img.md, src: "bloch-coin.png", width: "500px", alt: "A ring of four states — 100% heads at the top, 50-50 on each side, 100% tails at the bottom — joined by four FLIP arrows running clockwise." %}
 
 This is actually pretty curious. You notice that your map says “50-50” twice. Now *all* coins are 50-50 when you flip them once. But *this coin* has two distinct scenarios where it’s 50-50. And they’re subtly different. Not because of what you observe directly (they both yield half heads, half tails), but because of where they *lead to*. In one 50-50 state, if you don’t look and flip again, you’ll *definitely* get HEADS. And in the other 50-50 state, if you don’t look and flip again, you’ll *definitely* get TAILS. So the coin – or something – must have some memory, some way to track, some deeper variable for where it’s at in this cycle.
 
@@ -533,7 +533,7 @@ So you decide to flip it once, wait 2.41 seconds, then flip it *again*, and *THE
 
 So you tentatively draw a new path in your diagram:
 
-{% include img.md, src: "bloch-coin-2.png", width: "400px", alt: "The same ring of four coin states, now with a WAIT 2.4 S arrow crossing the middle from the left 50-50 state to the right one." %}
+{% include img.md, src: "bloch-coin-2.png", width: "500px", alt: "The same ring of four coin states, now with a WAIT 2.4 S arrow crossing the middle from the left 50-50 state to the right one." %}
 
 And then you wonder: if you go from left 50-50 (“L”) to the right 50-50 (“R”), *can you do the reverse*?
 
@@ -545,7 +545,7 @@ Your new theory: if you go L and wait 2.41 seconds, you’ll end up at R. But if
 
 You once again sketch another arrow in your burgeoning magic coin diagram:
 
-{% include img.md, src: "bloch-coin-3.png", width: "400px", alt: "The same ring, now with two WAIT 2.4 S arrows running in opposite directions between the left and right 50-50 states." %}
+{% include img.md, src: "bloch-coin-3.png", width: "500px", alt: "The same ring, now with two WAIT 2.4 S arrows running in opposite directions between the left and right 50-50 states." %}
 
 I appear again and ask if you’ve considered winning some bar bets with coin tricks. You say yes. I scoff and say you should use it to break RSA encryption and make billions. “Though you’d need to be able to read the flip without looking at it…” I mumble.
 
@@ -601,7 +601,7 @@ A version of the Ramsey experiment using a rubidium atom won the [Nobel prize in
 
 So here’s what our “map” looks like for this rubidium atom:
 
-{% include img.md, src: "bloch-rubidium.png", width: "400px", alt: "The coin ring redrawn for a rubidium atom: ground state at the top, excited at the bottom, “Plus” and “Minus” at the sides, joined by MICROWAVE PULSE arrows and two WAIT 9.8 PS arrows across the middle." %}
+{% include img.md, src: "bloch-rubidium.png", width: "500px", alt: "The coin ring redrawn for a rubidium atom: ground state at the top, excited at the bottom, “Plus” and “Minus” at the sides, joined by MICROWAVE PULSE arrows and two WAIT 9.8 PS arrows across the middle." %}
 
 The “ground” and “excited” electron states replace “heads” and “tails”, microwave pulses take the place of coin flips, and the waiting time between 50-50 states is much, *much* shorter (this picosecond duration can be arbitrarily lengthened in the lab, but for the sake of simplicity, we’ll continue referencing this one stupidly short value). Also, I’ve also renamed the 50-50 states to “Plus” and “Minus”.[^15]
 
@@ -613,11 +613,11 @@ Again, if you did not know quantum mechanics, you might think, “Ah, we’ve fo
 
 But if, instead of looking, you keep it isolated, wait precisely 9.8 picoseconds, and then blast it again, you’ll see that it’s 100% *ground* state.
 
-{% include img.md, src: "bloch-rubidium-path-to-ground.png", width: "400px", alt: "The same map with one route traced in blue: a microwave pulse to “Plus”, a 9.8 picosecond wait across to “Minus”, and a second pulse back up to the ground state." %}
+{% include img.md, src: "bloch-rubidium-path-to-ground.png", width: "500px", alt: "The same map with one route traced in blue: a microwave pulse to “Plus”, a 9.8 picosecond wait across to “Minus”, and a second pulse back up to the ground state." %}
 
 Alternatively, if you wait twice as long between blasts – a whole 19.6 picoseconds – the subsequent second blast will reveal an *excited* state atom every single time.
 
-{% include img.md, src: "bloch-rubidium-path-to-excited.png", width: "400px", alt: "The same map with a longer route traced in blue: a pulse to “Plus”, two 9.8 picosecond waits across and back, and a second pulse down to the excited state." %}
+{% include img.md, src: "bloch-rubidium-path-to-excited.png", width: "500px", alt: "The same map with a longer route traced in blue: a pulse to “Plus”, two 9.8 picosecond waits across and back, and a second pulse down to the excited state." %}
 
 On one hand, you’re probably like “Yeah, that’s exactly how the magic coin works, NBD”. But on the other hand, it means the magic coin is actually real (!)
 
@@ -1089,4 +1089,4 @@ In a sufficiently broad conversation on QM, these will all come up. However, eve
 * [**Quantum Country**](https://quantum.country/){target="_blank"} by Michael Nielsen & Andy Matuschak. A giant 4-part article on QC and QM. Michael Nielsen has (literally) written the textbook on QC, and while he’s one of the world’s best explainers of technical concepts, warning: this piece comes with the full mathematical formalism a practicing physicist would be interested in! Nonetheless, it builds up an understanding of quantum computing – including a quantum search algorithm – from the ground up. Incredibly good.
 * [**LessWrong Quantum Sequences**](https://www.lesswrong.com/w/the-quantum-physics-sequence){target="_blank"} by Eliezer Yudkowsky. For those comfortable with math (imaginary numbers, linear algebra), this is a surprisingly accessible introduction to QM. I recall it as being overly-wordy – and pretty smug regarding how MWI was *obviously* the correct interpretation of QM. Nonetheless, a worthwhile read for someone diving in.
 
-Thanks to Abhi Vyas and Matt Favero for their feedback.{ .credits }
+Thanks to Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }
