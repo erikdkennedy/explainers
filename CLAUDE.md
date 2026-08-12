@@ -198,10 +198,10 @@ sliding down only as far as the note above it forces. That is why a marker insid
 now gets a note beside that cell rather than below the whole table, and why the
 `data-render-sidenote-in-place` attribute the old float layout needed is gone.
 
-The marker is a brand-blue asterisk on a pale brand chip; hovering either end turns the chip
-orange and washes a matching gradient down the top of its note. That colour shift is the only
-tie between a marker and a note that got pushed down the margin, so it is load-bearing, not
-decoration. Below 1400px the marker becomes a numbered chip pointing at the list instead.
+The marker is a brand-blue asterisk on a pale brand chip; hovering either the marker or its
+note deepens the chip, which is what tells you which marker a note in the margin belongs to
+once it has been pushed down away from its own reference. Below 1400px the marker becomes a
+numbered chip pointing at the list instead.
 
 ⚠️ **The chip is an absolutely-positioned pseudo-element, not padding on the inline box.**
 Padding on an inline doesn't grow the line box, but its *background* paints the inline's full
@@ -210,17 +210,14 @@ across the whole line rather than a chip. Out of flow, the box is ours to size a
 cannot touch line-height (assert it by toggling `display:none` on the pseudo and comparing the
 paragraph's height — 121.63px either way).
 
-⚠️ **And its numbers were measured, not eyeballed.** An asterisk's ink is 8.5px tall and sits
-*entirely above the baseline* — `actualBoundingBoxDescent` comes back negative — so a guessed
-chip is off by about 2x in height and badly placed. Take `actualBoundingBox*` on the glyph
-against `fontBoundingBox*` on the link's own font (that pair is what defines the containing
-block), and express both in `em` so one set of numbers serves 21px body serif and 16px table
-sans alike. The worked arithmetic is in the rule's comment.
+Its numbers are in px, so the chip is the same size everywhere rather than scaling with its
+context: 1.52x the asterisk's ink in body copy, 2.0x in a 16px table cell. That is deliberate;
+the em equivalents are in the rule's comment if it ever needs to change.
 
-⚠️ **The hover wash needs `min(reach, note height)`, and a fixed height is visibly wrong.**
-Most notes are shorter than the reach, and a wash that outlives its note hangs in empty margin
-below it — it reads as a floating orange card rather than as a highlight *of* anything.
-
+Two things tried and rejected, so they don't get re-proposed: a **connector line** from marker
+to note (it has to cross the whole text column, and a note pushed a few hundred px down drags
+its wire through the prose — confining it to the gutter helps but does not earn its ink), and
+an **orange gradient wash** down a hovered note (it never read as a highlight *of* anything).
 ⚠️ **A definition nothing references is still dropped from the page**, and a mistyped label
 still ships as literal text. Neither announces itself; `npm run check` compares the source's
 labels against the page's references, sidenotes and list items, and it is the only thing that

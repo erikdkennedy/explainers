@@ -629,37 +629,30 @@ hr.full-width {
        pill spanning nearly the whole line rather than a chip. Out of flow, the box is ours
        to size, and it cannot affect line-height at all.
 
-       The numbers hug the asterisk's ink, and they were measured rather than guessed —
-       canvas `actualBoundingBox*` on the glyph, against `fontBoundingBox*` on the link's
-       own font, which is what defines the containing block. An asterisk's ink turns out to
-       be 8.5px tall and to sit *entirely above the baseline* (ink descent is negative), so
-       an eyeballed chip is wrong by about 2x in height and badly placed. `top` is measured
-       from the containing block's top; both are in em, so they ride the font size — which
-       is what makes one pair of numbers serve 21px body serif and 16px table sans alike.
-
-       To re-measure after a change of face or size, in a page that has the fonts loaded:
-           ctx.font = `600 ${linkPx}px Figtree`;  const cb  = ctx.measureText('*');
-           ctx.font = `600 ${glyphPx}px Figtree`; const ink = ctx.measureText('*');
-           top = cb.fontBoundingBoxAscent - ink.actualBoundingBoxAscent - pad;
-           height = ink.actualBoundingBoxAscent + ink.actualBoundingBoxDescent + 2 * pad;
-       with pad = 2.5px, then divide both by the link's font-size for the em values. */
+       Values tuned in devtools against 21px body copy, where the chip comes out 1.52x the
+       asterisk's ink. Being px rather than em, it does NOT scale with its context: in a
+       16px table cell the same 16px box is 2.0x the ink, and the glyph sits high in it with
+       visible empty chip underneath. The em equivalents — top -0.048em, height 0.762em —
+       are identical in body copy and proportional everywhere else, if that ever bothers
+       anyone. Deliberate as it stands. */
     .fn-ref__link::before {
         content: "";
         position: absolute;
         z-index: 0;
-        left: -3px;
-        right: -3px;
-        top: var(--fn-chip-top, 0.01em);
-        height: var(--fn-chip-height, 0.645em);
+        left: -2px;
+        right: -2px;
+        top: -1px;
+        height: 16px;
         border-radius: 4px;
-        background-color: color-mix(in srgb, var(--brand-color) 18%, transparent);
+        background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
         transition: background-color 0.15s ease-out;
     }
 
-    /* Hovering either end warms both: the marker's chip and the wash down its note. The
-       colour shift is the tie between the two — there is no connector doing that job. */
+    /* Hovering either end deepens the chip — so pointing at a note in the margin still
+       tells you which marker in the text it belongs to, which matters most in the crowded
+       case where a note has been pushed a long way down from its own reference. */
     .fn-ref.is-active .fn-ref__link::before {
-        background-color: color-mix(in srgb, var(--brand-orange) 55%, transparent);
+        background-color: color-mix(in srgb, var(--brand-color) 22%, transparent);
     }
 }
 
@@ -702,53 +695,11 @@ hr.full-width {
             visibility: visible;
         }
 
-        /* The highlight. Anchored to the top of the note and faded out well before its
-           bottom, so a two-line note and a twelve-line one both read as "this one" without
-           the long one turning into a solid orange block. It is a pseudo-element rather
-           than a background on the note itself because a background-image cannot transition
-           its own opacity, and fading in is what makes it read as a response to the hover.
-
-           ⚠️ The `min()` is not a refinement — a fixed height is visibly wrong. Most notes
-           here are shorter than the reach, and a wash that outlives its note hangs in empty
-           margin below it, reading as a floating orange card rather than as a highlight of
-           anything. Capping at the note's own box means a short note fades out over its own
-           length and a long one still stops after --sn-glow-height. */
-        &::after {
-            content: "";
-            position: absolute;
-            z-index: 0;
-            top: calc(-1 * var(--sn-glow-bleed));
-            left: calc(-1 * var(--sn-glow-bleed));
-            right: calc(-1 * var(--sn-glow-bleed));
-            height: min(
-                var(--sn-glow-height),
-                calc(100% + 2 * var(--sn-glow-bleed))
-            );
-            border-radius: 6px;
-            background: linear-gradient(
-                to bottom,
-                color-mix(in srgb, var(--brand-orange) 30%, transparent),
-                color-mix(in srgb, var(--brand-orange) 0%, transparent)
-            );
-            opacity: 0;
-            transition: opacity 0.18s ease-out;
-            pointer-events: none;
-        }
-
-        &.is-active::after {
-            opacity: 1;
-        }
-
         h4, p {
             margin-bottom: 6px;
             opacity: 0.9;
         }
     }
-
-        .sidenote__body {
-            position: relative;
-            z-index: 1;
-        }
 
 
 /*  The bottom-of-page list, for every width with no margin to spare.  */
@@ -937,8 +888,6 @@ footer.post-footer {
     --sn-gutter: 60px;      /* text column edge → note */
     --sn-gap: 24px;         /* minimum between two stacked notes */
     --sn-nudge: 2px;        /* note's first line down onto the marker's line */
-    --sn-glow-height: 96px; /* how far the hover highlight reaches down a note */
-    --sn-glow-bleed: 10px;  /* how far it spills past the note's own box */
 
     position: relative;
     padding-block: 20px;
