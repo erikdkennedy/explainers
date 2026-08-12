@@ -584,7 +584,9 @@ hr.full-width {
         color: var(--brand-color);
         text-decoration: none;
         font-family: var(--font-sans);
-        font-weight: 600;
+        /* Stated rather than inherited: a marker attached to bold text (a table's header
+           column, a run of **…**) would otherwise come out bold with it. */
+        font-weight: normal;
         cursor: pointer;
     }
 
