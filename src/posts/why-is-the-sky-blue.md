@@ -342,7 +342,7 @@ Here’s a comparison of how a basic guess – informed by our simplistic model 
 |------|-----------|----------------------|
 | Red | Haze (couldn’t be dust; a liquid core makes that impossible) | A haze of unknown composition |
 | White | Clouds, probably of ice because of coldness | Clouds of ammonia ice |
-| Slate (dark blue-gray) | Small atmospheric molecules. But potentially a chemically odd haze, if something absorbed the visible spectrum pretty strongly? | Hydrogen and helium – i.e. small gaseous molecules that scatter blue/violet[^5]{data-render-sidenote-in-place="true"} |
+| Slate (dark blue-gray) | Small atmospheric molecules. But potentially a chemically odd haze, if something absorbed the visible spectrum pretty strongly? | Hydrogen and helium – i.e. small gaseous molecules that scatter blue/violet[^5] |
 
 [^5]: The Galileo probe that descended into Jupiter entered one of these spots. It’s most surprising finding was how _dry_ Jupiter’s atmosphere seemed to be. But knowing it fell between where the clouds were, this makes total sense. Instead of ice crystals, it found hydrogen and helium.
 

@@ -167,9 +167,11 @@ classes on a wrapper div and mirror the two declarations in the post's own style
 
 ## Footnotes / sidenotes
 
-`markdown-it-footnote`, plus an `inline-footnotes-sidenotes` transform in `.eleventy.js` that
-clones each note into a `.sidenote` div next to its reference. Definitions live right after the
-paragraph that references them; 4-space-indented continuation lines for multi-paragraph notes:
+A custom pair in `.eleventy.js`: a `sidenoteDefinitions` markdown-it plugin that lifts every
+`[^label]: …` definition into a hidden block at the end of the document, and a `sidenotes`
+transform that resolves the *references* against the built HTML's text nodes. Definitions live
+right after the paragraph that references them; 4-space-indented continuation lines for
+multi-paragraph notes:
 
 ```markdown
 And that's the story.[^1]
@@ -179,15 +181,47 @@ And that's the story.[^1]
     Second paragraph of the sidenote, indented 4 spaces.
 ```
 
-⚠️ **A multi-paragraph note renders through two different code paths, so check both.**
-`markdown-it-footnote` builds the `<li>` at the bottom of the page; the transform then clones it
-into the `.sidenote`, and only the sidenote is what most readers actually see. The clone used to
-mangle them: its "split a single `<p>` on its newlines" fallback tested `^<p> … </p>$`, which a
-*two*-paragraph note matches just as well, so the capture swallowed the `</p>\n<p>` in the middle
-and the split emitted stray tags — two empty paragraphs wedged between every pair of real ones.
-Fixed by counting `<p` openers first, but the shape of the bug is worth remembering: the footnote
-list looked perfect while the sidenote beside it did not. Assert parity rather than eyeballing one
-of them — see *Verifying*.
+Because references are resolved in the built HTML rather than during inline Markdown parsing,
+**a marker works anywhere text ends up** — a body paragraph, a pipe-table cell, a raw HTML
+`<table>` or `<ul>`, an `img.md` caption, a widget include's prose. The one place it does not
+is inside an inline `<svg>`'s `<text>`, which would need a `<tspan>`; `svg`, `pre`, `code`,
+`script` and `style` are all skipped, so a literal `[^1]` in a code sample stays literal.
+
+Each note is rendered **once** and emitted twice — as a `.sidenote` in the margin and as a
+`.footnote-item` in the bottom-of-page list — from the same HTML, so the two cannot disagree.
+Exactly one of them is displayed (and therefore in the a11y tree) at any width: the margin
+above 1400px, the list below it. Referencing one note from several places is fine; it keeps one
+number, and only the later `fnref-` ids get a `-2`, `-3` suffix.
+
+Notes are **positioned by `post.js`**, not by the flow — each sits level with its own marker,
+sliding down only as far as the note above it forces. That is why a marker inside a table cell
+now gets a note beside that cell rather than below the whole table, and why the
+`data-render-sidenote-in-place` attribute the old float layout needed is gone.
+
+The marker is a brand-blue asterisk on a pale brand chip; hovering either the marker or its
+note deepens the chip, which is what tells you which marker a note in the margin belongs to
+once it has been pushed down away from its own reference. Below 1400px the marker becomes a
+numbered chip pointing at the list instead.
+
+⚠️ **The chip is an absolutely-positioned pseudo-element, not padding on the inline box.**
+Padding on an inline doesn't grow the line box, but its *background* paints the inline's full
+content area — ~24px around a single asterisk in 21px body serif, which draws a tall pill
+across the whole line rather than a chip. Out of flow, the box is ours to size and provably
+cannot touch line-height (assert it by toggling `display:none` on the pseudo and comparing the
+paragraph's height — 121.63px either way).
+
+Its numbers are in px, so the chip is the same size everywhere rather than scaling with its
+context: 1.52x the asterisk's ink in body copy, 2.0x in a 16px table cell. That is deliberate;
+the em equivalents are in the rule's comment if it ever needs to change.
+
+Two things tried and rejected, so they don't get re-proposed: a **connector line** from marker
+to note (it has to cross the whole text column, and a note pushed a few hundred px down drags
+its wire through the prose — confining it to the gutter helps but does not earn its ink), and
+an **orange gradient wash** down a hovered note (it never read as a highlight *of* anything).
+⚠️ **A definition nothing references is still dropped from the page**, and a mistyped label
+still ships as literal text. Neither announces itself; `npm run check` compares the source's
+labels against the page's references, sidenotes and list items, and it is the only thing that
+will tell you.
 
 **Google Docs footnotes do not appear in the `read_file_content` text export.** To get them, call
 `download_file_content` with `exportMimeType: "text/markdown"` — that export *does* contain
@@ -227,52 +261,22 @@ them. Expect them at 1x (a 700 × 470 Figma frame comes back 700 × 470), so the
 asset for photos and screenshots but only a *reference* for anything that also exists in Figma,
 where you want a @2x export instead.
 
-### Where footnote markers do and don't work
+### Footnote markers in HTML you wrote by hand
 
-The reference must sit in markdown **inline** context. Places it silently fails:
+A marker is substituted into the built page's text, so it needs to *be* text at that point —
+which is nearly always. The two things to know:
 
-| Placement | Works? | Do this instead |
-|---|---|---|
-| Body paragraph / list item | ✅ | — |
-| Pipe-table cell | ✅ | — |
-| Inside a raw HTML block (`<table>`, `<ul>`, …) | ❌ renders literally | Rewrite as a pipe table with inline `<ul>` in the cell |
-| On the same line as a `{% include img.md %}` | ❌ renders literally | Attach it to the nearest body sentence |
+- **`markdown-it-attrs` still binds `{…}` to the end of an inline run**, so anything that used
+  to carry an attribute onto a marker has the same trailing-text hazard it always did. There is
+  no longer any reason to put one there, though: sidenote placement is measured, not declared.
+- **A marker inside an inline `<svg>` renders literally.** Put widget prose in HTML (`<p>`,
+  `<figcaption>`) rather than in `<text>` if it needs a note.
 
-The include emits a `<figure>`, which makes that whole line an HTML block — so a caption can't
-carry a footnote. Move the marker into the prose that introduces the figure.
-
-⚠️ **A marker that fails this way doesn't just render literally — it deletes its own footnote.**
-`markdown-it-footnote` drops any definition nothing references, so the note vanishes from the
-bottom of the page, every footnote after it renumbers, and nothing warns you. The QM post shipped
-for a while with `[^2]` sitting in an `img.md` caption and the whole note silently gone. The tell
-is a count mismatch, which is why *Verifying* checks definitions against rendered refs rather than
-trusting that the page "looks fine".
-
-### Sidenote placement in tables
-
-Default placement puts the `.sidenote` after the nearest `p`/`li`/`blockquote`, which inside a
-table means *inside the cell*. Use `data-render-sidenote-in-place="true"` to push it below the
-whole table instead. Two ways to apply it:
-
-- Per-reference: `[^9]{data-render-sidenote-in-place="true"}` — but `markdown-it-attrs` only
-  binds `{…}` to the **end** of the inline run. A trailing `…` or `</li>` after it means the
-  attribute leaks through as literal text. Watch for that.
-- Preferred for a table with several notes: wrap the whole table in
-  `<div data-render-sidenote-in-place="true">`. The transform matches any ancestor. Leave blank
-  lines inside the div so markdown-it still parses the table:
-
-```html
-<div data-render-sidenote-in-place="true">
-
-| Condition | Examples |
-|-----------|----------|
-| … | <ul><li>…[^4]</li></ul> |
-
-</div>
-```
-
-That blank-line trick is the general way to put Markdown inside a wrapper div — the sky post
-uses it for `.triple-wide` and `.sticky-column-table-wrapper`.
+The old rule — "the reference must sit in Markdown inline context, so rewrite the raw HTML
+table as a pipe table" — no longer applies, and neither does the failure it caused, where a
+marker in an `img.md` caption rendered literally *and silently deleted its own note*. Both are
+worth remembering only as the reason `check.mjs` counts things instead of trusting the page to
+look fine.
 
 ## Prose conventions
 
@@ -346,14 +350,15 @@ npm run check
 
 `tools/check-post/check.mjs`. Each check in it caught something real: literal `{%` or `[^n]` left
 in the body, a footnote defined but never referenced (dropped outright — the *count* is the only
-tell), a multi-paragraph footnote whose sidenote clone disagrees with its list entry, empty
+tell), a note that reached the page as a reference but not as a sidenote or a list item, empty
 paragraphs, a figure filename that drifted from its asset, and any image displayed above its own
 resolution.
 
-⚠️ **Compare footnote labels inside the source, never against the output's ids.**
-`markdown-it-footnote` renumbers by order of first reference, so removing `[^2]` renumbers
-everything after it and a label-vs-id diff then reports the *last* footnote as missing. The first
-version of that check did exactly this and produced a confident false positive.
+⚠️ **Compare footnote labels inside the source, never against the output's numbering.** Notes are
+numbered by order of first reference, so removing `[^2]` renumbers everything after it and a
+label-vs-number diff then reports the *last* footnote as missing. The first version of that check
+did exactly this and produced a confident false positive. Count the three renderings against the
+source's label set instead, which is what it does now.
 
 ### Telling a 1x export from a @2x one
 

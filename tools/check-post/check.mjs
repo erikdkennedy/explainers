@@ -40,41 +40,41 @@ for (const slug of slugs) {
     const literalRefs = body.match(/\[\^\d+\]/g) || [];
     literalRefs.length ? fail(`literal footnote markers: ${literalRefs.join(' ')}`) : pass('no literal footnote markers');
 
-    // A marker in a place inline parsing doesn't reach gets no reference, and
-    // markdown-it-footnote then drops the definition entirely — no warning, no output.
+    // Definitions are matched inside the SOURCE, never against the output's ids: notes are
+    // numbered by order of first reference, so deleting one shifts every number below it
+    // and a label-vs-number diff would report the last note as missing.
     //
-    // Compare labels within the SOURCE, never against the output's ids: the renderer
-    // renumbers by order of first reference, so deleting [^2] silently shifts every id
-    // below it and a label-vs-id diff reports the last footnote as missing.
+    // A marker now resolves anywhere in the built page — captions, raw HTML tables, widget
+    // markup — so "referenced" no longer depends on where in the Markdown it sat. What can
+    // still go wrong is a typo'd label: the definition is then dropped from the page and the
+    // marker ships as literal text, neither of which announces itself.
     if (md) {
-        const defined = new Set([...md.matchAll(/^\[\^(\d+)\]:/gm)].map(m => m[1]));
-        const referenced = new Set([...md.matchAll(/\[\^(\d+)\](?!:)/g)].map(m => m[1]));
+        const defined = new Set([...md.matchAll(/^\[\^([^\]\s]+)\]:/gm)].map(m => m[1]));
+        const body = md.replace(/^\[\^[^\]\s]+\]:.*$/gm, '');
+        const referenced = new Set([...body.matchAll(/\[\^([^\]\s]+)\]/g)].map(m => m[1]));
         const orphaned = [...defined].filter(n => !referenced.has(n));
         const dangling = [...referenced].filter(n => !defined.has(n));
         orphaned.length && fail(`defined but never referenced (dropped from the page): ${orphaned.map(n => `[^${n}]`).join(', ')}`);
         dangling.length && fail(`referenced but never defined (renders literally): ${dangling.map(n => `[^${n}]`).join(', ')}`);
 
-        // And the page has to actually carry one reference per note.
-        const rendered = (html.match(/id="fnref\d+"/g) || []).length;
-        if (rendered !== defined.size) fail(`${defined.size} definitions in source but ${rendered} references rendered`);
-        else if (!orphaned.length && !dangling.length) pass(`all ${defined.size} footnotes referenced and rendered`);
-    }
+        // Every note the source defines has to reach the page as a reference, a margin
+        // sidenote AND a bottom-of-page list item — the three are what the reader sees at
+        // one width or another, and a note missing from just one of them is invisible in
+        // review.
+        const expected = defined.size - orphaned.length;
+        const refLabels = new Set([...html.matchAll(/class="fn-ref" id="[^"]*" data-fn="([^"]+)"/g)].map(m => m[1]));
+        const noteLabels = [...html.matchAll(/class="sidenote" id="[^"]*" data-fn="([^"]+)"/g)].map(m => m[1]);
+        const itemCount = (html.match(/class="footnote-item"/g) || []).length;
+        if (refLabels.size !== expected || noteLabels.length !== expected || itemCount !== expected) {
+            fail(`${expected} notes expected, but the page has ${refLabels.size} referenced, ` +
+                 `${noteLabels.length} sidenotes and ${itemCount} list items`);
+        } else if (!orphaned.length && !dangling.length) {
+            pass(`all ${expected} notes referenced, in the margin and in the list`);
+        }
 
-    // The footnote list and its sidenote clone are two code paths over the same content.
-    const lis = [...html.matchAll(/<li id="(fn\d+)"[^>]*>([\s\S]*?)<\/li>/g)];
-    const sides = new Map([...html.matchAll(/<div class="sidenote" data-footnote-id="(fn\d+)">([\s\S]*?)<\/div>/g)]
-        .map(m => [m[1], m[2]]));
-    const countP = s => (s.match(/<p[\s>]/g) || []).length;
-    const mismatched = [];
-    for (const [, id, liBody] of lis) {
-        const side = sides.get(id);
-        if (side === undefined) continue;           // note with no inline reference position
-        // The clone deliberately splits a *single* paragraph on its newlines, so only a
-        // genuinely multi-paragraph note has to match one-for-one.
-        if (countP(liBody) > 1 && countP(liBody) !== countP(side)) mismatched.push(id);
+        // The hidden definition block is scaffolding; it must not survive the transform.
+        html.includes('class="fn-defs"') && fail('fn-defs block left in the page');
     }
-    mismatched.length ? fail(`sidenote lost paragraphs: ${mismatched.join(', ')}`)
-                      : pass('multi-paragraph footnotes match their sidenotes');
 
     const empties = (html.match(/<p>\s*<\/p>/g) || []).length;
     if (empties) console.log(`  · ${empties} empty <p> (widget includes emit a couple; a jump here means a transform)`);

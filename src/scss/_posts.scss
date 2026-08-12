@@ -91,8 +91,8 @@ li {
 }
 
 /* Verbatim quotations of someone else — the QM glossary has two. A brand rule, some room, and
-   italics; the face doesn't change. Note the sidenote transform in .eleventy.js hangs notes off
-   `blockquote` as well as p/li, so a footnote inside one still lands in the right place. */
+   italics; the face doesn't change. A footnote inside one needs nothing special: sidenotes are
+   positioned against their marker's own box, not against a containing block. */
 blockquote {
     margin: 28px 0;
     padding-left: 20px;
@@ -258,23 +258,6 @@ table {
         td:nth-child(2) {
             padding-left: 8px;
         }
-    }
-}
-
-.sidenote {
-    --gap: 24px;
-
-    display: none;
-
-    @include w1400 {
-        display: block;
-        font-family: var(--font-sans);
-        float: right;
-        clear: right;
-        width: var(--sidebar-width);
-        margin-right: calc(-1 * (var(--sidebar-width) + var(--gap)));
-        margin-left: var(--gap);
-        box-sizing: border-box;
     }
 }
 
@@ -571,21 +554,154 @@ hr.full-width {
     }
 }
 
-.footnote-ref {
-    @include w1400 {
-        vertical-align: baseline;
-        font-size: 1em;
-        line-height: inherit;
+/*****************************************
+        FOOTNOTES / SIDENOTES
 
-        &:before {
-            content: "*";
-        }
-        
-        a {
-            display: none;
-        }
+  Three pieces, and which of them the reader sees is purely a question of whether there is
+  a margin to put a note in:
+
+    .fn-ref         the marker in the text                     — always
+    .sidenotes      the margin notes, positioned by post.js    — @w1400
+    .footnotes      the bottom-of-page list                    — below @w1400
+
+  Both note renderings come from the same definition HTML (see the `sidenotes` transform in
+  .eleventy.js), so they cannot disagree; exactly one of them is in the DOM's a11y tree at
+  any width, so nothing is announced twice.
+*****************************************/
+
+.fn-ref {
+    /* The marker sits on the baseline rather than as a true superscript: at 1em it reads as
+       a piece of punctuation the eye can find, which is the whole point of drawing more
+       attention to it. */
+    vertical-align: baseline;
+    font-size: 1em;
+    line-height: inherit;
+    white-space: nowrap;
+}
+
+    .fn-ref__link {
+        position: relative;
+        color: var(--brand-color);
+        text-decoration: none;
+        font-family: var(--font-sans);
+        cursor: pointer;
+    }
+
+/* Below the sidenote breakpoint the marker's job changes: it is a link down to a numbered
+   list rather than a pointer at something sitting right there, so it becomes a number. */
+@include under-w1400 {
+    .fn-ref__marker {
+        display: none;
+    }
+
+    .fn-ref__n {
+        padding: 1px 4px;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.62em;
+        vertical-align: super;
+        background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
     }
 }
+
+@include w1400 {
+    .fn-ref__n {
+        display: none;
+    }
+
+    .fn-ref__marker {
+        position: relative;
+        z-index: 1;
+
+        &::before {
+            content: "*";
+            font-size: 1.15em;
+        }
+    }
+
+    /* The chip behind the asterisk.
+
+       ⚠️ It is an absolutely-positioned pseudo-element, NOT padding + a background on the
+       inline box, and that is the whole point. Padding on an inline element doesn't grow
+       the line box — but its background paints the full *content area* of the inline,
+       which for 21px body serif is ~24px tall. Around a single asterisk that draws a tall
+       pill spanning nearly the whole line rather than a chip. Out of flow, the box is ours
+       to size, and it cannot affect line-height at all.
+
+       Values tuned in devtools against 21px body copy, where the chip comes out 1.52x the
+       asterisk's ink. Being px rather than em, it does NOT scale with its context: in a
+       16px table cell the same 16px box is 2.0x the ink, and the glyph sits high in it with
+       visible empty chip underneath. The em equivalents — top -0.048em, height 0.762em —
+       are identical in body copy and proportional everywhere else, if that ever bothers
+       anyone. Deliberate as it stands. */
+    .fn-ref__link::before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        left: -2px;
+        right: -2px;
+        top: -1px;
+        height: 16px;
+        border-radius: 4px;
+        background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
+        transition: background-color 0.15s ease-out;
+    }
+
+    /* Hovering either end deepens the chip — so pointing at a note in the margin still
+       tells you which marker in the text it belongs to, which matters most in the crowded
+       case where a note has been pushed a long way down from its own reference. */
+    .fn-ref.is-active .fn-ref__link::before {
+        background-color: color-mix(in srgb, var(--brand-color) 22%, transparent);
+    }
+}
+
+.sidenotes {
+    display: none;
+
+    @include w1400 {
+        display: block;
+        position: absolute;
+        top: 0;
+        /* .post-body's padding box ends 45px outside its text column at this width, so the
+           gutter is measured from the text and the padding handed back. */
+        left: 100%;
+        margin-left: calc(var(--sn-gutter) - 45px);
+        width: var(--sn-width);
+        height: 100%;
+    }
+}
+
+    /* The note's own look is unchanged from before the sidenotes were rebuilt: a hairline
+       rule across the top, 12px of air under it, 15px sans. What the old rule carried and
+       this one doesn't is the float layout it needed — the negative margins, the `top: -48px`
+       fudge, and the two masking pseudo-elements that hid body text sliding under a floated
+       note. Positioning is post.js's job now, so all of that is gone rather than reproduced. */
+    .sidenote {
+        position: absolute;
+        top: var(--sn-top, 0);
+        left: 0;
+        width: 100%;
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 1.3;
+        /* Nothing is placed until post.js has measured; without JS the notes would all
+           stack at the top of the margin. */
+        visibility: hidden;
+
+        .sidenotes--ready & {
+            visibility: visible;
+        }
+
+        h4, p {
+            margin-bottom: 6px;
+            opacity: 0.9;
+        }
+    }
+
+
+/*  The bottom-of-page list, for every width with no margin to spare.  */
 
 .footnotes-sep {
     position: relative;
@@ -602,6 +718,10 @@ hr.full-width {
     font-family: var(--font-sans);
     font-size: 14px;
     line-height: 1.3;
+
+    .footnotes-list {
+        padding-left: 1.6em;
+    }
 
     .footnote-item {
         margin-bottom: 14px;
@@ -761,6 +881,13 @@ footer.post-footer {
 .post-body {
     @include content-width;
 
+    /* The sidenote column. `position: relative` here is what every note and every wire is
+       positioned against, so post.js only ever needs one origin. */
+    --sn-width: 300px;
+    --sn-gutter: 60px;      /* text column edge → note */
+    --sn-gap: 24px;         /* minimum between two stacked notes */
+    --sn-nudge: 2px;        /* note's first line down onto the marker's line */
+
     position: relative;
     padding-block: 20px;
 
@@ -821,54 +948,6 @@ footer.post-footer {
         @include w700 {
             margin: 60px 0 30px;
             font-size: 30px;
-        }
-    }
-
-    .sidenote {
-        margin-bottom: 12px;
-        border-block: 1px solid var(--border-color);
-        padding-block: 20px;
-        font-family: var(--font-sans);
-        font-size: 14px;
-        line-height: 1.3;
-        
-        @include w700 {
-            --sidebar-width: 300px;
-            --sidebar-margin-width: 60px;
-            --sidebar-side-margin: 16px;
-
-            position: relative;    
-            top: -48px;        
-            float: right;
-            clear: right;
-            margin-right: calc(-1*var(--sidebar-width) - var(--sidebar-margin-width));
-            border-bottom: none;
-            width: var(--sidebar-width);
-            padding-top: 12px;
-            font-size: 15px;
-            vertical-align: baseline;
-            background: var(--background-color);
-            backdrop-filter: blur(8px);
-            z-index: 2;
-
-            &:before,
-            &:after {
-                content: '';
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                width: var(--sidebar-side-margin);
-                height: 100%;
-                background-color: var(--background-color);
-            }
-
-            &:before {left: 100%;}
-            &:after {right: 100%;}
-        }
-
-        h4, p {
-            margin-bottom: 6px;
-            opacity: 0.9;
         }
     }
 }
