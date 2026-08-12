@@ -451,9 +451,9 @@ Or, if we simply look at how long the resultant arrow is at every single point, 
 
 {% include qm/double-slit-pattern.html %}
 
-If you noticed the similarity to ripples on a pool, your thinking is in line with many scientists before you. You can recreate this same pattern with a double-slit wall set up in a pool of water.
+If you noticed the similarity to ripples on a pool, your thinking is in line with many scientists before you. You can recreate a similar pattern with water.
 
-{% include img.md, src: "water-ripples.png", width: "600px", alt: "Overlapping ripples in shallow water over a rocky streambed, crossing each other in a regular interference pattern." %}
+{% include img.md, src: "water-ripples.jpg", width: "600px", alt: "Two sets of circular ripples spreading across dark water and crossing one another, so that where they meet the crests and troughs interlock into a regular lattice of bright and dark patches.", image-credit: "<a href='https://www.needpix.com/photo/48550/wave-motion-waves-circles-water-wave-circle-rings-arrangement-nature-wallpaper' target='_blank'>geralt, via Needpix</a> (public domain)" %}
 
 There is a deep similarity in the underlying math, though let’s be precise. It’s not that the *particle* itself is a wave. Rather, the *quantum probability* is wave-like, allowing for even (the phantom copies of) a single particle to recreate the same patterns we see in the waves created by trillions of particles.
 
