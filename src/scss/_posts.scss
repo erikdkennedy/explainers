@@ -567,9 +567,6 @@ hr.full-width {
   Both note renderings come from the same definition HTML (see the `sidenotes` transform in
   .eleventy.js), so they cannot disagree; exactly one of them is in the DOM's a11y tree at
   any width, so nothing is announced twice.
-
-  Three visual proposals live here, selected by `data-sidenote-style` on <html>. Everything
-  shared sits in the base rules; each variant block only states its differences.
 *****************************************/
 
 .fn-ref {
@@ -583,21 +580,16 @@ hr.full-width {
 }
 
     .fn-ref__link {
+        position: relative;
         color: var(--brand-color);
         text-decoration: none;
         font-family: var(--font-sans);
         font-weight: 600;
-        border-radius: 4px;
-        transition: background-color 0.15s ease-out, color 0.15s ease-out;
-
-        &:hover {
-            background-color: color-mix(in srgb, var(--brand-color) 14%, transparent);
-        }
+        cursor: pointer;
     }
 
 /* Below the sidenote breakpoint the marker's job changes: it is a link down to a numbered
-   list rather than a pointer at something sitting right there, so it is a number in every
-   variant. Each variant's own marker only applies where there is a margin to point into. */
+   list rather than a pointer at something sitting right there, so it becomes a number. */
 @include under-w1400 {
     .fn-ref__marker {
         display: none;
@@ -605,18 +597,70 @@ hr.full-width {
 
     .fn-ref__n {
         padding: 1px 4px;
+        border-radius: 4px;
         font-family: var(--font-mono);
         font-size: 0.62em;
         vertical-align: super;
         background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
-        border-radius: 4px;
     }
 }
 
-/* An active pair — hovering or focusing either end lights up both. This is the tie between
-   a marker and its note that survives the note having been pushed down the margin. */
-.fn-ref.is-active .fn-ref__link {
-    background-color: color-mix(in srgb, var(--brand-color) 14%, transparent);
+@include w1400 {
+    .fn-ref__n {
+        display: none;
+    }
+
+    .fn-ref__marker {
+        position: relative;
+        z-index: 1;
+
+        &::before {
+            content: "*";
+            font-size: 1.15em;
+        }
+    }
+
+    /* The chip behind the asterisk.
+
+       ⚠️ It is an absolutely-positioned pseudo-element, NOT padding + a background on the
+       inline box, and that is the whole point. Padding on an inline element doesn't grow
+       the line box — but its background paints the full *content area* of the inline,
+       which for 21px body serif is ~24px tall. Around a single asterisk that draws a tall
+       pill spanning nearly the whole line rather than a chip. Out of flow, the box is ours
+       to size, and it cannot affect line-height at all.
+
+       The numbers hug the asterisk's ink, and they were measured rather than guessed —
+       canvas `actualBoundingBox*` on the glyph, against `fontBoundingBox*` on the link's
+       own font, which is what defines the containing block. An asterisk's ink turns out to
+       be 8.5px tall and to sit *entirely above the baseline* (ink descent is negative), so
+       an eyeballed chip is wrong by about 2x in height and badly placed. `top` is measured
+       from the containing block's top; both are in em, so they ride the font size — which
+       is what makes one pair of numbers serve 21px body serif and 16px table sans alike.
+
+       To re-measure after a change of face or size, in a page that has the fonts loaded:
+           ctx.font = `600 ${linkPx}px Figtree`;  const cb  = ctx.measureText('*');
+           ctx.font = `600 ${glyphPx}px Figtree`; const ink = ctx.measureText('*');
+           top = cb.fontBoundingBoxAscent - ink.actualBoundingBoxAscent - pad;
+           height = ink.actualBoundingBoxAscent + ink.actualBoundingBoxDescent + 2 * pad;
+       with pad = 2.5px, then divide both by the link's font-size for the em values. */
+    .fn-ref__link::before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        left: -3px;
+        right: -3px;
+        top: var(--fn-chip-top, 0.01em);
+        height: var(--fn-chip-height, 0.645em);
+        border-radius: 4px;
+        background-color: color-mix(in srgb, var(--brand-color) 18%, transparent);
+        transition: background-color 0.15s ease-out;
+    }
+
+    /* Hovering either end warms both: the marker's chip and the wash down its note. The
+       colour shift is the tie between the two — there is no connector doing that job. */
+    .fn-ref.is-active .fn-ref__link::before {
+        background-color: color-mix(in srgb, var(--brand-orange) 55%, transparent);
+    }
 }
 
 .sidenotes {
@@ -646,163 +690,70 @@ hr.full-width {
         /* Nothing is placed until post.js has measured; without JS the notes would all
            stack at the top of the margin. */
         visibility: hidden;
-        transition: opacity 0.15s ease-out;
 
         .sidenotes--ready & {
             visibility: visible;
+        }
+
+        /* The rule that opens the note. Lifted above the highlight wash beneath it. */
+        &::before {
+            content: "";
+            position: relative;
+            z-index: 1;
+            display: block;
+            margin-bottom: 10px;
+            width: 28px;
+            height: 2px;
+            background-color: var(--brand-color);
+        }
+
+        /* The highlight. Anchored to the top of the note and faded out well before its
+           bottom, so a two-line note and a twelve-line one both read as "this one" without
+           the long one turning into a solid orange block. It is a pseudo-element rather
+           than a background on the note itself because a background-image cannot transition
+           its own opacity, and fading in is what makes it read as a response to the hover.
+
+           ⚠️ The `min()` is not a refinement — a fixed height is visibly wrong. Most notes
+           here are shorter than the reach, and a wash that outlives its note hangs in empty
+           margin below it, reading as a floating orange card rather than as a highlight of
+           anything. Capping at the note's own box means a short note fades out over its own
+           length and a long one still stops after --sn-glow-height. */
+        &::after {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            top: calc(-1 * var(--sn-glow-bleed));
+            left: calc(-1 * var(--sn-glow-bleed));
+            right: calc(-1 * var(--sn-glow-bleed));
+            height: min(
+                var(--sn-glow-height),
+                calc(100% + 2 * var(--sn-glow-bleed))
+            );
+            border-radius: 6px;
+            background: linear-gradient(
+                to bottom,
+                color-mix(in srgb, var(--brand-orange) 30%, transparent),
+                color-mix(in srgb, var(--brand-orange) 0%, transparent)
+            );
+            opacity: 0;
+            transition: opacity 0.18s ease-out;
+            pointer-events: none;
+        }
+
+        &.is-active::after {
+            opacity: 1;
         }
 
         h4, p {
             margin-bottom: 6px;
             opacity: 0.9;
         }
+    }
 
-        > :last-child > :last-child {
-            margin-bottom: 0;
+        .sidenote__body {
+            position: relative;
+            z-index: 1;
         }
-    }
-
-        .sidenote__n {
-            display: none;
-        }
-
-/* The connector, drawn by post.js in .post-body's own coordinates. `overflow: visible` is
-   what lets a path leave the text column and reach into the margin. */
-.sidenote-wires {
-    display: none;
-
-    @include w1400 {
-        display: block;
-        position: absolute;
-        inset: 0;
-        overflow: visible;
-        pointer-events: none;
-        z-index: 1;
-    }
-}
-
-    .sidenote-wire {
-        fill: none;
-        stroke: var(--brand-color);
-        stroke-width: 1;
-        opacity: 0;
-        transition: opacity 0.15s ease-out;
-    }
-
-    .sidenote-wire.is-active {
-        opacity: 0.55;
-    }
-
-
-/*  Variant A — “Asterisk”  ...............................................................
-    The current design, tightened: a brand-blue asterisk in the text, and a note that is
-    just prose under a short rule. Quietest of the three; the tie is hover-only.          */
-
-[data-sidenote-style="a"] {
-    @include w1400 {
-        .fn-ref__marker::before {
-            content: "*";
-            font-size: 1.15em;
-        }
-
-        .fn-ref__n {
-            display: none;
-        }
-    }
-
-    .sidenote::before {
-        content: "";
-        display: block;
-        margin-bottom: 10px;
-        width: 28px;
-        height: 2px;
-        background-color: var(--brand-color);
-        transition: width 0.2s ease-out;
-    }
-
-    .sidenote.is-active::before {
-        width: 100%;
-    }
-}
-
-/*  Variant B — “Numbered”  ...............................................................
-    A mono numeral on a pale brand chip, repeated at the head of the note in a hanging
-    indent. The number itself is the tie, so it survives the note being pushed down and
-    needs no hover to read.                                                               */
-
-[data-sidenote-style="b"] {
-    @include w1400 {
-        .fn-ref__link {
-            padding: 1px 4px;
-            font-family: var(--font-mono);
-            font-size: 0.62em;
-            font-weight: 400;
-            vertical-align: super;
-            background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
-        }
-
-        .fn-ref__marker {
-            display: none;
-        }
-    }
-
-    .sidenote {
-        padding-left: 28px;
-    }
-
-        .sidenote__n {
-            display: block;
-            position: absolute;
-            top: 1px;
-            left: 0;
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--brand-color);
-        }
-
-    .sidenote.is-active {
-        .sidenote__n {
-            font-weight: 700;
-        }
-    }
-}
-
-/*  Variant C — “Wired”  ..................................................................
-    The literal answer to “tie the reference to the note”: a thin elbow drawn from the
-    marker out to the note it belongs to, always on. The marker itself is a filled dot,
-    since the line is doing the identifying and a glyph would compete with it.            */
-
-[data-sidenote-style="c"] {
-    @include w1400 {
-        .fn-ref__marker::before {
-            content: "\2022";
-            font-size: 1.1em;
-        }
-
-        .fn-ref__n {
-            display: none;
-        }
-    }
-
-    .sidenote-wire {
-        opacity: 0.25;
-    }
-
-    .sidenote-wire.is-active {
-        opacity: 1;
-        stroke-width: 1.5;
-    }
-
-    .sidenote {
-        padding-left: 12px;
-        border-left: 1px solid color-mix(in srgb, var(--brand-color) 30%, transparent);
-        transition: border-color 0.15s ease-out;
-    }
-
-    .sidenote.is-active {
-        border-left-color: var(--brand-color);
-    }
-}
 
 
 /*  The bottom-of-page list, for every width with no margin to spare.  */
@@ -991,6 +942,8 @@ footer.post-footer {
     --sn-gutter: 60px;      /* text column edge → note */
     --sn-gap: 24px;         /* minimum between two stacked notes */
     --sn-nudge: 2px;        /* note's first line down onto the marker's line */
+    --sn-glow-height: 96px; /* how far the hover highlight reaches down a note */
+    --sn-glow-bleed: 10px;  /* how far it spills past the note's own box */
 
     position: relative;
     padding-block: 20px;
@@ -1091,56 +1044,3 @@ label,
 @mixin centered-label {
     transform: translateX(-50%);
 }
-
-
-/*****************************************
-      SIDENOTE STYLE SWITCHER (temporary)
-
-  Scaffolding for picking between the three treatments above. Goes away with the include of
-  the same name and the initSidenoteSwitcher() section of post.js.
-*****************************************/
-
-.sn-switcher {
-    position: fixed;
-    left: 12px;
-    bottom: 12px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    background-color: var(--background-color);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-    .sn-switcher__label {
-        padding-left: 8px;
-        padding-right: 4px;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        text-transform: uppercase;
-        opacity: 0.6;
-    }
-
-    .sn-switcher__btn {
-        padding: 5px 10px;
-        border: 1px solid transparent;
-        border-radius: 999px;
-        background: none;
-        color: var(--text-color);
-        font-family: var(--font-mono);
-        font-size: 11px;
-        cursor: pointer;
-
-        &:hover {
-            border-color: var(--border-color);
-        }
-
-        &.is-current {
-            border-color: transparent;
-            background-color: var(--brand-color);
-            color: white;
-        }
-    }

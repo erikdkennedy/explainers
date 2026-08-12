@@ -219,15 +219,9 @@ export default function(eleventyConfig) {
       // marker inside a table cell or a figure caption.
       const asides = seen.map((label, i) =>
         `<aside class="sidenote" id="sn-${label}" data-fn="${label}" data-fn-n="${i + 1}">` +
-        `<span class="sidenote__n" aria-hidden="true">${i + 1}</span>` +
         `<div class="sidenote__body">${defs.get(label)}</div>` +
         `</aside>`).join('');
-      // The wires are a sibling of the notes, not a child: they have to reach from a
-      // reference in the text column to a note in the margin, so they need .post-body's
-      // coordinate space rather than the note column's.
-      $('.post-body').append(
-        `<svg class="sidenote-wires" aria-hidden="true"></svg><div class="sidenotes">${asides}</div>`
-      );
+      $('.post-body').append(`<div class="sidenotes">${asides}</div>`);
 
       // The bottom-of-page list, shown wherever there is no room for a margin. Rendered
       // from the same `defs` HTML, so the two can no longer disagree.
