@@ -7,7 +7,7 @@
      the equator's minor radius 16.5, so the blue trace is exactly concentric with the grey
      path it thickens and every marker lands exactly on an arc midpoint. -->
 <svg viewBox="0 0 215 158" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rm-bloch-title" aria-describedby="rm-bloch-desc">
-<title id="rm-bloch-title">Where the atom's state has travelled</title>
+<title id="rm-bloch-title">Where the atom’s state has travelled</title>
 <desc id="rm-bloch-desc">A sphere whose north pole is the ground state, south pole the excited state, and whose equator is the fifty-fifty mixtures — “plus” on the left, “minus” on the right. A blue trail marks the route the state has taken so far.</desc>
 <defs>
     <!-- One triangle, tip at the origin pointing along +x, re-used at all six arc midpoints

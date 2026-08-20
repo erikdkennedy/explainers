@@ -83,8 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let lowest = 0;
 
         for (const pair of _pairs) {
-            // A note pointed at from several places belongs beside the first of them, and
-            // every marker still lights it up on hover.
+            // A note pointed at from several places belongs beside the first of them.
             const anchor = pair.refs[0].getBoundingClientRect();
             const wanted = anchor.top - origin.top + nudge;
             const top = Math.max(wanted, floor);
@@ -115,12 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /*  HANDLERS  */
-
-    function setSidenoteActive(pair, on) {
-        pair.refs.forEach(ref => ref.classList.toggle('is-active', on));
-    }
-
     /*  INITIALIZATION  */
 
     function initSidenotes() {
@@ -140,17 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         _pairs = [...byLabel.values()];
         if (!_pairs.length) return;
-
-        for (const pair of _pairs) {
-            for (const el of [...pair.refs, pair.note]) {
-                el.addEventListener('pointerenter', () => setSidenoteActive(pair, true));
-                el.addEventListener('pointerleave', () => setSidenoteActive(pair, false));
-            }
-            for (const ref of pair.refs) {
-                ref.addEventListener('focusin', () => setSidenoteActive(pair, true));
-                ref.addEventListener('focusout', () => setSidenoteActive(pair, false));
-            }
-        }
 
         layoutSidenotes();
 

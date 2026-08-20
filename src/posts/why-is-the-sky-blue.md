@@ -264,13 +264,13 @@ These particles are typically either:
 
 <div class="triple-wide">
     <div class="triple-wide__item">
-        {% include img.md, src: "red-atmosphere-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/ASU/MSSS", caption: "Mars: iron oxide dust.", alt: "Mars' red sky" %}
+        {% include img.md, src: "red-atmosphere-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/ASU/MSSS", caption: "Mars: iron oxide dust.", alt: "Mars’ red sky" %}
     </div>
     <div class="triple-wide__item">
-        {% include img.md, src: "orange-atmosphere-titan.png", width: "300px", image-credit: "ESA/NASA/JPL/University Of Arizona", caption: "Titan (a moon of Saturn): haze of organic molecules.", alt: "Titan's orange sky" %}
+        {% include img.md, src: "orange-atmosphere-titan.png", width: "300px", image-credit: "ESA/NASA/JPL/University Of Arizona", caption: "Titan (a moon of Saturn): haze of organic molecules.", alt: "Titan’s orange sky" %}
     </div>
     <div class="triple-wide__item">
-        {% include img.md, src: "yellow-atmosphere-venus.png", width: "300px", image-credit: "Russian Academy of Science, processing by Don Mitchell", caption: "Venus: haze of sulfurous molecules.", alt: "Venus' yellow sky" %}
+        {% include img.md, src: "yellow-atmosphere-venus.png", width: "300px", image-credit: "Russian Academy of Science, processing by Don Mitchell", caption: "Venus: haze of sulfurous molecules.", alt: "Venus’ yellow sky" %}
     </div>
 </div>
 
@@ -290,13 +290,13 @@ When visible light hits clouds of droplets (or ice crystals) that are much bigge
 
 <div class="triple-wide">
     <div class="triple-wide__item">
-        {% include img.md, src: "white-clouds-earth.png", width: "300px", image-credit: "NASA", caption: "Earth: clouds made of water (liquid or frozen).", alt: "Earth's white clouds" %}
+        {% include img.md, src: "white-clouds-earth.png", width: "300px", image-credit: "NASA", caption: "Earth: clouds made of water (liquid or frozen).", alt: "Earth’s white clouds" %}
     </div>
     <div class="triple-wide__item">
-        {% include img.md, src: "white-clouds-venus.png", width: "300px", image-credit: "NASA/JPL-Caltech", caption: "Venus: high-altitude clouds of sulfuric acid (!). The tan/orange is from the aforementioned haze.", alt: "Venus' white clouds" %}
+        {% include img.md, src: "white-clouds-venus.png", width: "300px", image-credit: "NASA/JPL-Caltech", caption: "Venus: high-altitude clouds of sulfuric acid (!). The tan/orange is from the aforementioned haze.", alt: "Venus’ white clouds" %}
     </div>
     <div class="triple-wide__item">
-        {% include img.md, src: "white-clouds-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/MSSS", caption: "Mars: a rare overcast sky. Martian clouds are made of water ice.", alt: "Mars' white clouds" %}
+        {% include img.md, src: "white-clouds-mars.png", width: "300px", image-credit: "NASA/JPL-Caltech/MSSS", caption: "Mars: a rare overcast sky. Martian clouds are made of water ice.", alt: "Mars’ white clouds" %}
     </div>
 </div>
 
@@ -306,7 +306,7 @@ The largest and most complex atmosphere in our solar system is Jupiter. But we k
 
 QUIZ: looking at this picture, what can you say about Jupiter’s atmosphere? Answers below the image, so take a guess before scrolling 😉
 
-{% include img.md, src: "jupiter-atmosphere-closeup.png", width: "500", image-credit: "NASA/JPL/University of Arizona", caption: "A closeup of Jupiter's atmosphere", alt: "A closeup of Jupiter's atmosphere" %}
+{% include img.md, src: "jupiter-atmosphere-closeup.png", width: "500", image-credit: "NASA/JPL/University of Arizona", caption: "A closeup of Jupiter’s atmosphere", alt: "A closeup of Jupiter’s atmosphere" %}
 
 Here’s a comparison of how a basic guess – informed by our simplistic model – compares to scientific consensus.
 

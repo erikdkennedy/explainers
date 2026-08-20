@@ -12,7 +12,7 @@
      connector geometry are all written per frame by renderRamsey(). -->
 <svg viewBox="0 58 469 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rm-stage-title" aria-describedby="rm-stage-desc">
 <title id="rm-stage-title">One atom, split into phantom copies by two microwave pulses</title>
-<desc id="rm-stage-desc">An atom drawn as a disc — blue and lettered G in its ground state, red and lettered E when excited — with a spinning arrow for its quantum probability. Microwave pulses split it into phantom copies; each copy's arrow spins at a speed set by its energy, and copies whose arrows end up opposed cancel one another out.</desc>
+<desc id="rm-stage-desc">An atom drawn as a disc — blue and lettered G in its ground state, red and lettered E when excited — with a spinning arrow for its quantum probability. Microwave pulses split it into phantom copies; each copy’s arrow spins at a speed set by its energy, and copies whose arrows end up opposed cancel one another out.</desc>
 <defs>
     <!-- Both heads keep their tip at the origin and neither grows with its shaft, exactly as
          Figma draws them: the arrowhead is the same 7.46 units across on the 41-long arrow and

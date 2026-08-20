@@ -570,9 +570,18 @@ hr.full-width {
 *****************************************/
 
 .fn-ref {
-    /* The marker sits on the baseline rather than as a true superscript: at 1em it reads as
-       a piece of punctuation the eye can find, which is the whole point of drawing more
-       attention to it. */
+    /* ⚠️ The raise is `position: relative` + `top`, NOT `vertical-align: super`, and the two
+       are not interchangeable. Padding on an inline doesn't grow the line box — but raising
+       the inline does, because the line box has to contain every inline's content area
+       wherever that area has been shifted to. Measured: `super` added 8px to a 58.81px
+       two-line paragraph, opening the leading around any paragraph carrying a note. Relative
+       positioning is a paint-time offset, so layout is computed as though it never happened.
+
+       `top` is in em, which here resolves against the *surrounding* text because .fn-ref
+       inherits its font-size — so the raise stays proportional in 21px body copy and in a
+       16px table cell, while the chip itself stays a fixed px size in both. */
+    position: relative;
+    top: -0.3em;
     vertical-align: baseline;
     font-size: 1em;
     line-height: inherit;
@@ -580,78 +589,45 @@ hr.full-width {
 }
 
     .fn-ref__link {
-        position: relative;
         color: var(--brand-color);
         text-decoration: none;
-        font-family: var(--font-sans);
         cursor: pointer;
     }
 
-/* Below the sidenote breakpoint the marker's job changes: it is a link down to a numbered
-   list rather than a pointer at something sitting right there, so it becomes a number. */
-@include under-w1400 {
-    .fn-ref__marker {
-        display: none;
-    }
+/* The marker is the note's own number on a pale brand chip, at every width — the number is
+   what pairs a marker with a note, whether the note is in the margin or in the list at the
+   bottom, so there is no longer a reason for the two widths to draw different things.
 
-    .fn-ref__n {
-        padding: 1px 4px;
-        border-radius: 4px;
-        font-family: var(--font-mono);
-        font-size: 0.62em;
-        vertical-align: super;
-        background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
-    }
+   ⚠️ Kept an *inline* box with padding, NOT an inline-block. Padding on an inline paints its
+   background without growing the line box; an inline-block would add its full height to the
+   line and open the leading around every paragraph that happens to carry a note. The px
+   font-size is deliberate for the same reason as the old chip's px height: the marker is the
+   same size in 21px body copy as in a 16px table cell instead of scaling with its context. */
+.fn-ref__n {
+    /* Vertical padding is 0 on purpose. An inline's background paints the font's content
+       area — ascent + descent, ~14px at 11px mono — which already supplies the air the
+       design file drew as 3px of padding above and below the digit. Adding CSS padding on
+       top of it stacks the two and the chip comes out half again as tall as intended. */
+    padding: 0 3px;
+    border-radius: 4px;
+    background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    vertical-align: baseline;
 }
 
+/* Above the breakpoint the note is already on screen beside the marker and carries the same
+   number, so the marker has nothing to navigate to and nothing to announce: matching number
+   to number is the whole of the pairing. `pointer-events: none` is what makes that true —
+   the bottom-of-page list it would otherwise jump to is `display: none` at this width, so
+   the click either did nothing or moved the article somewhere arbitrary.
+
+   Below the breakpoint the same markup is a real jump link down to the list, which is the
+   only place the note exists there, so the anchor stays in the markup at both widths. */
 @include w1400 {
-    .fn-ref__n {
-        display: none;
-    }
-
-    .fn-ref__marker {
-        position: relative;
-        z-index: 1;
-
-        &::before {
-            content: "*";
-            font-size: 1.15em;
-        }
-    }
-
-    /* The chip behind the asterisk.
-
-       ⚠️ It is an absolutely-positioned pseudo-element, NOT padding + a background on the
-       inline box, and that is the whole point. Padding on an inline element doesn't grow
-       the line box — but its background paints the full *content area* of the inline,
-       which for 21px body serif is ~24px tall. Around a single asterisk that draws a tall
-       pill spanning nearly the whole line rather than a chip. Out of flow, the box is ours
-       to size, and it cannot affect line-height at all.
-
-       Values tuned in devtools against 21px body copy, where the chip comes out 1.52x the
-       asterisk's ink. Being px rather than em, it does NOT scale with its context: in a
-       16px table cell the same 16px box is 2.0x the ink, and the glyph sits high in it with
-       visible empty chip underneath. The em equivalents — top -0.048em, height 0.762em —
-       are identical in body copy and proportional everywhere else, if that ever bothers
-       anyone. Deliberate as it stands. */
-    .fn-ref__link::before {
-        content: "";
-        position: absolute;
-        z-index: 0;
-        left: -2px;
-        right: -2px;
-        top: -1px;
-        height: 16px;
-        border-radius: 4px;
-        background-color: color-mix(in srgb, var(--brand-color) 10%, transparent);
-        transition: background-color 0.15s ease-out;
-    }
-
-    /* Hovering either end deepens the chip — so pointing at a note in the margin still
-       tells you which marker in the text it belongs to, which matters most in the crowded
-       case where a note has been pushed a long way down from its own reference. */
-    .fn-ref.is-active .fn-ref__link::before {
-        background-color: color-mix(in srgb, var(--brand-color) 22%, transparent);
+    .fn-ref__link {
+        cursor: default;
+        pointer-events: none;
     }
 }
 
@@ -699,6 +675,26 @@ hr.full-width {
             opacity: 0.9;
         }
     }
+
+    /* The note's own number, mono and brand, opening the note's first line. It repeats what
+       the marker says, which is the point: once a note has been pushed down the margin away
+       from its reference, the number is the only thing left tying the two together.
+
+       The gap after the slash is a margin rather than the spaces the design file used, so it
+       does not collapse, does not get selected with the text, and stays put if the note's
+       first line is re-wrapped. */
+    .sidenote__n {
+        margin-right: 10px;
+        color: var(--brand-color);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+        .sidenote__sep {
+            margin-left: 3px;
+            color: var(--brand-blue-pale);
+        }
 
 
 /*  The bottom-of-page list, for every width with no margin to spare.  */
@@ -967,6 +963,19 @@ footer.post-footer {
     p {
         margin-bottom: 0;
     }
+}
+
+/* A widget's caption is an ordinary paragraph in the post carrying `{ .caption }`, so it sits
+   in the article source next to the prose it belongs to and is parsed as Markdown like any
+   other paragraph. `.caption` shares the figcaption styling above, so all this has to do is
+   fix the spacing: the card pulls its caption up to the 16px img.md leaves under a figure's
+   media, and the caption inherits the 40px the card would otherwise have put below itself. */
+.widget:has(+ .caption) {
+    margin-bottom: 16px;
+}
+
+.widget + .caption {
+    margin-bottom: 40px;
 }
 
 label,
