@@ -7,11 +7,8 @@
 	<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 	<link rel="alternate" type="application/rss+xml" title="Explainers RSS Feed" href="/feed.xml">
 	<title>{{ title }}</title>
-	{%- assign meta_image = img_subdir | meta_image_path -%}
-	{%- if meta_image -%}
-	<meta property="og:image" content="{{ meta_image }}">
-	<meta name="twitter:image" content="{{ meta_image }}">
-	{%- endif -%}
+	{%- assign og_type = "article" -%}
+	{% include social-meta.html %}
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link

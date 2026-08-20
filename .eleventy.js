@@ -132,6 +132,38 @@ export default function(eleventyConfig) {
     return '';
   });
 
+  // Filter: a date as YYYY-MM-DD in UTC, for `article:published_time`.
+  // Liquid's own `date` formats in the *local* zone, and YAML parses a bare `2026-08-19` as
+  // UTC midnight — so west of Greenwich every post publishes a day early.
+  eleventyConfig.addFilter('iso_date', (value) => {
+    const date = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+  });
+
+  // Filter: a social-card description — whole sentences off the standfirst, up to ~160 chars.
+  // A card that stops mid-word reads as broken (`truncate` cut a nutshell at "yet it is 10..."),
+  // so prefer dropping a whole sentence; only a single over-long one falls back to a word trim.
+  const META_DESC_MAX = 160;
+  eleventyConfig.addFilter('meta_excerpt', (text) => {
+    if (!text || typeof text !== 'string') {
+      return '';
+    }
+    const plain = text.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    if (plain.length <= META_DESC_MAX) {
+      return plain;
+    }
+    // A sentence ends at .?! (plus any closing quote) followed by the *next* sentence's opening
+    // capital — so an inline question like “why is the sky blue?” is not treated as a break.
+    const sentences = plain.split(/(?<=[.?!]["”’']?)\s+(?=[“"'(]?[A-Z0-9])/);
+    let out = '';
+    for (const sentence of sentences) {
+      const next = out ? `${out} ${sentence}` : sentence;
+      if (next.length > META_DESC_MAX) break;
+      out = next;
+    }
+    return out || `${plain.slice(0, META_DESC_MAX - 1).replace(/\s+\S*$/, '')}…`;
+  });
+
   // Final safety net: strip empty paragraphs from generated HTML
   eleventyConfig.addTransform('strip-empty-paragraphs', (content, outputPath) => {
     if (outputPath && outputPath.endsWith('.html')) {
