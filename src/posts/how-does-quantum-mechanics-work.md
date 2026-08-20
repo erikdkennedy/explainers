@@ -5,6 +5,10 @@ nutshell: "This article is a tangible, intuitive intro to quantum mechanics – 
 toc: qm-toc.html
 img_subdir: qm
 img_on_homepage: quantum-background-sm.html
+header_img: qm-splash-lg.svg
+header_tile: 659.4px                               # 70% of the SVG's natural 942px
+header_tile_opacity: 0.52                          # ink density; see .header__media--tiled
+header_gradient: "180deg, #00A3DF 0%, #31359D 100%"
 published_on: 2026-08-19
 layout: post
 css: quantum

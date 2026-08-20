@@ -282,6 +282,11 @@ header {
     border: 8px solid white;
     border-radius: 40px;
     background-color: #3333FF;
+
+    /* A tiled header's artwork multiplies onto this background, and `isolation` is what keeps
+       that blend inside the header — without it the backdrop is the page, so the ink darkens
+       the body background around the corner radii instead of the panel. */
+    isolation: isolate;
 }
 
     .header__media {
@@ -293,6 +298,27 @@ header {
         background-repeat: no-repeat;
         pointer-events: none;
     }
+
+        /* A tiled header repeats a motif rather than cropping one photo, so `background-size`
+           is the tile's own size (set inline, since it belongs to the artwork) and the grid is
+           anchored by the inherited `background-position: center` — which is what makes a whole
+           tile sit in the middle of the header and the repeats grow outward symmetrically,
+           instead of the top-left corner being the one place that's guaranteed to look right.
+
+           `multiply` is what lets the tile be *line art on white* rather than a cutout: white
+           multiplies to a no-op, so the paper disappears and only the ink darkens the gradient
+           beneath. Measured off the Figma frame — the observed pixel/backdrop ratio is the same
+           in all three channels, which is the signature of multiply and rules out any normal
+           blend, since a translucent dark ink over a strongly-tinted backdrop would move the
+           channels by different fractions.
+
+           The ink is then faded with `opacity` (set inline per post), so the whole thing is
+           `backdrop × ((1 - α) + α × ink)`. Do not swap that for a lighter *source*: at α = 1
+           the black linework goes to solid black over the deep end of the gradient. */
+        .header__media--tiled {
+            background-repeat: repeat;
+            mix-blend-mode: multiply;
+        }
 
         .header__video {
             position: absolute;
