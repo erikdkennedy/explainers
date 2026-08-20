@@ -34,11 +34,14 @@
 <body>
 	{% include site-top-nav.md %}
 	{%- assign has_header_media = header_img or header_video -%}
-	<header class="layout-width post-header{% if has_header_media %} has-header-media{% endif %}">
+	<header class="layout-width post-header{% if has_header_media %} has-header-media{% endif %}"
+		{%- if header_gradient -%}
+			style="background-image: linear-gradient({{ header_gradient }});"
+		{%- endif -%}>
 		{%- if has_header_media -%}
-		<div class="header__media"
+		<div class="header__media{% if header_tile %} header__media--tiled{% endif %}"
 			{%- if header_img -%}
-				style="background-image: url('/assets/img/{{ img_subdir }}/{{ header_img }}');"
+				style="background-image: url('/assets/img/{{ img_subdir }}/{{ header_img }}');{% if header_tile %} background-size: {{ header_tile }} auto;{% endif %}{% if header_tile_opacity %} opacity: {{ header_tile_opacity }};{% endif %}"
 			{%- endif -%}
 			aria-hidden="true">
 			{%- if header_video -%}
