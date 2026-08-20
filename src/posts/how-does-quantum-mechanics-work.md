@@ -1,11 +1,11 @@
 ---
 title: How does Quantum Mechanics work?
-subtitle: The most complete non-mathematical explanation on the web
+subtitle: A wildly in-depth, illustrated, & math-free explanation
 nutshell: "This article is a tangible, intuitive intro to quantum mechanics – the way I wish it had been explained to me. It avoids equations & jargon in favor of visual explanations & analogies, yet it is 100% scientifically accurate, to the best of my ability. It starts with two unintuitive (yet foundational) facts about the quantum realm, then applies them in the context of 3 famous quantum mechanical experiments, each revealing more of the profound weirdness of the universe as we know it."
 toc: qm-toc.html
 img_subdir: qm
 img_on_homepage: quantum-background-sm.html
-published_on: 2025-11-01
+published_on: 2026-08-19
 layout: post
 css: quantum
 js: [post, quantum]
@@ -25,7 +25,7 @@ Unfortunately, this is a taller order for quantum mechanics than any other area 
 
 In any other area of science, you could just look a little closer and determine what’s really going on. But quantum mechanics *is* the description of what happens when you try to “look a little closer” at photons and atoms and such.
 
-The results are so wild, they’d make for bad fiction.
+**And the results are so wild, they’d make for bad fiction.**
 
 So if we want to explain quantum mechanics with our hands, we have to make an allowance here – nature may not look exactly like what I’m about to describe! But it certainly arrives at the same results. You can ponder the implications shortly. Physicists have; no consensus has emerged.
 
@@ -33,12 +33,12 @@ One other side-note before we begin: I’m avoiding the standard terminology of 
 
 (Physicists, you’ve been warned 😉)
 
-OK, enough pre-amble. Let’s dive right in.
+OK, enough preamble. Let’s dive right in.
 
 As far as I can tell, basically *all* of the weirdness of QM is due to *two simple facts*. Neither is intuitive in everyday life, but they’re the foundation of the quantum:
 
-1. Probabilities can cancel
-2. Particles can split into many “phantom copies” of themselves
+1. **Probabilities can cancel**
+2. **Particles can split into many “phantom copies” of themselves**
 
 Let’s talk about each of those.
 
@@ -66,6 +66,7 @@ Take, for example, dice. Say you roll two dice and count the total dots. How man
 
 1. The first die is 1 and the second die is 2
 2. The first die is 2 and the second die is 1
+{type="A"}
 
 So the probability of rolling a 3 is the probability of (A) plus the probability of (B).
 
@@ -81,7 +82,7 @@ Also, if you roll each die individually, they’ll both come up with 1’s and 2
 
 Exactly! And, good news: that’s like half of the weirdness of quantum mechanics right there. It’s about what *doesn’t* happen.
 
-In fact, here’s a hack for understanding QM: if you ever hear about a weird quantum result, simply rephrase it in terms of what *doesn’t* happen, and then rephrase what doesn’t happen in terms of the multiple ways that it *could* happen adding to 0.
+In fact, **here’s a hack for understanding QM**: if you ever hear about a weird quantum result, simply rephrase it in terms of what *doesn’t* happen, and then rephrase what doesn’t happen in terms of the multiple ways that it *could* happen adding to 0.
 
 The double-slit experiment – which is perhaps the most famous quantum experiment of all time (and we’ll talk about it in-depth shortly) – fits this mold perfectly. You may’ve seen it before, but in case you haven’t, it’s where you shoot particles (e.g. photons, electrons, etc) one at a time through 1 or 2 very small, very close together slits. The particles that make it through the slit(s) hit a screen on the far side. When you add a second slit, the pattern they make becomes unexpectedly more complex.
 
@@ -100,7 +101,7 @@ But let’s rephrase this in terms of what *doesn’t* happen.
 
 “Photons don’t land in certain areas?”
 
-Yes. And now let’s rephrase that in terms of the multiple ways it *could* happen. What are the multiple ways that a photon *would* reach one of those dark bands?
+Yes. And now let’s rephrase _that_ in terms of the multiple ways the non-event *could've* happen. What are the multiple ways that a photon *would* reach one of those dark bands?
 
 “Uh, either going through the left slit or going through the right slit?”
 
@@ -118,7 +119,9 @@ That’s a great lead-in.
 
 ## Multiple phantom copies {data-ordinal="II." #phantom-copies}
 
-The second weird yet generative insight about QM is that things (photons, atoms, etc) seem to have the ability to split into many “phantom copies” of themselves.
+The second weird yet generative insight about QM is that things (photons, atoms, etc) seem to have the ability to split into many “phantom copies” of themselves[^pc].
+
+[^pc]: I mentioned this above, but I'll repeat it here: phantom copies are a visualization of what is happening _mathematically_, not a statement of what exists. Does something like them exist? We don't know.
 
 I say “phantom copies” because they’re never observed directly.
 
@@ -126,7 +129,7 @@ I say “phantom copies” because they’re never observed directly.
 
 Because they do leave a mysterious – and important – trace of their existence. I’ll explain in a minute. But first, I want to state, as succinctly as possible, how these phantom copies work:
 
-***Whenever particles lose contact with the outside world, they split into phantom copies that trace out every possible thing the particles could do. However, upon looking, you find each particle in only one state.***
+***Whenever particles lose contact with the outside world, they split into phantom copies that trace out every possible thing the particles could do. However, upon looking, you find each particle in only one state. Only one phantom copy is reality; the rest disappear.***
 
 Weird, huh?
 
@@ -139,11 +142,11 @@ It’s possible to put an atom in a state where it’s all but certain to emit a
 
 And, while this will complicate things, and we will return to it later, it’s worth mentioning now:
 
-1. We also need phantom copies of the *atom*, one for each possibility of *when* it jumps down an energy level (which it does when the photon is emitted)
+3. We also need phantom copies of the *atom*, one for each possibility of *when* it jumps down an energy level (which it does when the photon is emitted)
 
 {% include qm/emission.html %}
 
-<p class="caption">Note: I’m only displaying SOME of the photon phantom copies. In reality, they’d cover the surface of the illustration!</p>
+Note: I’m only displaying SOME of the photon phantom copies. In reality, they’d cover the surface of the illustration!{ .caption }
 
 You’ll notice the bulk of these phantom photons leave *early* (rather than later) and *horizontally* (rather than vertically). Exactly *why* is specific to the type of atom and the exact configuration of its electrons – but for now, just understand this: ***some outcomes are more likely than others***.
 
@@ -174,34 +177,78 @@ So in between these brief, specific moments of knowledge about a particle’s st
 
 This framing raises a question. What *are* all the things that these phantom copies do?
 
-For starters, for any result that you might observe, there’s a phantom copy doing that thing.
+At first approximation, they do every physically possible thing that the particle could do.
 
-Perhaps more shockingly, there are phantom copies doing things that are *never physically observed* – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I will explain why you don’t *see* these things shortly)
+But it's slightly more complicated than that.
 
-But in general, any measurable property of a particle or group of particles is a dimension in which these phantom copies can vary. Here’s a fuller list to give you a better idea:
+Basically, for any property that you measure – position, speed, mass, spin, etc. – if that property _could_ be found to be different values (e.g. a speed of 1 m/s vs 2 m/s), then you need to consider phantom copies for every possible value.
 
-| Condition | Examples |
-|-----------|----------|
-| Anytime a particle could take **different paths**[^4] | <ul><li>An electron goes through a slit vs. hits a wall</li><li>An atom hits another atom vs. flies past it</li><li>A photon bounces off glass vs. goes through it</li><li>A photon bounces in one direction vs another[^5]</li></ul> |
-| Anytime a particle could be somewhere at **different times** | <ul><li>A radioactive atom could emit various particles at different possible times[^6]</li><li>An atom with excited electrons could emit a photon at different possible times</li><li>A particle could travel to a spot faster or slower[^7]</li></ul> |
-| Anytime a particle could have **different properties** | <ul><li>The spin of a particle – e.g. proton, neutron, electron, etc. (changed by certain magnetic fields, particle collisions, etc.)</li><li>The polarization of a photon (changed by light hitting certain types of crystals, etc.)</li><li>The energy levels of an atom’s electrons (changed by bombarding it with other particles)</li><li>The rotational speed of a molecule (changed by collisions)</li><li>The amount of vibration between the nuclei of a molecule</li></ul> |
-| Other | <ul><li>Electrons in a tiny superconducting wire could travel clockwise or counterclockwise</li></ul> |
+But… if that property is an _instrinsic property of the particle_ (e.g. the mass of an electron), and won't ever be found as different values, then you DON'T need to consider phantom copies for that property.
 
-[^4]: The equations of QM don’t allow us to say the *particle* takes any one path. Instead, between the moments of “losing contact” and “regaining contact”, the particle is *only* phantom copies doing every possible permutation of things. As to the nature of the phantom copies, that’s up for debate, and something we’ll talk about in [Interpretations](#cocktail-party).
+That being said, there are phantom copies doing things that are _never physically observed_ – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I'll explain more on this soon)
+
+It might be easier to describe just by seeing a bunch of examples:
+
+<table>
+    <thead>
+        <tr><th>Condition</th><th>Examples</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Anytime a particle could take <strong>different paths</strong></td>
+            <td><ul>
+                <li>An electron goes through a slit vs. hits a wall</li>
+                <li>An atom hits another atom vs. flies past it</li>
+                <li>A photon bounces off glass vs. goes through it</li>
+                <li>A photon bounces in one direction vs another[^5]</li>
+            </ul></td>
+        </tr>
+        <tr>
+            <td>Anytime a particle could be somewhere at <strong>different times</strong></td>
+            <td><ul>
+                <li>A radioactive atom could emit various particles at different possible times[^6]</li>
+                <li>An atom with excited electrons could emit a photon at different possible times</li>
+                <li>A particle could travel to a spot faster or slower[^7]</li>
+            </ul></td>
+        </tr>
+        <tr>
+            <td>Anytime a particle could have <strong>different properties</strong></td>
+            <td><ul>
+                <li>The spin of a particle – e.g. proton, neutron, electron, etc. (changed by certain magnetic fields, particle collisions, etc.)</li>
+                <li>The polarization of a photon (changed by light hitting certain types of crystals, etc.)</li>
+                <li>The energy levels of an atom’s electrons (changed by bombarding it with other particles)</li>
+                <li>The rotational speed of a molecule (changed by collisions)</li>
+                <li>The amount of vibration between the nuclei of a molecule</li>
+            </ul></td>
+        </tr>
+        <tr>
+            <td>Other</td>
+            <td><ul>
+                <li>Electrons in a tiny superconducting wire could travel clockwise or counterclockwise</li>
+            </ul></td>
+        </tr>
+    </tbody>
+</table>
 
 [^5]: At the everyday level, photons bounce off at the same angle they hit at (“angle of incidence = angle of reflection”). But in QM, phantom copies shoot off at every possible angle. That being said, the phantom versions bouncing at exotic angles cancel each other out, and we only observe the angle of incidence equaling the angle of reflection. For more, [read this book](https://amzn.to/42Vgm3p){target="_blank"}.
 
 [^6]: For example, a radioactive tritium atom will, at some point, emit an electron and an antineutrino. Even though it has a 50% chance of doing this in any given 12.3-year span, you need to account for the possibility of it happening at *every possible moment*
 
-[^7]: At the everyday level, photons travel at the speed of light, c. But in QM, phantom copies can travel faster or slower. That being said, the phantom versions at different exotic speeds always cancel each other out, and we only observe photons moving at the speed of light. For more, [read this book](https://amzn.to/42Vgm3p){target="_blank"}.
+[^7]: At the everyday level, photons travel at the speed of light, c. But in QM, you can consider phantom copies traveling faster or slower. That being said, the phantom versions at different exotic speeds always cancel each other out, and we only observe photons moving at the speed of light. For more, [read this book](https://amzn.to/42Vgm3p){target="_blank"} (same as above 🙂).
 
-That being said, there still has to be *some* uncertainty that generates these phantom copies. If a rotating molecule has zero probability of anything bumping it, the rotating molecule won’t have phantom copies spinning at different speeds. But as soon as it’s possible that it *might* get jostled, then you’ve got phantom copies to consider.
+All this being said, if there's some property that's 100% known, and has a 0% chance of changing, you don't need to consider phantom copies of different values. They only matter to the degree that different outcomes are, at least in theory, _possible_.
+
+So if a rotating molecule has zero probability of anything bumping it, you don't need to worry about phantom copies with other rotational speeds. Only once it's potentially jostled do you have to start thinking of phantom copies with different rotational speeds.
 
 And what jostles the molecule? Phantom copies of other particles, of course! The whole thing is multiplicative.
 
 A single particle – e.g. an electron – traveling through space is *easy* to visualize.
 
 {% include qm/traveling-electron.html %}
+
+Like the last such illustration, this shows only a few phantom copies. You're more likely to see the particle where the copies are denser[^guassian].{ .caption }
+
+[^guassian]: So another way to visualize this is as a mounded probability distribution that flattens and spreads out as it moves.
 
 You’re *most* likely to see it at a certain point, with the probability decreasing as you spread out.
 
@@ -211,7 +258,7 @@ You need to consider not just every phantom copy from two particles, but every *
 
 So, I’ll just note this for now, and we’ll return to it in the third experiment: when multiple particles are involved, it’s easier to visualize entire phantom *timelines* rather than simply phantom *copies*.
 
-{% include img.md, src:"possible-branches-of-quantum-particle-collision.png", caption: "", alt:"" %}
+{% include img.md, src:"possible-branches-of-quantum-particle-collision.png", caption: "For every particle collision, you need to account for all possible speeds, directions, timings, etc.", alt:"cards showing possible branches of a quantum particle collision" %}
 
 As a minor spoiler alert, this is why it’s so hard to simulate quantum systems on computers. For every new particle you *add*, the possibilities you need to keep track of *multiply*. Today’s supercomputers can only handle a small molecule on a good day.
 
@@ -221,7 +268,9 @@ Let’s talk about that.
 
 ### “You find each particle in only one state”
 
-Whenever you look at a particle (and by “look”, I mean “interact with in some way in order to determine its state”), *you only ever see it in one state*. All those other phantom copies are gone forever. Which state will you see? As best we know, it’s totally random. From all the phantom copies, it’s as if God just picks one out of a hat. But even if we don’t know *which* state we’ll see, we can figure out the *probability* of seeing a particular state.[^8]
+Whenever you look at a particle (and by “look”, I mean “interact with in some way in order to determine its state”), *you only ever see it in one state*. All those other phantom copies are gone forever. Which state will you see? As best we know, it’s totally random. From all the phantom copies, it’s as if God just picks one out of a hat[^out_of_a_hat]. But even if we don’t know *which* state we’ll see, we can figure out the *probability* of seeing a particular state.[^8]
+
+[^out_of_a_hat]: The visual of _picking out of a hat_ implies a discrete number of possibilities. But are the possible locations of a particle a discrete set? It doesn't seem that they are. Furthermore, properties like photon polarization or particle spin defy this metaphor even more (for reasons we won't go into here). Nonetheless, I find "picking out of a hat" an incredibly useful visual for predicting quantum behavior.
 
 [^8]: In theory, anyhow. In practice, this is wildly complicated without simplifying assumptions.
 
@@ -229,7 +278,10 @@ This, by the way, is how *cancellable probabilities* and *phantom copies* come t
 
 Each phantom copy has a probability of being the one that we see. But it’s not a *normal* probability, with a value between 0 and 1. It’s a *special quantum probability*, which can sometimes cancel.
 
-And when does it cancel? When two phantom copies end up in the *exact same state*, but with *equal and opposite* probabilities.
+And when does it cancel? When two phantom copies end up in the *exact same state*, but with *equal and opposite* probabilities[^multpc].
+
+[^multpc]: Or, more generally, when any number of phantom copies have quantum probabilities that _sum_ to zero.
+
 
 Here is the analog with classical probability. Read down each column.
 
@@ -239,7 +291,7 @@ Here is the analog with classical probability. Read down each column.
 | For an event to happen… | That end up in the same state…[^9] |
 | Each way has a probability of happening… | Each phantom copy has a special quantum probability of being found in that state… |
 | And if you add them together… | And if you add up the special quantum probabilities for each of the indistinguishable phantom copies… |
-| You get the total probability of the event. | You get the total quantum probability of the event – which can be 0 – and is directly related to the classical probability of the event |
+| You get the total probability of the event. | You get the total quantum probability of the event (which (a) can be 0 and (b) can be used to find the classical probability of the event) |
 
 [^9]: The same position at the same time with the same properties
 
@@ -253,13 +305,15 @@ Anyhow, this should be a “scales falling off your eyes” moment with respect 
 >
 > Because they do leave a mysterious – and important – trace of their existence.
 
-The trace of their existence is when they cancel out and certain events do not happen.
+The trace of their existence is when they cancel out and certain events don't happen.
 
 Or:
 
-> Perhaps more shockingly, there are phantom copies doing things that are never physically observed – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I will explain why you don’t see these things shortly)
+> That being said, there are phantom copies doing things that are _never physically observed_ – e.g. particles hitting the blank spots on the back wall of a double-slit experiment, or photons moving faster or slower than the speed of light. (I'll explain more on this soon)
 
 The events never observed are times when two or more ways in which those events could occur have special quantum probabilities that add up to zero.
+
+So: the weirdness of QM is in what _doesn't_ happen, and that's because of probabilities that _cancel_.
 
 Before we look at specific experiments, I want to hammer home one point that’s perhaps the most common *misunderstanding* of QM when scientists explain it to a lay audience. Don’t worry; it’s half review 😉
 
@@ -278,9 +332,9 @@ There are 2 reasons why “multiple phantom copies” and “I don’t know” a
 1. Phantom copies that end up in the same state can **cancel each other out** (If you merely *don’t know* something, there’s no cancelling involved)
 2. As long as the phantom copies remain isolated enough so one outcome is not distinguishable, you can (carefully) **modify the probability** of various outcomes (not always, but sometimes)[^10]
 
-[^10]: And technically is true of some classical probability distributions as well. If you blindly throw a paper airplane north, then blow a fan east-to-west across the direction of throwing, *you’ve modified the probability distribution of where you’ll expect to find the paper airplane*. QED! That being said, the quantum mechanical version is much more shocking than something this mundane.
+[^10]: Technically, this is true of some classical probability distributions as well. If you blindly throw a paper airplane north, then blow a fan east-to-west across the room, *you’ve modified the probability distribution of where you’ll expect to find the paper airplane*. Easy! That being said, the quantum mechanical version is more shocking and powerful.
 
-The first of these is the easiest to understand, and if it’s the only thing you get out of this article, that’s totally fine. The second reason is more subtle, and I’ll introduce it via analogy below.
+The first of these is the easiest to understand, and if it’s the only thing you get out of this article, that’s totally fine. The second reason is more subtle, and I’ll introduce it via analogy [below](#parable-of-the-coin).
 
 Now, if you’re still with me, let’s talk about 3 classic QM experiments.
 
@@ -396,19 +450,21 @@ If you were to look at a series of points along a line emanating from the partic
 
 It’s worth being super clear on *what* is doing the oscillating here. It’s *not* a property of the particle that spins. Rather, it’s a *probability* that spins (classical probabilities can only grow or shrink – but quantum probabilities, being 2-D, can spin). Specifically, it’s the quantum probability of finding a photon at a particular point, measured for a series of points along a straight line. And yes, this paragraph is highly unintuitive. Unfortunately, it’s pretty fundamental to how QM works, so re-read as necessary.
 
-Now I should say that there’s no *direct* way to measure the special quantum probability of a particle appearing at a certain point. And frankly, it’s hard to measure the *classical* probability of something happening. You have to run a bunch of trials and assume you’re getting closer and closer to some underlying value.
+Now I should say that there’s no *direct* way to measure the special quantum probability of a particle appearing at a certain point. Actually, if we're being precise, we can't exactly even measure *classical* probability directly. You have to run a bunch of trials and hope the law of large numbers[^loln] is working today.
+
+[^loln]: The more you perform a random event (e.g. flipping a coin), the closer you get to the true "underlying" probability (e.g. 50% heads, 50% tails).
 
 But the spinning of a quantum probability *isn’t even picked up by repeated trials* per se. Remember: the classical probability is tied to the *length* of the arrow – which isn’t meaningfully changing.[^13] The *direction* of the arrow – which *is* changing – only comes into play when arrows are added together.
 
-[^13]: I should also add that the length of the quantum probability arrow decreases over the length of the path – in inverse proportion to the length of the path.
+[^13]: Technically, the arrow's length decreases over the length of the path – in inverse proportion to the length of the path. But this doesn't affect our discussion today.
 
-So to see any quantum weirdness at all, you need *two* phantom copies to end up in the exact same place, so their arrows can be added together. And to see *complete cancellation* (i.e. something that mysteriously doesn’t happen), the phantom copies’ arrows of quantum probability need to be equal and opposite.
+So to see any quantum weirdness at all, you need *two* identical phantom copies to end up in the exact same place, so their arrows can be added together. And to see *complete cancellation* (i.e. something that mysteriously doesn’t happen), the phantom copies’ arrows of quantum probability need to be equal and opposite.
 
 Fortunately, the distance it takes for the quantum probability to rotate 360° *is* simply the wavelength of the photon used in the experiment (or, for electrons or atoms, it’s not as neat – but in all cases, it’s related to the particle’s *momentum*).[^14]
 
-[^14]: Namely, it’s inversely proportional to the particle’s momentum. More momentum means denser rotations in space.
+[^14]: Namely, it’s _inversely_ proportional to the particle’s momentum. More momentum means denser rotations in space.
 
-That means that, to get two phantom copies to cancel each other out – as they do when their arrow representations are equal and opposite – one has to travel exactly one half of a wavelength farther than the other, and end in the same spot.
+That means that, to get two phantom copies to cancel each other out – as they do when their arrow representations are equal and opposite – one has to travel exactly one half of a wavelength farther than the other (or 1.5 wavelengths farther, etc.), and they both have to end in the same location.
 
 Let’s see how that looks.
 
@@ -549,7 +605,7 @@ I appear again and ask if you’ve considered winning some bar bets with coin tr
 
 
 
-## Experiment 2: the Ramsey experiment {data-ordinal="VI." #ramsey-experiment}
+## Experiment 2: the Ramsey experiment {data-ordinal="VI." #ramsey}
 
 In the quantum world, a lot of things act like the coin in the example above – atoms, for instance. I’ll explain how in a second.
 
@@ -576,18 +632,20 @@ Today, we’ll only deal with two consecutive energy states – which I’ll cal
 
 <div class="double-wide">
     <div class="double-wide__item">
-        {% include img.md, src: "ground-state-electron.png", width: "350px", caption: "A “ground state” electron in an atom has LESS energy, and, for our purposes, stays closer to the nucleus.", alt: "A false-color image of a hydrogen atom's electron cloud: a single compact blob, brightest at the centre." %}
+        {% include img.md, src: "ground-state-electron.png", width: "350px", caption: "A “ground state” electron in an atom has LESS energy, and, for our purposes, stays closer to the nucleus.", alt: "A false-color image of a hydrogen atom’s electron cloud: a single compact blob, brightest at the centre." %}
     </div>
     <div class="double-wide__item">
-        {% include img.md, src: "excited-state-electron.png", width: "350px", image-credit: "<a href='https://www.newscientist.com/article/mg21829194-900-smile-hydrogen-atom-youre-on-quantum-camera/' target='_blank'>New Scientist</a>", caption: "An “excited state” electron in an atom has MORE energy, and is typically farther afield from the nucleus.", alt: "A false-color image of a hydrogen atom's electron cloud in an excited state: a bright core surrounded by a separate outer ring." %}
+        {% include img.md, src: "excited-state-electron.png", width: "350px", image-credit: "<a href='https://www.newscientist.com/article/mg21829194-900-smile-hydrogen-atom-youre-on-quantum-camera/' target='_blank'>New Scientist</a>", caption: "An “excited state” electron in an atom has MORE energy, and is typically farther afield from the nucleus.", alt: "A false-color image of a hydrogen atom’s electron cloud in an excited state: a bright core surrounded by a separate outer ring." %}
     </div>
 </div>
 
 These electron energy states map over to the coin analogy from the previous section. But instead of flipping the coin to transition between states, we beam the atom with a perfectly calibrated blast of photons.
 
-A version of the Ramsey experiment using a rubidium atom won the [Nobel prize in 2012](https://www.nobelprize.org/prizes/physics/2012/popular-information/){target="_blank"}. So we’ll use that going forward.
+A version of the Ramsey experiment using a rubidium atom won the Nobel prize in 2012[^nobel]. So… rubidium it is!
 
-| Coin analogy | Atom (e.g. rubidium in Rydberg n=50 state) |
+[^nobel]: More on that [here](https://www.nobelprize.org/prizes/physics/2012/popular-information/){target="_blank"}.
+
+| Coin analogy | Atom (e.g. rubidium in Rydberg n=50 state[^rydberg]) |
 |--------------|------|
 | Heads | Lower electron energy state (“ground”) |
 | Tails | Higher electron energy state (“excited”) |
@@ -595,13 +653,13 @@ A version of the Ramsey experiment using a rubidium atom won the [Nobel prize in
 | The 50-50 states | Two “phantom copies”; one in each energy state |
 | Waiting 2.41 seconds | Waiting 9.8 picoseconds (differs by atom) |
 
+[^rydberg]: What does "Rydberg n=50" mean? It's not important to QM, but it is kinda cool 🤷‍♂️ Basically, _one_ electron in the atom is 50 rungs up the ladder of possible energy states. The other 36 are all in the lowest possible rungs. But that one crazy electron is _so_ far out, the radius of the Rydberg rubidium is about 500x larger than a normal rubidium!
+
 So here’s what our “map” looks like for this rubidium atom:
 
 {% include img.md, src: "bloch-rubidium.png", width: "500px", alt: "The coin ring redrawn for a rubidium atom: ground state at the top, excited at the bottom, “Plus” and “Minus” at the sides, joined by MICROWAVE PULSE arrows and two WAIT 9.8 PS arrows across the middle." %}
 
-The “ground” and “excited” electron states replace “heads” and “tails”, microwave pulses take the place of coin flips, and the waiting time between 50-50 states is much, *much* shorter (this picosecond duration can be arbitrarily lengthened in the lab, but for the sake of simplicity, we’ll continue referencing this one stupidly short value). Also, I’ve also renamed the 50-50 states to “Plus” and “Minus”.[^15]
-
-[^15]: Those already familiar with quantum computing will recognize these as the |+⟩ and |−⟩ states on the Bloch sphere.
+The “ground” and “excited” electron states replace “heads” and “tails”, microwave pulses take the place of coin flips, and the waiting time between 50-50 states is much, *much* shorter (this picosecond duration can be arbitrarily lengthened in the lab, but for the sake of simplicity, we’ll continue referencing this one stupidly short value). Also, I’ve also renamed the 50-50 states to “Plus” and “Minus”.
 
 For our little rubidium atom, if you pulse it with a precise blast of microwave radiation, and then look at its energy state, it’s ground 50% of the time, excited 50% of the time.
 
@@ -631,7 +689,7 @@ Now the core idea of this article is that quantum weirdness is because of (1) ca
 |--|------------------------|-------------------|
 | What splits into phantom copies? | A particle (e.g. a photon) | An atom |
 | How do the phantom copies differ from each other? | Location | Energy level |
-| How many relevant phantom copies are there? | Potentially infinite | 2 (for all intents and purposes[^17]) |
+| How many relevant phantom copies are there? | Potentially infinite | 2[^17] |
 | What’s the event that has multiple ways in which it could happen? | Landing at a specific point on the far screen | Being found at a specific energy level (e.g. ground or excited) |
 | What are the (two) ways the event could happen? | <ul><li>Phantom copy goes through left slit to that point</li><li>Phantom copy goes through right slit to that point</li></ul> | <ul><li>The first blast excites the atom/phantom copy and it stays excited through the second blast</li><li>The first blast doesn’t excite the atom/phantom copy, but the second blast does</li></ul> |
 | How do you calculate the special quantum probability of each way? | The probability oscillates with a wavelength related to the momentum of the particle (for a photon, it’s simply its wavelength) | The probability oscillates at a frequency proportional to the energy of the atom |
@@ -639,19 +697,17 @@ Now the core idea of this article is that quantum weirdness is because of (1) ca
 
 </div>
 
-[^17]: At one moment, there will perhaps technically be 4 – but *conceptually*, we’re concerned with two phantom copies.
+[^17]: At one moment, there will perhaps technically be 4 – but *conceptually*, we’re concerned with two energy levels.
 
 The last two steps are new – we haven’t covered those yet.
 
-To see how it all fits together, here’s a widget that walks step-by-step through the experiment, using the visualization of cancellable phantom copies:
+But rather than try to explain this over paragraphs of text, here is what is _looks like_:
 
 {% include qm/ramsey.html %}
 
-Two details the widget states without justifying: why that first blast leaves the atom exactly 50-50,[^18] and why the ground copy formed from the excited one comes out with its arrow flipped.[^19]
+One confusing thing about this visualization is why the excited atom, when blasted, forms a ground copy with its arrow flipped. I've researched what this _means_, and I've come back empty-handed. If I find out a satisfying answer, I will update this article[^19].
 
-[^18]: As the diagram from the previous section implies, a longer blast means a higher percentage chance of finding the atom in the excited state. This is true all the way up to double the calibrated blast, when the atom is in the “100% excited” state, and then the probability starts decreasing again towards 100% ground state.
-
-[^19]: It’s a rule that when an excited-state copy gets split, the ground-state copy flips its arrow.
+[^19]: So, it’s a rule that when an excited-state copy gets split, the ground-state copy flips its arrow.
 
     This is true of all similar quantum systems, not just the electronic energy state of an atom.
 
@@ -659,11 +715,23 @@ Two details the widget states without justifying: why that first blast leaves th
 
     To be honest, I don’t know. It does appear to be more about mathematical bookkeeping than about the physical properties of electron energy states. If you were given an atom in “state 1” (but not told whether “1” meant ground-state or excited-state), no amount of (a) microwave blasts, (b) waiting, or (c) reading out the state as “1” or “2” would allow you to figure out whether “1” was ground or excited. It’s just sort of a mathematical truism that when state 2 spawns back into state 1, the arrow flips.
 
-    If I do find a more satisfying answer – whether tangible or mathematical – I will update this article.
+    As I mentioned inline, if I do find a more satisfying answer – whether tangible or mathematical – I will update this article.
 
-And here is the whole sequence in one picture, if you’d rather see it laid out end to end than step through it.
+And here is the whole sequence in one picture, if you’d rather see it laid out end to end:
 
-{% include img.md, src: "ramsey-step-by-step-timeline.png", width: "700px", alt: "The four stages of the Ramsey experiment left to right: microwave blast #1 splits one ground-state atom into a ground and an excited copy; the wait turns their arrows apart; blast #2 splits each of those into two more; and in the result the two excited copies cancel while the two ground copies add, leaving a single ground-state atom.", caption: "The same five steps the widget walks through, end to end. The excited copies (red) cancel; the ground copies (blue) add." %}
+{% include img.md, src: "ramsey-step-by-step-timeline.png", width: "700px", alt: "The four stages of the Ramsey experiment left to right: microwave blast #1 splits one ground-state atom into a ground and an excited copy; the wait turns their arrows apart; blast #2 splits each of those into two more; and in the result the two excited copies cancel while the two ground copies add, leaving a single ground-state atom.", caption: "Blasts split phantom copies. Waiting lets cancelling probabilies get in or out of sync. Do it just right and you have a magic coin." %}
+
+Imagine not knowing about QM. What would you think the blast was doing?
+
+"Either exciting the atom or letting it stay in the ground state – like, maybe the photons miss? – each possibility with 50% probability"
+
+Right. You'd think the atom had a definite state, excited or ground – you simply didn't know which.
+
+But how can you prove that _this_ situation is different? How can you prove this is something different than mere _ignorance_ of the atom's state?
+
+"Because if you do another blast, you can get 100% ground or 100% excited, depending on how long you wait between blasts!"
+
+Exactly. And it turns out that phantom copies with cancellable probabilities are what we need to use to visualize how this works.
 
 In the double-slit experiment, there were *potentially infinite* phantom copies with *identical* properties taking *different paths*.
 
@@ -675,7 +743,7 @@ Next, let’s take the final conceptual step for this article. Let’s examine w
 
 ## Experiment 3: the Hong-Ou-Mandel experiment {data-ordinal="VII." #hong-ou-mandel}
 
-The Hong-Ou-Mandel experiment is perhaps the simplest experiment that forces us to reckon with how QM deals with *multiple* particles. Since our goal is to be able to visualize things as tangibly as possible, I’ll keep the lede front and center:
+The Hong-Ou-Mandel experiment is perhaps the simplest experiment that forces us to reckon with how QM deals with *multiple* particles. Since our goal is to be able to visualize things as tangibly as possible, I’ll keep the lede front and center. From earlier:
 
 > when multiple particles are involved, it’s easier to visualize entire phantom *timelines* rather than simply phantom *copies*
 
@@ -731,9 +799,9 @@ Now, contrary to how we worked through the double-slit experiment, we’re not g
 
 In our case, since there are two photons, we’re actually interested in *two events happening*. Sensor A detecting a photon (or two) AND sensor B detecting a photon (or two). And there’s no clean way to show all the possibilities with little rainbow lines towards the sensors.
 
-But we can use the same spirit. Rather than visualizing the quantum probability of a single event at different points in *3-D space*, we can simply calculate the quantum probability of multiple sub-events co-occurring directly.
+But we can use the same spirit. Rather than visualizing the quantum probability of a single event at different points in *3-D space*, let's find the quantum probability of events in _event space_.
 
-In other words, we’ll take the 3 end results we’re interested in:
+Put simply, we’ll take the 3 end results we’re interested in…
 
 1. Sensor L goes off twice
 2. Sensor R goes off twice
@@ -752,31 +820,48 @@ But there are *two* ways for R and L to each go off once:
 1. Photon L passes through AND photon R passes through
 2. Photon L reflects AND photon R reflects
 
-{% include img.md, src: "hong-ou-mandel-3-end-results-from-4-photon-paths.png", width: "700px", alt: "The same three panels, now filled in: one setup under each outer heading, and two under the middle one.", caption: "In quantum mechanics, we can never tell which of the middle two events actually happened – as long as the results are totally indistinguishable" %}
+{% include img.md, src: "hong-ou-mandel-3-end-results-from-4-photon-paths.png", width: "700px", alt: "The same three panels, now filled in: one setup under each outer heading, and two under the middle one.", caption: "In quantum mechanics, we can never tell which of the middle two events actually happened." %}
 
 Now, to figure out which end result happens, we simply need to find the quantum probability of each one.
 
 The first and last scenarios are slightly easier. The middle scenario – in which each sensor goes off once – involves adding two possible ways that could happen. But let’s start with the easy part.
 
-So, take the first scenario, in which the left sensor goes off twice. There are two things that need to happen for the left sensor to go off twice: one photon passes through AND the other photon reflects. To figure out the quantum probability of such a scenario, we need to *multiply* (a) the special quantum probability of a phantom copy passing through with (b) that of it reflecting.
+So, take the first scenario, in which the left sensor goes off twice. There are two things that need to happen for the left sensor to go off twice: one photon passes through AND the other photon reflects. To figure out the quantum probability of such a scenario, we need to *multiply* (a) the special quantum probability of a phantom copy _passing through_ with (b) that of it _reflecting_.
 
-Why? Because whenever we want to know the probability of *A and B happening*, we multiply the probabilities of A and B together.[^22] For instance, the probability of a person being born male in May is the probability of being male (~0.5) multiplied by the probability of being born in May (~0.083). Our special type of quantum probability is no different than classical probability here.
+### Multiplying quantum probabilities
+
+"What's this? We're not only _adding_ quantum probabilities, now we're _multiplying_ them?"
+
+Yes – but it's pretty straightforward.
+
+Think of classical probability. Whenever we want to know the probability of *A AND B happening*, we multiply the probabilities of A and B together.[^22] For instance, the probability of a person being born male in May is the probability of being male (~0.5) multiplied by the probability of being born in May (~0.083).
 
 [^22]: As long as they’re independent events
 
-But how do you “multiply” two arrows together? Math actually provides a very straightforward answer here: you *add* the angles and *multiply* the lengths.[^23]
+Well, our special type of quantum probability is no different than classical probability here.
+
+"But how do you 'multiply' two arrows together?"
+
+Math actually provides a very straightforward answer here: you *add* the angles and *multiply* the lengths.[^23]
 
 [^23]: This is simply the geometric interpretation of multiplying complex numbers together.
 
 {% include qm/amplitude-multiplication.html %}
 
-In the context of the Hong-Ou-Mandel experiment, it’s even easier still. Since all paths end with the same arrow *length*, we don’t have to get precise there.[^24] And since the exact *direction* of the arrows don’t matter – only their relative directions compared to each other – we can treat those pretty loosely too.
+In the context of the Hong-Ou-Mandel experiment, two things make this even easier:
+
+1. Since all paths are the same length, all possible arrow lengths (at the sensor) are the same, and we can basically ignore the exact value[^24]
+2. The exact *direction* of the arrows doesn't matter – only their relative directions compared to each other. So we can treat those pretty loosely too
 
 [^24]: Technically, you must rescale the length of the arrows so that the sum of all possibilities is 1.
 
-Given this, we can say that e.g. the quantum probability of the left sensor going off twice looks like this:
+So we're doing arrow multiplication on easy mode 😉
 
-{% include img.md, src: "hong-ou-mandel-amplitude-of-left-sensor-going-off-twice.png", width: "614px", alt: "The setup with both photons arriving at the left sensor, beside the arrow equation PASS THROUGH times REFLECT equals a result pointing straight up." %}
+### Quantum probabilities in the Hong-Ou-Mandel experiment
+
+Given the above, we can say that the quantum probability of the left sensor going off twice looks like this:
+
+{% include img.md, src: "hong-ou-mandel-amplitude-of-left-sensor-going-off-twice.png", width: "614px", alt: "The setup with both photons arriving at the left sensor, beside the arrow equation PASS THROUGH times REFLECT equals a result pointing straight up.", caption: "All we know of the two factored arrows is they’re 90° out of sync; I’m just using these specific directions (left, up) as an example." %}
 
 It’s a slightly shorter arrow in a different direction. Ok, fine.
 
@@ -794,7 +879,7 @@ And finally, when *both* phantom copies reflect at the beamsplitter:
 
 {% include img.md, src: "hong-ou-mandel-amplitude-of-both-photons-reflecting.png", width: "614px", alt: "The setup with both photons reflecting, beside the arrow equation REFLECT times REFLECT equals a result pointing left — the exact opposite of the previous one." %}
 
-Now when we sum those, we find the most devious of quantum results…
+Now, because both of those results are indistinguishable, we need to add their quantum probabilities. And when we sum them, we get the most devious of quantum results…
 
 {% include img.md, src: "hong-ou-mandel-amplitude-of-coincidences.png", width: "547px", alt: "BOTH PASS THROUGH plus BOTH REFLECT: a right-pointing arrow added to an equal left-pointing one, giving a dot. Below, the two setups themselves add to zero." %}
 
@@ -808,11 +893,11 @@ It’s a bit crazy, no?
 
 And yet it’s reality.
 
-{% include img.md, src: "jachura-hong-ou-mandel.png", width: "448px", alt: "Sixteen numbered frames from a photon-counting camera, each showing green dots in either the Port V row or the Port H row, but almost never in both.", caption: "Both photons hit either one sensor (“Port V”) or the other (“Port H”), never both. Except frame 8. Experimental error! – making photons indistinguishable is hard.", image-credit: "<a href='https://opg.optica.org/ol/fulltext.cfm?uri=ol-40-7-1540' target='_blank'>Jachura and Chrapkiewicz (2015)</a>" %}
+{% include img.md, src: "jachura-hong-ou-mandel.png", width: "448px", alt: "Sixteen numbered frames from a photon-counting camera, each showing green dots in either the Port V row or the Port H row, but almost never in both.", caption: "Both photons hit either one sensor (“Port V”) or the other (“Port H”), never both. Except frame 8. Experimental error! (Turns out making photons indistinguishable is hard!)", image-credit: "<a href='https://opg.optica.org/ol/fulltext.cfm?uri=ol-40-7-1540' target='_blank'>Jachura and Chrapkiewicz (2015)</a>" %}
 
 In these experiments of quantum mechanics, a theme starts to emerge. The stuff the universe is composed of, when no one’s looking, endlessly splits into copies of itself in every permutation of possible paths and properties. The whole system is accounted for in an odd type of probability, a probability that spins (trillions of times per second, even). It’s a probability that cancels too, and while anything that can happen one way might occur, some things that can occur many ways are simply never seen.
 
-With that ends my main exposition of QM. However, one task remains. I have rigorously avoided all QM terminology and jargon up to this point. If you are ever to read about or speak with someone about QM, they will have no idea what you’re talking about with phantom copies and cancelling probabilities.
+With that ends my main exposition of QM. However, one task remains. I have rigorously avoided all QM terminology and jargon up to this point. If you are ever to read about or speak with someone about QM, they will have _no idea_ what you’re talking about with "phantom copies" and "cancelling probabilities".
 
 So let’s translate the very tangible, physical picture thus far into the language the rest of the world uses for the concepts and ideas above.
 
@@ -930,11 +1015,7 @@ With quantum mechanics, we discovered equations that *predicted* reality stunnin
 
 And so QM has something that no other part of physics has. It has *interpretations*. Again, these different interpretations all have the same equations and the same predictions.[^27] They’re simply about what those equations *mean*.
 
-<!-- TODO: the doc's footnote 27 is cut off mid-sentence — it reads, in full, “The notable
-     exception being “objective collapse” theories, which posit that ”. Trimmed to a complete
-     clause here; finish the thought when you get a chance. -->
-
-[^27]: The notable exception being “objective collapse” theories.
+[^27]: The notable exception being “objective collapse”, covered below.
 
 In some sense, an interpretation is an answer to the measurement problem.
 
@@ -968,7 +1049,7 @@ So it’s worth noting that, if you meet someone who subscribes to the Copenhage
 
 “Many worlds” is the understatement of the century. It should properly be called something like “infinite parallel universes spawning every femtosecond”.
 
-According to the Many Worlds Interpretation (henceforth “MWI”), there’s not *a* universe in which quantum events happen randomly (God rolling dice, as Einstein famously quipped), but a deterministic *multiverse*, in which every possible event that *can* happen *does* happen – just in different branches.
+According to the Many Worlds Interpretation (henceforth “MWI”), there’s not *a* universe in which quantum events happen _randomly_ (or, as Einstein put it, "God does not play dice"), but a deterministic *multiverse*, in which every possible event that *can* happen *does* happen – just in different branches.
 
 It’s pretty similar to the “phantom timeline” idea I’ve mentioned above. The MWI take on the double-slit experiment is that, for anywhere one *could* see the particle land, there’s a branch in which the particle did land there. And if you shoot 100 particles through the double slit, the universe splits into every possibility, every time.
 
@@ -990,7 +1071,7 @@ But MWI is not a monolith, and proponents debate even some basic ontological que
 
 But one thing all MWIers agree on is that there are an effectively infinite number of copies of *you*. The branch in which you started reading this paragraph will turn into an ungodly number of branches containing slightly different yous – all by the time you finish this paragraph. Then, in even *more* branches, you will go on to live every life that it is physically possible for you to live.
 
-Putting aside the existential vertigo, MWI is perhaps the easiest interpretation to visualize. It’s no coincidence that “phantom timelines” (and, for single particles, “phantom copies”) are so similar to branches in MWI. Two relevant differences: (1) I’ve more or less ignored the measurement problem (i.e. what happens to the non-observed copies) and (2) I’ve consistently described the phantom copies branching off as soon as the particle *loses* contact (many modern MWI proponents believe branches aren’t separate until the particle *regains* contact, a process called “decoherence”).
+Putting aside the existential vertigo, MWI is perhaps the easiest interpretation to visualize. It’s no coincidence that “phantom timelines” (and, for single particles, “phantom copies”) are so similar to branches in MWI. Two relevant differences: (1) in my writeup, I’ve more or less ignored the measurement problem (i.e. what happens to the non-observed copies) and (2) I’ve consistently described the phantom copies branching off as soon as the particle *loses* contact (many modern MWI proponents believe branches aren’t separate until the particle *regains* contact, a process called “decoherence”).
 
 But if you’re willing to allow branches to separate the moment anything loses contact, then that opens up perhaps the *strongest* argument for *any* interpretation of QM I’ve heard, and that’s from David Deutsch, the godfather of quantum computing.
 
@@ -1076,6 +1157,7 @@ Nonetheless, there are foundational ideas and terms we haven’t covered:
 
 In a sufficiently broad conversation on QM, these will all come up. However, even if this article can’t cover them, you will find them *much* simpler to understand given the tangible model of things we’ve talked about over the last 12,000 words.
 
+Oh, and one last thing – what's the difference between _superposition_ and _not knowing the state of the system_? 😉
 
 
 ## Further reading {data-ordinal="IX." #further-reading}

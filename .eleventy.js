@@ -52,10 +52,22 @@ export default function(eleventyConfig) {
     },
   });
 
-  // Markdown library with attrs and sidenote definitions (allow raw HTML in Markdown)
-  const markdownLib = MarkdownIt({ html: true })
+  // Markdown library with attrs and sidenote definitions (allow raw HTML in Markdown).
+  //
+  // `typographer` is on for its smartquotes rule alone: straight ' and " in the source come
+  // out as ’ “ ” in the page, so a draft written in an editor with no curly quotes still
+  // renders to the house style. It only ever sees `text` tokens, so quotes inside code spans,
+  // fenced blocks and raw HTML attributes (`class="…"`, `href="…"`) are left exactly as
+  // written — the rule cannot reach them.
+  //
+  // ⚠️ `typographer` also gates a `replacements` rule that rewrites (c) (tm) +- ... -- ---
+  // into ©, ™, ±, …, – and —. That one is disabled: this site writes real en dashes in the
+  // source already, and a rule that silently rewrites `--` is the kind of thing that turns a
+  // literal string in prose into something else. Enable it deliberately if it's ever wanted.
+  const markdownLib = MarkdownIt({ html: true, typographer: true })
     .use(markdownItAttrs)
-    .use(sidenoteDefinitions);
+    .use(sidenoteDefinitions)
+    .disable('replacements');
   // Remove empty paragraphs emitted from blank lines
   markdownLib.core.ruler.after('inline', 'remove_empty_paragraphs', (state) => {
     const filtered = [];
@@ -166,6 +178,12 @@ export default function(eleventyConfig) {
       // nothing references is dropped (check-post flags it) — same contract as before.
       const seen = [];
       const refCount = new Map();
+      // ⚠️ Ids are built from the note's *number*, never from its label. The label is
+      // whatever the source wrote — `[^19]`, `[^guassian]` — and for a post transcribed from
+      // a Google Doc most labels are that doc's own footnote numbers, which stopped matching
+      // reference order the moment a note was added or dropped. Keying ids on the label put
+      // `#fn-19` in the address bar under a marker reading 3, on 30 of this post's 31 notes.
+      // The number is what the reader can see, so it is what the anchor says.
       const refHtml = (label) => {
         const n = seen.indexOf(label) + 1;
         // A note may be pointed at from more than one place. It stays one note with one
@@ -173,10 +191,9 @@ export default function(eleventyConfig) {
         // bare one so the bottom list's backref still has somewhere to go.
         const k = (refCount.get(label) || 0) + 1;
         refCount.set(label, k);
-        const id = k === 1 ? `fnref-${label}` : `fnref-${label}-${k}`;
+        const id = k === 1 ? `fnref-${n}` : `fnref-${n}-${k}`;
         return `<sup class="fn-ref" id="${id}" data-fn="${label}">` +
-               `<a class="fn-ref__link" href="#fn-${label}">` +
-               `<span class="fn-ref__marker" aria-hidden="true"></span>` +
+               `<a class="fn-ref__link" href="#fn-${n}">` +
                `<span class="fn-ref__n">${n}</span>` +
                `</a></sup>`;
       };
@@ -218,16 +235,29 @@ export default function(eleventyConfig) {
       // references. Keeping them out of the flow is what lets a note sit level with a
       // marker inside a table cell or a figure caption.
       const asides = seen.map((label, i) =>
-        `<aside class="sidenote" id="sn-${label}" data-fn="${label}">` +
+        `<aside class="sidenote" id="sn-${i + 1}" data-fn="${label}">` +
         `<div class="sidenote__body">${defs.get(label)}</div>` +
         `</aside>`).join('');
       $('.post-body').append(`<div class="sidenotes">${asides}</div>`);
 
+      // Each note opens with its own number, which is what pairs it with its marker once
+      // post.js has pushed it away from its own reference. It goes inside the note's first
+      // block rather than before it, so it sits on the first line of prose rather than on a
+      // line of its own — and only into the margin copy, since the bottom-of-page list is an
+      // <ol> that is already numbered.
+      $('.sidenotes .sidenote').each((i, el) => {
+        const prefix = `<span class="sidenote__n">${i + 1}` +
+                       `<span class="sidenote__sep" aria-hidden="true">/</span></span>`;
+        const $body = $(el).find('.sidenote__body');
+        const $first = $body.children().first();
+        ($first.length ? $first : $body).prepend(prefix);
+      });
+
       // The bottom-of-page list, shown wherever there is no room for a margin. Rendered
       // from the same `defs` HTML, so the two can no longer disagree.
       const items = seen.map((label, i) =>
-        `<li class="footnote-item" id="fn-${label}" value="${i + 1}">${defs.get(label)}` +
-        `<a class="footnote-backref" href="#fnref-${label}">\u21a9\ufe0e</a></li>`).join('');
+        `<li class="footnote-item" id="fn-${i + 1}" value="${i + 1}">${defs.get(label)}` +
+        `<a class="footnote-backref" href="#fnref-${i + 1}">\u21a9\ufe0e</a></li>`).join('');
       $('.post-body').append(
         `<hr class="footnotes-sep"><section class="footnotes">` +
         `<ol class="footnotes-list">${items}</ol></section>`
