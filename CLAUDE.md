@@ -71,6 +71,7 @@ subtitle: An intuitive & non-technical primer      # renders under the title
 nutshell: "…"                                      # standfirst above the article body; quote it if it contains a colon
 toc: qm-toc.html                                   # include name in src/_includes/
 img_subdir: qm                                     # resolves BOTH src/assets/img/<x>/ and src/_includes/<x>/
+meta_description: "…"                              # optional; overrides the generated social-card description
 img_on_homepage: quantum-background-sm.html
 video_on_homepage: clouds-slow.mp4                 # optional
 header_img: cloud-banner.png                       # optional
@@ -97,6 +98,44 @@ The doc's H1 is the post title — it lives in frontmatter, not the body.
   so the TOC's `#introduction` link has a target.
 
 Attribute syntax comes from `markdown-it-attrs`.
+
+## Social cards
+
+`src/_includes/social-meta.html` generates the whole Open Graph / Twitter block, and **both
+layouts include it** — `post.html` sets `og_type = "article"` first, `page.html` takes the
+default `"website"`. Keep it in the one include; the first version of this duplicated the block
+across the two layouts, which is exactly how the home and post cards drift apart.
+
+The image is **convention, not frontmatter**: `meta_image_path` looks for
+`src/assets/img/meta/<img_subdir>.png`, so the QM post's card is `meta/qm.png` purely because
+its `img_subdir` is `qm`. Anything with no file of its own — the homepage and about page, which
+set no `img_subdir` at all, plus any future post — falls back to `site.default_meta_image`
+(`home.png`). All three existing cards are **1200 × 630**; keep that, since it is what
+`summary_large_image` expects.
+
+Site-wide values live in `src/_data/site.json`: `name`, `url`, `description` (the fallback card
+text for pages with no `nutshell`) and `default_meta_image`. Per-page overrides are
+`meta_title` and `meta_description` in frontmatter.
+
+Three things in here are load-bearing:
+
+- ⚠️ **Every URL must be absolute.** Facebook, LinkedIn and Slack all reject a root-relative
+  `og:image`, and the failure is silent — the card renders with no image at all. `site.url` is
+  prefixed onto both the image and `og:url`. `feed.html` reads the same value, so the domain
+  appears in exactly one place.
+- ⚠️ **Dates need `iso_date`, not Liquid's `date`.** YAML parses a bare `2026-08-19` as UTC
+  midnight and `date` formats in the *local* zone, so anywhere west of Greenwich every post
+  claims to have published a day early. `iso_date` formats from `toISOString()`.
+- The description is `nutshell` through `meta_excerpt` — whole sentences up to ~160 chars,
+  because a card that stops mid-word reads as broken (Liquid's `truncate` cut one at
+  “yet it is 10…”). Its sentence split deliberately ignores `?`/`!` followed by a closing quote,
+  so the sky post's “why is the sky blue?” is not mistaken for the end of a sentence.
+
+⚠️ **A stray text node in `<head>` gets relocated, not just rendered.** `{#- … -#}` is Nunjucks,
+not Liquid, so it survived as literal text — and the sidenotes transform's HTML parser then hit
+non-whitespace in `<head>`, implied a `</head><body>`, and moved every meta tag after it into the
+body. It does not look like a comment-syntax error; it looks like the layout exploded. Use
+`{% comment %}`, and check `grep -c "</head>"` is 1 after touching that block.
 
 ## Table of contents
 
