@@ -92,12 +92,20 @@ The double-slit experiment – which is perhaps the most famous quantum experime
 
 <div class="double-wide">
     <div class="double-wide__item">
-        {% include img.md, src: "single-slit-results.png", width: "350px", caption: "<p>This is expected (more or less).</p><p>When you shoot the photons through a slit, they mostly go straight through, with some bending left or right a bit.</p>", alt: "" %}
+        {% include img.md, src: "single-slit-results.png", width: "350px", caption: "<p>This is expected (more or less)[^single_slit].</p><p>When you shoot the photons through a slit, they mostly go straight through, with some bending left or right a bit.</p>", alt: "" %}
     </div>
     <div class="double-wide__item">
         {% include img.md, src: "double-slit-results.png", width: "350px", caption: "<p>This is NOT expected.</p><p>Upon adding a second slit, the pattern suddenly changes to alternating light/dark areas. Why would the photons NOT hit some areas?</p>", alt: "" %}
     </div>
 </div>
+
+[^single_slit]: This is a sidenote. I'll use it for technical clarifications that aren't required reading. Like these two notes:
+
+    First, the slit must be arbitrarily small, or else the pattern becomes more complex (for reasons that are, indeed, quantum mechanical in nature)
+
+    Second, the fact that particles change direction _at all_ when passing through the slit requires some explanation. That explanation is quantum mechanical as well.
+
+    Nonetheless, if we squint (metaphorically), we can admit the double-slit pattern is more jolting than the arbitrarily-small-single-slit pattern.
 
 This unexpectedly complicated pattern is usually phrased in terms of what *happens*: “a crazy pattern!”
 
@@ -709,7 +717,7 @@ But rather than try to explain this over paragraphs of text, here is what is _lo
 
 {% include qm/ramsey.html %}
 
-One confusing thing about this visualization is why the excited atom, when blasted, forms a ground copy with its arrow flipped. I've researched what this _means_, and I've come back empty-handed. If I find out a satisfying answer, I will update this article[^19].
+One confusing thing about this visualization is why the excited phantom copy, when blasted, forms a ground copy with its arrow flipped. I've researched what this _means_, and I've come back empty-handed. If I find out a satisfying answer, I will update this article[^19].
 
 [^19]: So, it’s a rule that when an excited-state copy gets split, the ground-state copy flips its arrow.
 
@@ -930,7 +938,9 @@ For what it’s worth, to get the classical probability of some result, you do t
 1. Take the probability amplitude for each separate way the result could occur
 2. Add them together
 3. Take the length of the result (the *magnitude* of the *amplitude* 🧐)
-4. Square it
+4. Square it[^born_rule]
+
+[^born_rule]: This is called the Born Rule. To get the corresponding classical probability, square the amplitude's length.
 
 Why *square* it? No one knows, but it probably says something very deep about reality. Let me know if you find out![^25] 🤷‍♂️
 
@@ -942,8 +952,10 @@ Whenever I’ve talked about “multiple phantom copies” of a particle or syst
 
 The biggest misconception about superposition is that it kinda sounds like a fancy way of saying “I don’t know what state the thing is in”. But remember: that’s wrong for two reasons:
 
-1. Amplitudes in a superposition can *cancel*, meaning a certain event simply may never be observed (these weird cancellations aren’t explainable by “I don’t know what state the thing is in”)
+1. Amplitudes in a superposition can *cancel*[^inteference], meaning a certain event simply may never be observed (these weird cancellations aren’t explainable by “I don’t know what state the thing is in”)
 2. You can *tweak* a superposition (in ways you can’t tweak “I don’t know what state the thing is in”), which we saw in the parable of the coin and Ramsey experiment
+
+[^inteference]: Or "interfere", as the jargon goes.
 
 Any property of a particle or a group of particles that can vary can be in superposition. In general, spatial superpositions get the most airtime (“the particle is everywhere!” 👻), except for in quantum computing, where we really carefully put things in a superposition of just two states (like the rubidium atom in both its ground and excited energy state).
 
@@ -1117,7 +1129,9 @@ Speaking of Shor’s algorithm, this is also related to David Deutsch’s justif
 
 Deutsch, of course, believes there’s only one answer: quantum computation happens in the multiverse! It happens in the incalculably many branches that are *always* being generated – but that we can sometimes carefully harness to cancel in *juuuust* the right way so that we find ourselves in a branch where the quantum computers are correct.
 
-This is a stunning idea – but he’s far from convinced the rest of the physics community, and in general, the field called “Foundations of Quantum Mechanics” – which deals with *what is happening under the hood* – remains fascinating.
+This is a stunning idea – but he’s far from having convinced the rest of the physics community[^where_qc_happens], and in general, the field called “Foundations of Quantum Mechanics” – which deals with *what is happening under the hood* – remains fascinating.
+
+[^where_qc_happens]: All non-MWIers would explain this by saying, _hey, superposition is a much deeper substrate for computation than you'd think!_
 
 To end our glossary, we’ll switch gears to something much simpler, and more famous.
 
@@ -1151,15 +1165,23 @@ And because I can’t let a good thing go, I’ll mention a third interpretation
 
 QM is not a small field, and trying to do it justice in an intro will always leave stones unturned.
 
-Nonetheless, there are foundational ideas and terms we haven’t covered:
+Nonetheless, there are foundational ideas and terms we haven’t covered. But, if I've done my job, you'll pick them up quickly:
 
-* The Schrodinger Equation
-* Wave-Particle Duality
-* Quantum tunneling
-* Heisenberg’s Uncertainty Principle
-* Entanglement
+* **The Mach-Zehnder Experiment**. The single best experiment to read about next. It's the same effect as Ramsey – but with a photon's path instead of an atom's energy level.
+* **Quantum tunneling**. Good cocktail party chitchat, but it's basically just fallout from what we've already talked about.
+* **Heisenberg’s Uncertainty Principle**. New material[^hup]. A grab-bag of quantum effects that all pertain to the unknowability (or undefined-ness) of pairs of properties. Being concise about this is above my paygrade.
+* **Entanglement**. Easy to understand the basics[^entanglement], but the in-depth version (e.g. Bell's Theorem) is fiendishly complex. Nonetheless, entanglement is the zen master version of how the quantum _truly_ differs from the classical.
+* **Wave-Particle Duality**. A piece of jargon, that in Bill Watterson's words, "makes language a complete impediment to understanding". Still, you hear this term _all_ the time, and it's worth knowing what it is – and isn't.
+* **The Schrodinger Equation**. The math governing how the wavefunction changes over time. Lots of complex[^complex] calculus.
+* **Basis**. Not your typical cocktail party quantum fare, but if you're thinking "particles are just phantom copies, easy", this will keep the ontological weirdness flowing.
 
-In a sufficiently broad conversation on QM, these will all come up. However, even if this article can’t cover them, you will find them *much* simpler to understand given the tangible model of things we’ve talked about over the last 12,000 words.
+[^hup]: But some footnotes allude to it, cf. "The better you know where it just was, the worse you know where it’s going" and "More momentum means denser rotations in space".
+
+[^entanglement]: Indeed, you've already seen them. The Hong-Ou-Mandel experiment entangles two photons.
+
+[^complex]: In both senses.
+
+In a sufficiently broad conversation on QM, these will all come up. However, even if this article can’t cover them, you will find them *much* simpler to understand given the tangible model of things we’ve talked about over the last 15,000 words.
 
 Oh, and one last thing – what's the difference between _superposition_ and _not knowing the state of the system_? 😉
 
