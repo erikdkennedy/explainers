@@ -6,12 +6,30 @@ import MarkdownIt from "markdown-it";
 import markdownItAttrs from "markdown-it-attrs";
 import { minify as terserMinify } from "terser";
 import * as cheerio from "cheerio";
+import { injectSplashAnimation } from "./tools/qm-splash/animate.mjs";
+import { convertImages } from "./tools/webp/convert.mjs";
 
 export default function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addWatchTarget("src/scss");
   eleventyConfig.addWatchTarget("src/assets/css");
   eleventyConfig.addWatchTarget("src/assets/js");
+
+  /* The QM header splash is a generated asset: its animation lives inside the SVG as
+     declarative CSS (it is loaded as a `background-image`, so nothing outside it can reach
+     in) and is injected by tools/qm-splash. `tools/` sits outside `dir.input`, so Eleventy
+     would neither watch it nor know the SVG depends on it — editing a dial would silently
+     do nothing until someone remembered `npm run splash`. Wire it into the build instead.
+     The injector writes only when the bytes change, which is what keeps this from looping
+     against its own passthrough copy. */
+  eleventyConfig.addWatchTarget("tools/qm-splash");
+  eleventyConfig.on("eleventy.before", () => { injectSplashAnimation(); });
+
+  /* Writes a .webp beside every raster in src/assets/img. Same reasoning as the splash
+     injector above: it is a generated asset, so generating it on build is what keeps a
+     newly-dropped export from silently shipping as a 280 KB PNG. Incremental — it only
+     touches sources newer than their .webp — so the steady-state cost is a stat per file. */
+  eleventyConfig.on("eleventy.before", async () => { await convertImages({ quiet: true }); });
 
   eleventyConfig.addTemplateFormats("scss");
   eleventyConfig.addExtension("scss", {
@@ -224,8 +242,10 @@ export default function(eleventyConfig) {
         const k = (refCount.get(label) || 0) + 1;
         refCount.set(label, k);
         const id = k === 1 ? `fnref-${n}` : `fnref-${n}-${k}`;
+        // The visible marker is a bare digit, so without a label the accessible name is
+        // "3" — read out mid-sentence with nothing to say it is a footnote.
         return `<sup class="fn-ref" id="${id}" data-fn="${label}">` +
-               `<a class="fn-ref__link" href="#fn-${n}">` +
+               `<a class="fn-ref__link" href="#fn-${n}" aria-label="Footnote ${n}">` +
                `<span class="fn-ref__n">${n}</span>` +
                `</a></sup>`;
       };
@@ -289,9 +309,11 @@ export default function(eleventyConfig) {
       // from the same `defs` HTML, so the two can no longer disagree.
       const items = seen.map((label, i) =>
         `<li class="footnote-item" id="fn-${i + 1}" value="${i + 1}">${defs.get(label)}` +
-        `<a class="footnote-backref" href="#fnref-${i + 1}">\u21a9\ufe0e</a></li>`).join('');
+        `<a class="footnote-backref" href="#fnref-${i + 1}" ` +
+        `aria-label="Back to reference ${i + 1}">\u21a9\ufe0e</a></li>`).join('');
       $('.post-body').append(
-        `<hr class="footnotes-sep"><section class="footnotes">` +
+        `<hr class="footnotes-sep"><section class="footnotes" aria-labelledby="footnotes-heading">` +
+        `<h2 id="footnotes-heading" class="visually-hidden">Notes</h2>` +
         `<ol class="footnotes-list">${items}</ol></section>`
       );
 

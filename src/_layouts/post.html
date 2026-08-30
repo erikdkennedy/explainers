@@ -29,8 +29,10 @@
 </head>
 
 <body>
+	<a class="skip-link" href="#main">Skip to content</a>
 	{% include site-top-nav.md %}
 	{%- assign has_header_media = header_img or header_video -%}
+	<main id="main">
 	<header class="layout-width post-header{% if has_header_media %} has-header-media{% endif %}"
 		{%- if header_gradient -%}
 			style="background-image: linear-gradient({{ header_gradient }});"
@@ -76,6 +78,7 @@
 		</div>
 
 	</article>
+	</main>
 	<footer class="post-footer layout-width">
 		<div class="footer-content content-width">
 			{% include site-logo.html %}

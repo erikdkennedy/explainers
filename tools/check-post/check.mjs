@@ -82,8 +82,14 @@ for (const slug of slugs) {
     // Figures: the file has to exist, and be dense enough for the width it's shown at.
     const soft = [];
     let missing = 0, imgs = 0;
-    for (const m of html.matchAll(/<img src="([^"]+)"(?:[^>]*?width="(\d+)px?")?/g)) {
-        const [, src, width] = m;
+    // Match the whole tag and pull attributes out of it, rather than assuming src comes
+    // first — img.md now leads with loading/decoding, and an order-dependent regex silently
+    // reported "0 images all resolve" rather than failing.
+    for (const m of html.matchAll(/<img\b[^>]*>/g)) {
+        const tag = m[0];
+        const src = (/\ssrc="([^"]+)"/.exec(tag) || [])[1];
+        if (!src) continue;
+        const width = (/\swidth="(\d+)px?"/.exec(tag) || [])[1];
         imgs++;
         const p = join(SITE, src);
         if (!existsSync(p)) { fail(`missing asset ${src}`); missing++; continue; }

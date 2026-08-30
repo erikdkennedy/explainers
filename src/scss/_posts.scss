@@ -242,7 +242,13 @@ table {
         -webkit-overflow-scrolling: touch;
 
         table {
+            /* `width: 100%` alone means the table always fits, so `overflow-x` never
+               engages and the sticky first column below never activates — the wrapper was
+               inert. A floor is what gives it something to scroll: below it the columns
+               compress to ~114px on a phone, which is about 13 characters per line for
+               cells that run to two sentences. */
             width: 100%;
+            min-width: 620px;
         }
 
         th:first-child,
@@ -437,7 +443,9 @@ hr.full-width {
         z-index: 2;
     }
 
-    h4 {
+    /* Was an `h4` under the page's `h2` subtitle — a skipped level. It is an `h2` now and
+       the rule follows the class rather than the tag. */
+    .toc__heading {
         @include slub;
 
         margin-bottom: 0px;
@@ -668,7 +676,12 @@ hr.full-width {
            gutter is measured from the text and the padding handed back. */
         left: 100%;
         margin-left: calc(var(--sn-gutter) - 45px);
-        width: var(--sn-width);
+        /* Measured: the column's left edge sits at (100vw + 790px) / 2 + 15px, so a flat
+           300px runs 10px past the viewport at exactly 1400px and only fits from 1420px up.
+           There is no scrollbar to recover it either — `:root` is `overflow-x: clip` — so the
+           last few px of every note were being shaved off mid-word. Cap the width by what is
+           actually there, keeping a 10px margin, and let it reach 300px once it can. */
+        width: min(var(--sn-width), calc(50vw - 420px));
         height: 100%;
     }
 }

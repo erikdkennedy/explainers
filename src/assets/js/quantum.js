@@ -186,6 +186,27 @@
         return Math.max(min, Math.min(max, value));
     }
 
+    // Announces into a live region once the reader has stopped moving.
+    //
+    // Three of these widgets write their status from the render path, which runs once per
+    // rAF for the whole of a drag. A screen reader is then still part-way through one
+    // sentence when the next replaces it — and .dsp-status is three sentences long, so it
+    // never finishes any of them. Waiting for a pause means exactly one announcement per
+    // gesture, which is the only one the reader wanted.
+    //
+    // Widgets that write on a discrete event instead (hom-status, te-status, and the
+    // arrived-at-a-keyframe writes in em/rm) are already correctly scoped and don't use this.
+    const ANNOUNCE_QUIET = 450; // ms of no further writes before the region is updated
+    const _announceTimers = new WeakMap();
+
+    function announce($region, text) {
+        if (!$region) return;
+        clearTimeout(_announceTimers.get($region));
+        _announceTimers.set($region, setTimeout(() => {
+            $region.textContent = text;
+        }, ANNOUNCE_QUIET));
+    }
+
     // Box-Muller. Photons cluster at the middle of the detector rather than
     // spreading evenly across it.
     function randomNormal() {
@@ -1333,8 +1354,8 @@
 
         setArrow($result, angle, magnitude);
 
-        const $status = $widget.querySelector('.qam-status');
-        if ($status) $status.textContent = `Product: ${describeArrow(angle, magnitude)}.`;
+        announce($widget.querySelector('.qam-status'),
+            `Product: ${describeArrow(angle, magnitude)}.`);
     }
 
 
@@ -1448,11 +1469,9 @@
             if ($value) $value.textContent = String(Math.round(params[key]));
         });
 
-        const $status = $widget.querySelector('.ds-status');
-        if (!$status) return;
-
-        $status.textContent = `Wavelength ${Math.round(params.wavelength)}, `
-            + `slit separation ${Math.round(params.separation)}.`;
+        announce($widget.querySelector('.ds-status'),
+            `Wavelength ${Math.round(params.wavelength)}, `
+            + `slit separation ${Math.round(params.separation)}.`);
     }
 
 
@@ -1615,12 +1634,10 @@
             if ($value) $value.textContent = String(Math.round(params[key]));
         });
 
-        const $status = $widget.querySelector('.dsp-status');
-        if (!$status) return;
-
-        $status.textContent = `${Math.round(params.position * 100)}% of the way across the wall. `
+        announce($widget.querySelector('.dsp-status'),
+            `${Math.round(params.position * 100)}% of the way across the wall. `
             + `Wavelength ${Math.round(params.wavelength)}, slit separation ${Math.round(params.separation)}. `
-            + `Total amplitude length ${geometry.total.magnitude.toFixed(2)} of a possible 1.`;
+            + `Total amplitude length ${geometry.total.magnitude.toFixed(2)} of a possible 1.`);
     }
 
 

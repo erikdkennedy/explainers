@@ -106,6 +106,25 @@ document.addEventListener("DOMContentLoaded", () => {
         _notes.classList.add('sidenotes--ready');
     }
 
+    // Above the breakpoint the bottom-of-page list is `display: none`, so the marker's
+    // `#fn-N` target does not exist to jump to: `pointer-events: none` stops the mouse, but
+    // a keyboard user still tabs through every marker and lands on a link that goes nowhere.
+    // The note itself *is* on screen at that width, so point the marker at that instead and
+    // the link does something sensible at both widths rather than being suppressed at one.
+    function syncMarkerTargets() {
+        const wide = window.matchMedia(SN_MEDIA).matches;
+        for (const pair of _pairs) {
+            // Not focusable in its own right; this just gives the jump somewhere to land.
+            pair.note.setAttribute('tabindex', '-1');
+            for (const ref of pair.refs) {
+                const link = ref.querySelector('.fn-ref__link');
+                if (!link) continue;
+                if (!link.dataset.listHref) link.dataset.listHref = link.getAttribute('href');
+                link.setAttribute('href', wide ? `#${pair.note.id}` : link.dataset.listHref);
+            }
+        }
+    }
+
     function scheduleSidenoteLayout() {
         if (_frame) return;
         _frame = requestAnimationFrame(() => {
@@ -133,6 +152,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         _pairs = [...byLabel.values()];
         if (!_pairs.length) return;
+
+        syncMarkerTargets();
+        window.matchMedia(SN_MEDIA).addEventListener('change', syncMarkerTargets);
 
         layoutSidenotes();
 

@@ -9,12 +9,12 @@ header_img: qm-splash-lg.svg
 header_tile: 659.4px                               # 70% of the SVG's natural 942px
 header_tile_opacity: 0.52                          # ink density; see .header__media--tiled
 header_gradient: "180deg, #00A3DF 0%, #31359D 100%"
-published_on: 2026-08-19
+published_on: 2026-08-27
 layout: post
 css: quantum
 js: [post, quantum]
 tags: [posts]
-published: false
+published: true
 ---
 
 
@@ -92,10 +92,10 @@ The double-slit experiment – which is perhaps the most famous quantum experime
 
 <div class="double-wide">
     <div class="double-wide__item">
-        {% include img.md, src: "single-slit-results.png", width: "350px", caption: "<p>This is expected (more or less)[^single_slit].</p><p>When you shoot the photons through a slit, they mostly go straight through, with some bending left or right a bit.</p>", alt: "" %}
+        {% include img.md, src: "single-slit-results.png", width: "350px", caption: "<p>This is expected (more or less)[^single_slit].</p><p>When you shoot the photons through a slit, they mostly go straight through, with some bending left or right a bit.</p>", alt: "One slit: the particles land in a single broad band on the far wall." %}
     </div>
     <div class="double-wide__item">
-        {% include img.md, src: "double-slit-results.png", width: "350px", caption: "<p>This is NOT expected.</p><p>Upon adding a second slit, the pattern suddenly changes to alternating light/dark areas. Why would the photons NOT hit some areas?</p>", alt: "" %}
+        {% include img.md, src: "double-slit-results.png", width: "350px", caption: "<p>This is NOT expected.</p><p>Upon adding a second slit, the pattern suddenly changes to alternating light/dark areas. Why would the photons NOT hit some areas?</p>", alt: "Two slits: the particles land in several sharp bands separated by gaps." %}
     </div>
 </div>
 

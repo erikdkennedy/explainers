@@ -87,6 +87,27 @@ $w1440: "min-width: 1441px";
 @mixin w1400 { @media ($w1400) {@content;} }
 @mixin w1440 { @media ($w1440) {@content;} }
 
+/* Off-screen until focused, then a real, visible control in the top-left. First tab stop on
+   a 10,000-word article with a 9-item table of contents. */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 12px 20px;
+    background-color: var(--brand-color);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    text-decoration: none;
+    border-bottom-right-radius: 8px;
+    transform: translateY(-110%);
+
+    &:focus {
+        transform: translateY(0);
+    }
+}
+
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -187,6 +208,7 @@ h1, h2, h3, h4, h5, h6 {
 img, picture, video, canvas, svg {
     display: block;
     max-width: 100%;
+    height: auto;
 }
 
 input, button, textarea, select {
@@ -197,7 +219,12 @@ p {
     text-wrap: pretty;
 }
 
-nav {
+/* Scoped to the site nav by class, not by tag. As a bare `nav` selector this reached every
+   other <nav> on the site — the two TOCs and the Ramsey step rail — handing them
+   `display: flex`, `align-items: center`, a 1400px cap and 16px of inline padding they
+   never asked for. `align-items: center` on `.toc-wrapper` is what centred the sticky TOC
+   inside a 61,000px-tall column, i.e. put it ~31,000px down the page and off screen. */
+.site-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
