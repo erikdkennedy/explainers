@@ -42,3 +42,9 @@ tools/wavefunction-studio/out/
 # Claude Code local state
 ########################################
 .claude/worktrees/
+
+########################################
+# Generated image derivatives
+########################################
+# Written by tools/webp on every build; the .png/.jpg beside them is the source of truth.
+src/assets/img/**/*.webp

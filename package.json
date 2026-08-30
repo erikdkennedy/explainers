@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "sass src/scss:src/assets/css && eleventy",
+    "build": "sass --style=compressed --no-source-map src/scss:src/assets/css && eleventy",
     "serve": "npm-run-all --parallel sass:watch eleventy:serve",
     "sass:watch": "sass --watch src/scss:src/assets/css",
     "eleventy:serve": "eleventy --serve",
+    "splash": "node tools/qm-splash/animate.mjs",
     "clean": "rimraf _site src/assets/css",
     "check": "npm run build && node tools/check-post/check.mjs"
   },
@@ -19,6 +20,7 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
     "sass": "^1.77.6",
+    "sharp": "^0.35.4",
     "terser": "^5.44.0",
     "three": "0.170.0"
   }

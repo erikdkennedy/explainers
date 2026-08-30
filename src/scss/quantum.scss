@@ -1,5 +1,13 @@
 @use "./posts" as *;
 
+/* The Figma spec for a slider thumb is a white disc with a 1px `--border-color` (#D3D3D3)
+   ring — which is 1.37:1 against the #F5F5F5 card and fails WCAG 1.4.11, the 3:1 floor for
+   the boundary of a control. #888888 is 3.25:1 and is the smallest visible change that
+   clears it. Revert this one value to restore the design file exactly. */
+:root {
+    --qm-thumb-border: #888888;
+}
+
 /*****************************************
          HONG-OU-MANDEL EXPERIMENT
 *****************************************/
@@ -11,6 +19,31 @@
     --hom-mark-fade: 9s; /* tweakable */
     --hom-lit-time: 700ms; /* tweakable */
     --hom-lit-color: var(--brand-red);
+
+    /* RESPONSIVE COUNTER-SCALING
+       The diagram is only 390 wide, so it holds its size until the card drops below that
+       (~482px viewport) and never falls as far as the 700-wide widgets — but it does reach
+       0.73 at a 375px viewport and 0.59 at 320px, which puts the 15px labels at 10.9px and
+       8.8px and takes the marching-ants stroke sub-pixel. The ants are the only thing
+       saying the sources can be clicked, so losing them is losing the affordance.
+
+       Two multipliers for the same reason `amplitude-multiplication` has two: a stroke that
+       falls under a pixel disappears outright, where small type merely reads small. Every
+       consumer states the design value once and multiplies, so the numbers below stay the
+       ones in the drawing. Kept modest — this SVG's labels sit close to the artwork, and
+       over-correcting collides them rather than rescuing them. */
+    --hom-counter-scale: 1;         /* type */
+    --hom-counter-scale-stroke: 1;  /* line weights */
+
+    @include under-w500 {
+        --hom-counter-scale: 1.05;
+        --hom-counter-scale-stroke: 1.15;
+    }
+
+    @include under-w400 {
+        --hom-counter-scale: 1.20;
+        --hom-counter-scale-stroke: 1.45;
+    }
 
     /* The diagram is drawn at 390 x 312 and simply scales down from there. */
     svg {
@@ -34,7 +67,7 @@
 
     .hom-label {
         font-family: var(--font-mono);
-        font-size: 15px;
+        font-size: calc(15px * var(--hom-counter-scale, 1));
         fill: var(--text-color);
     }
 
@@ -58,7 +91,7 @@
            those retire on first use, and a keyboard user still needs a ring. */
         &:focus-visible .hom-hit {
             stroke: var(--link-color);
-            stroke-width: 2;
+            stroke-width: calc(2 * var(--hom-counter-scale-stroke, 1));
         }
     }
 
@@ -74,7 +107,9 @@
         .hom-ants {
             fill: none;
             stroke: var(--text-color);
-            stroke-width: 1.5;
+            /* stroke-width takes a bare <number>, so no unit here — see the note on
+               --qam-counter-scale in the amplitude widget. */
+            stroke-width: calc(1.5 * var(--hom-counter-scale-stroke, 1));
             stroke-dasharray: var(--hom-ants-dash) var(--hom-ants-dash);
             animation: homAntsMarch var(--hom-ants-speed) linear infinite;
             transition: opacity 350ms ease-out;
@@ -386,7 +421,9 @@
         }
 
         .ds-value {
-            opacity: 0.5;
+            /* 0.5 put #2d2d2d on the #F5F5F5 card at ~2.7:1 — under AA, on the only part of
+               the label that actually changes. 0.7 is ~5.2:1 and still reads as secondary. */
+            opacity: 0.7;
             font-variant-numeric: tabular-nums;
         }
 
@@ -404,6 +441,12 @@
 
         &:focus {
             outline: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--link-color);
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         &:focus-visible::-webkit-slider-thumb {
@@ -429,7 +472,7 @@
             /* Centres a 20px thumb over a 4px track. */
             margin-top: calc((var(--ds-track-height, 4px) - var(--ds-thumb-size, 20px)) / 2);
             border-radius: 50%;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--qm-thumb-border);
             background: #fff;
         }
 
@@ -444,7 +487,7 @@
             height: var(--ds-thumb-size, 20px);
             box-sizing: border-box;
             border-radius: 50%;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--qm-thumb-border);
             background: #fff;
         }
 
@@ -604,6 +647,12 @@
 
             &:focus {
                 outline: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color);
+                outline-offset: 2px;
+                border-radius: 4px;
             }
 
             &:focus-visible::-webkit-slider-thumb {
@@ -767,7 +816,8 @@
         }
 
         .dsp-value {
-            opacity: 0.5;
+            /* See .ds-value — 0.5 was ~2.7:1. */
+            opacity: 0.7;
             font-variant-numeric: tabular-nums;
         }
 
@@ -785,6 +835,12 @@
 
         &:focus {
             outline: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--link-color);
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         &:focus-visible::-webkit-slider-thumb {
@@ -822,7 +878,7 @@
             /* Centres a 20px thumb over a 4px track. */
             margin-top: calc((var(--dsp-track-height, 4px) - var(--dsp-thumb-size, 20px)) / 2);
             border-radius: 50%;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--qm-thumb-border);
             background: #fff;
         }
 
@@ -837,7 +893,7 @@
             height: var(--dsp-thumb-size, 20px);
             box-sizing: border-box;
             border-radius: 50%;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--qm-thumb-border);
             background: #fff;
         }
 
@@ -1131,19 +1187,28 @@
         text-transform: uppercase;
         color: rgba(0, 0, 0, 0.7);
         opacity: 0;
-        transition: opacity var(--em-label-transition, 220ms) ease;
+        /* See .rm-caption: transparent is not hidden, and all five would otherwise be read
+           out at once. */
+        visibility: hidden;
+        transition: opacity var(--em-label-transition, 220ms) ease,
+                    visibility 0s linear var(--em-label-transition, 220ms);
         pointer-events: none;
     }
 
         .em-label.is-visible {
             opacity: 1;
+            visibility: visible;
+            transition: opacity var(--em-label-transition, 220ms) ease,
+                        visibility 0s;
         }
 
         /* Held up between keyframes while the reader scrubs — see setEmissionLabel(). Dimmed
            because the picture on screen is *near* this keyframe rather than at it; solid would
            be the widget asserting something it cannot back up. */
         .em-label.is-visible.is-approximate {
-            opacity: 0.55;
+            /* Compounds with the base `rgba(0, 0, 0, 0.7)` above, so 0.55 was an effective
+               0.385 alpha — ~2.7:1. 0.78 lands near 4.6:1 and still reads as held-up. */
+            opacity: 0.78;
         }
 
         /* Figma anchors this one by its top edge and lets it set its own width; every
@@ -1205,6 +1270,7 @@
 
     .em-controls {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: var(--em-controls-gap, 10px);
         margin-top: 20px;
@@ -1225,6 +1291,12 @@
 
             &:focus {
                 outline: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color);
+                outline-offset: 2px;
+                border-radius: 4px;
             }
 
             &:focus-visible::-webkit-slider-thumb {
@@ -1365,6 +1437,18 @@
             }
         }
 
+        /* The buttons are fixed-width (58px + a ~87px "NEXT"), so every px the card loses
+           comes out of the scrubber: 124px at a 375px viewport and 69px at 320px, which
+           after a 28px thumb leaves 41px of travel for a 1000-step clock. `flex-wrap` alone
+           cannot save it — the scrubber is `flex: 1; min-width: 0`, so it shrinks rather
+           than wraps. Giving it a full-width basis is what puts it on its own row, above
+           the buttons, where it gets the whole card. */
+        @include under-w500 {
+            .em-scrubber {
+                flex: 1 0 100%;
+            }
+        }
+
         /* Below this the overlay stops working at any size, so the labels leave the
            drawing entirely and stack into a band beneath it. The stage grows taller to
            make room and the atom rides up with it — one shape, no clipping, and the
@@ -1476,6 +1560,13 @@
                whatever happens to be positioned further up the page — scrollRamseyCrumbIntoView()
                compares the two, and without this it silently scrolls to the wrong place. */
             position: relative;
+            /* Stated here rather than inherited. This is a <nav>, and it used to pick these up
+               from a bare `nav` element rule in _base.scss that was meant for the site header;
+               that rule is now scoped to .site-nav, so the box it was quietly providing has to
+               be declared. These are the values it was already rendering with. */
+            display: flex;
+            align-items: center;
+            padding-inline: 16px;
             flex: 1;
             min-width: 0; /* a flex item's intrinsic width would otherwise floor the whole row */
             overflow-x: auto;
@@ -1518,13 +1609,23 @@
                 /* Decoration, and deliberately not in the markup: a screen reader working down
                    the list does not need an arrow read out between every item. */
                 & + .rm-crumb-item::before {
-                    content: "→";
+                    /* The alt-text syntax, because `aria-hidden` cannot reach a
+                       pseudo-element and generated content *is* exposed — without the `/ ""`
+                       this reads "right arrow" between every crumb, which is exactly what the
+                       comment above says it must not do. */
+                    content: "→" / "";
                     opacity: 0.3;
                 }
             }
 
                 .rm-crumb {
-                    padding: 0;
+                    /* A 15px line of 120% type is a ~14px-tall tap target, and these are the
+                       only way back to an earlier step. The negative margin gives the button
+                       a 44px-tall hit area without moving anything or growing the rail — the
+                       padding is purely target, not layout. */
+                    padding-block: 15px;
+                    margin-block: -15px;
+                    padding-inline: 0;
                     border: none;
                     background: none;
                     font-family: var(--font-mono);
@@ -1533,7 +1634,8 @@
                     text-transform: uppercase;
                     white-space: nowrap;
                     color: var(--text-color);
-                    opacity: 0.5;
+                    /* ~2.7:1 at 0.5, and these are controls whose labels have to be read. */
+                    opacity: 0.7;
                     cursor: pointer;
 
                     /* The step you are on: full strength, and nothing to click towards. It stays
@@ -1819,12 +1921,23 @@
             font-size: 16px;
             line-height: 145%;
             opacity: 0;
-            transition: opacity var(--rm-caption-fade, 220ms) ease;
+            /* `opacity: 0` alone leaves all five captions in the accessibility tree, so a
+               screen reader reads every step's text in a row — including step 4's answer
+               while the reader is sitting on step 0 — and then hears the current one again
+               from .rm-status. `visibility` is what actually removes them; it is delayed to
+               the end of the fade out and restored instantly on the way in, so the
+               cross-fade still happens. */
+            visibility: hidden;
+            transition: opacity var(--rm-caption-fade, 220ms) ease,
+                        visibility 0s linear var(--rm-caption-fade, 220ms);
             pointer-events: none;
         }
 
         .rm-caption.is-visible {
             opacity: 1;
+            visibility: visible;
+            transition: opacity var(--rm-caption-fade, 220ms) ease,
+                        visibility 0s;
             pointer-events: auto;
         }
 
