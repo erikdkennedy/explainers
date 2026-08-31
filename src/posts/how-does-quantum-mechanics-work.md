@@ -160,7 +160,7 @@ And, while this will complicate things, and we will return to it later, it’s w
 
 Note: I’m only displaying SOME of the photon phantom copies. In reality, they’d cover the surface of the illustration!{ .caption }
 
-You’ll notice the bulk of these phantom photons leave *early* (rather than later) and *horizontally* (rather than vertically). Exactly *why* is specific to the type of atom and the exact configuration of its electrons – but for now, just understand this: ***some outcomes are more likely than others***.
+You’ll notice the bulk of these phantom photons leave *early* (rather than later). The specifics aren’t as important as the idea that ***some outcomes are more likely than others***.
 
 For now, let’s clarify these rules of how phantom copies work.
 
@@ -1081,7 +1081,7 @@ But MWI is not a monolith, and proponents debate even some basic ontological que
 
 * Are branches discrete, countable things?
 * Are there *many* branches, or *infinite* branches?
-* Do the new universes branch from existing ones, or did they all always exist?
+* Do the new branches truly _branch off_ from existing ones, or did they all always exist?
 * If they branch, *when* exactly do they branch? – when we *lose* contact with the particle, or *regain* it?
 * Why do the rules of probability for branches have *amplitudes* associated with them? What’s *that* all about?
 
@@ -1192,4 +1192,4 @@ Oh, and one last thing – what's the difference between _superposition_ and _no
 * [**Quantum Country**](https://quantum.country/){target="_blank"} by Michael Nielsen & Andy Matuschak. A giant 4-part article on QC and QM. Michael Nielsen has (literally) written the textbook on QC, and while he’s one of the world’s best explainers of technical concepts, warning: this piece comes with the full mathematical formalism a practicing physicist would be interested in! Nonetheless, it builds up an understanding of quantum computing – including a quantum search algorithm – from the ground up. Incredibly good.
 * [**LessWrong Quantum Sequences**](https://www.lesswrong.com/w/the-quantum-physics-sequence){target="_blank"} by Eliezer Yudkowsky. For those comfortable with math (imaginary numbers, linear algebra), this is a surprisingly accessible introduction to QM. I recall it as being overly-wordy – and pretty smug regarding how MWI was *obviously* the correct interpretation of QM. Nonetheless, a worthwhile read for someone diving in.
 
-Thanks to Scott Aaronson, Mithuna Yoganathan, Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }
+Thanks to Gautam Shine, Scott Aaronson, Mithuna Yoganathan, Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }

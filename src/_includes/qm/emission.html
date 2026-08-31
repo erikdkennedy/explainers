@@ -7,13 +7,15 @@
              a halo — and the orbital has to come first or its blurred red tints them.
              Photons are DOM dots, seeded by initEmission() in quantum.js: hand-authoring
              150 divs would be unreadable, and they must keep their pixel size on a phone. -->
-        <!-- The 2p orbital: two blurred lobes meeting at the nucleus, tips at the origin.
-             The south lobe is the north one mirrored, which is how Figma builds it. Drawn
-             1:1 — the viewBox is 180 x 240 user units in a 180 x 240px box, so blur(15px)
-             is Figma's stdDeviation 15 exactly. -->
-        <svg class="em-cloud" viewBox="-90 -120 180 240" aria-hidden="true" focusable="false">
-            <path class="em-cloud-lobe" d="M36 -43.7C36 -30.9975 0 0 0 0C0 0 -36 -30.9975 -36 -43.7C-36 -56.4025 -19.8823 -69 0 -69C19.8823 -69 36 -56.4025 36 -43.7Z"/>
-            <path class="em-cloud-lobe" transform="scale(1 -1)" d="M36 -43.7C36 -30.9975 0 0 0 0C0 0 -36 -30.9975 -36 -43.7C-36 -56.4025 -19.8823 -69 0 -69C19.8823 -69 36 -56.4025 36 -43.7Z"/>
+        <!-- The excited electron cloud: one blurred disc, not two lobes. An atom alone in
+             empty space is isotropic — p_x / p_y / p_z are an arbitrary choice of basis, and
+             nothing here picks one out — so the cloud has no axis and neither does the spray.
+             (A preferred direction needs something to break the symmetry: neighbouring atoms
+             in a crystal, or the polarization of the light that did the exciting.) Drawn 1:1 —
+             the viewBox is 180 x 180 user units in a 180 x 180px box, so blur(15px) is Figma's
+             stdDeviation 15 exactly. -->
+        <svg class="em-cloud" viewBox="-90 -90 180 180" aria-hidden="true" focusable="false">
+            <circle class="em-cloud-disc" cx="0" cy="0" r="50"/>
         </svg>
         <!-- Ground underneath and always opaque; excited on top, fading out on the decay
              probability. Cross-fading *both* would leave the atom part transparent in the

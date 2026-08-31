@@ -1072,7 +1072,7 @@
     --em-excited-color: #E54C2E;
     --em-ground-color: #007BFC;
     --em-cloud-blur: 15px; /* Figma's feGaussianBlur stdDeviation, which CSS blur() matches 1:1 */
-    --em-cloud-lobe-opacity: 0.5;
+    --em-cloud-disc-opacity: 0.5;
     --em-atom-radius: 10px; /* carries its unit — see the calc() note in CLAUDE.md */
 
     /* The atom's height within the stage, as a percentage. JS reads this back once per
@@ -1124,15 +1124,15 @@
         }
 
         .em-cloud {
-            width: 180px; /* the lobes are 72 x 138; the rest is room for the blur to fall off */
-            height: 240px;
+            width: 180px; /* the disc is 100 across; the rest is room for the blur to fall off */
+            height: 180px;
             margin: 0; /* _posts.scss centres bare svg in prose; this one is placed */
             opacity: var(--em-cloud-opacity, 1);
         }
 
-            .em-cloud-lobe {
+            .em-cloud-disc {
                 fill: var(--em-excited-color, #E54C2E);
-                opacity: var(--em-cloud-lobe-opacity, 0.5);
+                opacity: var(--em-cloud-disc-opacity, 0.5);
                 filter: blur(var(--em-cloud-blur, 15px));
             }
 
@@ -1221,12 +1221,15 @@
             white-space: nowrap;
         }
 
-        /* Copies are emitted with a cos² dipole weighting, so they crowd the horizontal and
-           thin out directly above and below the atom. That is the whole story behind where
-           these three sit: a caption in the sideways lobe gets dots through the type within a
-           step or two, and the further from the atom's own latitude a caption is, the longer
-           it stays readable. Counted photons landing inside each label's box, sampled across
-           the span of t the caption is on screen for — the numbers are in the notes below. */
+        /* The spray is isotropic (see randomEmissionAngle()), so there is no thin direction
+           left to hide a caption in — what protects one now is only *when* the expanding
+           shell sweeps across it. The first two are safe outright: their spans end before
+           any copy has travelled that far, measured at 0.00 dots through the type. The
+           third is on screen from its keyframe to t = 1 and cannot avoid the sweep; every
+           position measured lands within a dot or so of the ~6 a uniform scatter of 150
+           over this box would give, so it is placed for its meaning instead. Counted photons
+           landing inside each label's box, sampled across the span of t the caption is on
+           screen for — the numbers are in the notes below. */
         .em-label[data-step="1"],
         .em-label[data-step="2"],
         .em-label[data-step="3"] {
@@ -1241,16 +1244,18 @@
         /* Only step 1 is shown early enough that nothing has reached it yet. */
         .em-label[data-step="1"] { top: 45.5%; }
 
-        /* Figma puts this at 63%, which is inside the sideways lobe: it collects a dot or two
-           by the end of its span. Dropping it to 80% measured clean over t = 0.1 … 0.4. */
+        /* Figma puts this at 63%, close enough to the atom that the shell reaches it inside
+           the caption's span. Dropping it to 80% measured clean over t = 0.1 … 0.25. */
         .em-label[data-step="2"] { top: 80%; }
 
         /* This one is on screen from its keyframe all the way to t = 1, so it takes the worst
-           of the spray, and no position beside the atom survives that. Centred *under* the
-           atom instead — 33.6% + the column's own 32.8% puts its middle on the atom's 50% —
-           which is both the thinnest part of the dipole pattern and the right place for a
-           caption that is about the atom rather than about the photons. Measured over
-           t = 0.4 … 1: 1.9 dots through the type beside the atom, 1.25 below it. */
+           of the spray and no position escapes it. Centred *under* the atom — 33.6% + the
+           column's own 32.8% puts its middle on the atom's 50% — which is the right place for
+           a caption that is about the atom rather than about the photons, and is also the
+           quietest of the positions tried. Measured over t = 0.25 … 1: 5.1 dots through the
+           type here, against 8.3 at 70% and 9.4 at 62% — nearer the atom is *worse*, because
+           a shell that has already swept past still leaves the areal density going as
+           exp(r·RATE/SPEED)/r, and that 1/r is what fills the middle back in. */
         .em-label[data-step="3"] {
             left: 33.6%;
             top: 90.25%;

@@ -61,29 +61,39 @@
     const TE_REDUCED_MOTION_T = 0.35; // a paused widget should still show a cloud, not a speck
 
     // An excited atom emitting a photon. Lengths are in stage widths and times in units of
-    // the whole timeline, as above. Two distributions carry the physics, and between them
-    // they are what makes the article's claim — "the bulk of these phantom photons leave
-    // early, and horizontally" — something the reader watches rather than reads:
-    //
-    //   when  the emission time is exponential, so most copies leave in the first moments
-    //   where the 2p orbital's dipole is vertical, so intensity goes as sin^2 off that
-    //         axis: brightest along the horizontal, dark along the lobes themselves
+    // the whole timeline, as above. One distribution carries the physics, and it is what
+    // makes the article's claim — "the bulk of these phantom photons leave early" —
+    // something the reader watches rather than reads: the emission time is exponential, so
+    // most copies leave in the first moments. Direction is isotropic; see
+    // randomEmissionAngle() for why there is no preferred one.
     // Sized for the *first* step rather than the last: at t = 0.05 the copies have barely
     // cleared the nucleus, and the ones still behind it are hidden, so a count that looks
     // generous at full spread leaves a bare handful in the halo the reader meets first.
     const EM_PHOTON_COUNT = 150;
-    // Per unit t. exp(-3) leaves ~5% of the atom still excited at the end of the timeline,
-    // which is the most decay that can be shown without the last stretch looking static.
-    const EM_DECAY_RATE = 3;
+    // Per unit t, so the timeline is this many lifetimes long. Spontaneous emission has a
+    // constant hazard rate — for hydrogen's 2p -> 1s that is A = 6.27e8 /s, a 1.6 ns
+    // lifetime — so the emission time is exponential and the survival probability is
+    // exp(-t / lifetime). The shape is fixed by the physics; the only thing to choose is
+    // how much of it the timeline shows, and *that* is what has to be big enough to read.
+    //
+    // It has to be read off the spray rather than off the count, because a dot's distance
+    // from the atom is set by how early it left: the areal density of copies at radius r
+    // goes as exp(r * RATE / SPEED) / r, so the shell is denser than the middle by a factor
+    // that is only ~2 at RATE = 3 — a spray that looks, fairly enough, about uniform. At 5
+    // it is ~7, which is a visibly hollow middle and a crowded rim, i.e. the exponential
+    // itself. exp(-5) also leaves under 1% of the atom excited at the end of the timeline.
+    const EM_DECAY_RATE = 5;
     const EM_PHOTON_SPEED = 0.55; // stage widths per unit t — the earliest copies clear the frame
     const EM_SURVIVOR_POOL = 6; // how many of the outermost in-frame copies the survivor is drawn from
     const EM_SURVIVOR_CLEARANCE = 0.02; // stage widths of air between the survivor and the last caption
     // Figma's five dial positions, except the fourth: the atom's own phantom copies are worth
     // meeting while copies are still visibly leaving, not once the spray has all but finished,
-    // so that keyframe sits at 0.40 rather than Figma's 0.90.
-    const EM_STEPS = [0, 0.05, 0.10, 0.40, 1];
+    // so that keyframe sits well before Figma's 0.90. It is placed by *fraction emitted*
+    // (~0.7) rather than by a time, so raising EM_DECAY_RATE moves it rather than skipping
+    // past the moment it was chosen for — at rate 3 that fraction fell at 0.40.
+    const EM_STEPS = [0, 0.05, 0.10, 0.25, 1];
     const EM_TWEEN_MIN = 450; // ms for the shortest hop, 0 -> 0.05
-    const EM_TWEEN_MAX = 1400; // ms for the long haul, 0.40 -> 1
+    const EM_TWEEN_MAX = 1400; // ms for the long haul, 0.25 -> 1
     const EM_MAX_FRAME = 0.05; // seconds — clamp dt so a backgrounded tab does not jump
     const EM_EPSILON = 1e-6; // "strictly past the current t", in the face of float error
 
@@ -236,18 +246,13 @@
         return -Math.log(1 - Math.random()) / rate; // 1 - random() is (0, 1], so log is finite
     }
 
-    // Dipole radiation: intensity goes as sin^2 of the angle off the dipole axis. The 2p
-    // orbital's axis is vertical and theta is measured from the horizontal, so that angle
-    // is (90deg - theta) and the envelope becomes cos^2 — brightest straight out to the
-    // sides, dark along the lobes. Rejection sampling, two iterations on average, drawn
-    // once per photon at init and never again.
-    function randomDipoleAngle() {
-        for (let i = 0; i < 64; i++) {
-            const theta = Math.random() * 2 * Math.PI;
-            const cos = Math.cos(theta);
-            if (Math.random() < cos * cos) return theta;
-        }
-        return Math.random() * 2 * Math.PI; // unreachable in practice; never loop forever
+    // Isotropic, and deliberately so. An earlier version sampled a cos^2 dipole envelope off
+    // the 2p orbital's axis — but a lone atom in empty space has no such axis: p_x / p_y / p_z
+    // are an arbitrary basis, and picking one of them out is only meaningful once something
+    // breaks the symmetry (neighbouring atoms in a crystal, or the polarization of whatever
+    // did the exciting). Nothing in this picture does, so every direction is equally likely.
+    function randomEmissionAngle() {
+        return Math.random() * 2 * Math.PI;
     }
 
 
@@ -511,7 +516,7 @@
             $photon.className = 'em-photon';
             $photon.style.display = 'none'; // nothing has been emitted at t = 0
 
-            const theta = randomDipoleAngle();
+            const theta = randomEmissionAngle();
 
             seeds.push({
                 tau: randomExponential(EM_DECAY_RATE), // the moment this copy leaves
