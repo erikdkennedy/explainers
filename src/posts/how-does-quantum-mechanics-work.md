@@ -9,7 +9,7 @@ header_img: qm-splash-lg.svg
 header_tile: 659.4px                               # 70% of the SVG's natural 942px
 header_tile_opacity: 0.52                          # ink density; see .header__media--tiled
 header_gradient: "180deg, #00A3DF 0%, #31359D 100%"
-published_on: 2026-08-27
+published_on: 2026-08-30
 layout: post
 css: quantum
 js: [post, quantum]
@@ -961,7 +961,7 @@ Any property of a particle or a group of particles that can vary can be in super
 
 But as long as a particle or system is isolated from the outside environment, it can enter a superposition of every *possible* state it could be in. And when you sum up all those possibilities, well, we have a word for that…
 
-### Wavefunction
+### Wavefunction { #wavefunction }
 
 The mathematical expression of the probability amplitude of every possible state of the system is called the *wavefunction*.
 
@@ -1192,4 +1192,4 @@ Oh, and one last thing – what's the difference between _superposition_ and _no
 * [**Quantum Country**](https://quantum.country/){target="_blank"} by Michael Nielsen & Andy Matuschak. A giant 4-part article on QC and QM. Michael Nielsen has (literally) written the textbook on QC, and while he’s one of the world’s best explainers of technical concepts, warning: this piece comes with the full mathematical formalism a practicing physicist would be interested in! Nonetheless, it builds up an understanding of quantum computing – including a quantum search algorithm – from the ground up. Incredibly good.
 * [**LessWrong Quantum Sequences**](https://www.lesswrong.com/w/the-quantum-physics-sequence){target="_blank"} by Eliezer Yudkowsky. For those comfortable with math (imaginary numbers, linear algebra), this is a surprisingly accessible introduction to QM. I recall it as being overly-wordy – and pretty smug regarding how MWI was *obviously* the correct interpretation of QM. Nonetheless, a worthwhile read for someone diving in.
 
-Thanks to Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }
+Thanks to Scott Aaronson, Mithuna Yoganathan, Abhi Vyas, Matt Favero, and Steven Young for their feedback. LLMs were consulted in the research of this article, but any hallucinations are my own. I welcome <a href="mailto:erik@explainers.blog">further feedback</a>.{ .credits }
