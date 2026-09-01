@@ -1081,9 +1081,11 @@ But MWI is not a monolith, and proponents debate even some basic ontological que
 
 * Are branches discrete, countable things?
 * Are there *many* branches, or *infinite* branches?
-* Do the new branches truly _branch off_ from existing ones, or did they all always exist?
+* Do the new branches truly _branch off_ from existing ones, or did they all always exist?[^branches_always_exist]
 * If they branch, *when* exactly do they branch? – when we *lose* contact with the particle, or *regain* it?
 * Why do the rules of probability for branches have *amplitudes* associated with them? What’s *that* all about?
+
+[^branches_always_exist]: This might sound like a silly question. But if we start with _the wavefunction of the universe_, then “a branch” is simply terms that are unable to recombine as the function evolves over time. Mathematically, nothing new is _created_ – just partitioned, so to speak.
 
 But one thing all MWIers agree on is that there are an effectively infinite number of copies of *you*. The branch in which you started reading this paragraph will turn into an ungodly number of branches containing slightly different yous – all by the time you finish this paragraph. Then, in even *more* branches, you will go on to live every life that it is physically possible for you to live.
 
