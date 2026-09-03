@@ -15,6 +15,29 @@ Runs Eleventy `--serve` (port 8080) and `sass --watch` in parallel, with live re
 A `.claude/launch.json` entry named `explainers-dev` exists so the preview tooling can start
 the same thing by name.
 
+## Git workflow
+
+**Merge PRs with a standard merge commit — never squash.** This is a deliberate change of policy as
+of 2026-09-03, and the repo's own history argues against it: main is 50 commits with **zero** merge
+commits, every one of `(#14)`–`(#21)` a squash. Do not read that log as the house style and imitate
+it. Nothing in the GitHub settings enforces either way (all three merge methods are enabled), so the
+button is whatever was clicked last — check it rather than trusting the default.
+
+```bash
+gh pr merge <n> --merge        # not --squash
+```
+
+⚠️ **Squashing is what stranded a commit here, and the failure is silent.** PR #21 was squash-merged,
+which left `emission-isotropic` pointing at a commit id that no longer exists anywhere in main. A
+later push to that branch therefore attached to nothing: the PR was closed, so no open PR pointed at
+the new commit, and `git log main..HEAD` was the only thing that would ever have mentioned it. It
+looks exactly like a branch with unpushed work, right up until you notice the work is a week old.
+With a real merge commit the branch stays an ancestor of main, so pushing to it after the merge
+leaves it visibly ahead by one rather than silently orphaned.
+
+The corollary, since `delete_branch_on_merge` is off: a merged branch sticks around locally *and* on
+the remote and looks live. After a PR lands, delete both.
+
 ## Layout of things
 
 | Path | What |
